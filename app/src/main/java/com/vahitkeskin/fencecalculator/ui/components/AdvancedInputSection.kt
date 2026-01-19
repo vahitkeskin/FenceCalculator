@@ -3,6 +3,7 @@ package com.vahitkeskin.fencecalculator.ui.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -20,6 +21,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.focus.onFocusEvent
+import kotlinx.coroutines.launch
 
 @Composable
 fun AdvancedInputSection(
@@ -43,6 +50,7 @@ fun AdvancedInputSection(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CompactInput(
     label: String,
@@ -53,12 +61,26 @@ fun CompactInput(
     focusManager: androidx.compose.ui.focus.FocusManager,
     isLast: Boolean = false
 ) {
+    // 1. Scroll İsteği İçin Gerekli Değişkenler
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    val coroutineScope = rememberCoroutineScope()
+
     Column(modifier) {
         Text(label, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                // 2. Inputa tıklandığında (Focus olduğunda) ekrana getir
+                .bringIntoViewRequester(bringIntoViewRequester)
+                .onFocusEvent { focusState ->
+                    if (focusState.isFocused) {
+                        coroutineScope.launch {
+                            bringIntoViewRequester.bringIntoView()
+                        }
+                    }
+                },
             textStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
             singleLine = true,
             leadingIcon = { Icon(icon, null, Modifier.size(18.dp)) },

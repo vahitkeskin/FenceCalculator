@@ -1,14 +1,20 @@
 package com.vahitkeskin.fencecalculator.ui.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -16,8 +22,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vahitkeskin.fencecalculator.data.model.CalculationItem
+import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SwapLayoutResultRow(
     item: CalculationItem,
@@ -26,6 +34,10 @@ fun SwapLayoutResultRow(
 ) {
     val df = DecimalFormat("#,##0.##")
     val currencyFormat = DecimalFormat("#,##0.00")
+
+    // Scroll İsteği İçin Gerekli Değişkenler
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    val coroutineScope = rememberCoroutineScope()
 
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -50,10 +62,22 @@ fun SwapLayoutResultRow(
                         }
                     }
                     Spacer(modifier = Modifier.height(12.dp))
+
+                    // Input Alanı
                     OutlinedTextField(
                         value = currentPriceInput,
                         onValueChange = onPriceChange,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            // Inputa tıklandığında (Focus olduğunda) ekrana getir
+                            .bringIntoViewRequester(bringIntoViewRequester)
+                            .onFocusEvent { focusState ->
+                                if (focusState.isFocused) {
+                                    coroutineScope.launch {
+                                        bringIntoViewRequester.bringIntoView()
+                                    }
+                                }
+                            },
                         label = { Text("Birim Fiyat (₺)", style = MaterialTheme.typography.bodySmall) },
                         placeholder = { Text("0", color = Color.LightGray) },
                         textStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
