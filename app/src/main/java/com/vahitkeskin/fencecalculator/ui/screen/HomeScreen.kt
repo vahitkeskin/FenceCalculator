@@ -29,7 +29,6 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     viewModel: CalculatorViewModel = hiltViewModel()
 ) {
-    // UI Durumları (State)
     var showSettingsSheet by remember { mutableStateOf(false) }
     var isGeneratingPdf by remember { mutableStateOf(false) }
 
@@ -38,6 +37,8 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
 
     Scaffold(
+        // TOOLBAR BURADA TANIMLANDIĞI İÇİN SABİT KALIR
+        // Scaffold'un kendisine .imePadding() VERMEYİN!
         topBar = {
             TopAppBar(
                 title = {
@@ -55,29 +56,20 @@ fun HomeScreen(
                     }
                 },
                 actions = {
-                    // PDF PAYLAŞ BUTONU
                     IconButton(onClick = {
                         scope.launch {
                             isGeneratingPdf = true
-                            // Kullanıcı animasyonu görsün diye ufak bir gecikme
                             delay(1500)
-
-                            // PDF Oluşturucu Çağır
                             PdfGenerator.generateAndSharePdf(
                                 context = context,
                                 results = viewModel.results,
                                 totalCost = viewModel.grandTotalCost,
                                 length = viewModel.totalLengthInput
                             )
-
                             isGeneratingPdf = false
                         }
                     }) {
-                        Icon(
-                            imageVector = Icons.Default.Share,
-                            contentDescription = "PDF Paylaş",
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
+                        Icon(Icons.Default.Share, contentDescription = "PDF Paylaş", tint = MaterialTheme.colorScheme.onPrimaryContainer)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -88,20 +80,26 @@ fun HomeScreen(
         }
     ) { innerPadding ->
 
-        // ANA İÇERİK (BOX)
+        // Klavye yüksekliğini hesapla
+        val imeBottomPadding = WindowInsets.ime.asPaddingValues().calculateBottomPadding()
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(innerPadding) // TopBar'ın yüksekliği kadar içeriği aşağı iter
         ) {
-            // LİSTE (Inputs + Items)
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                // Altta BottomBar olduğu için içeriğin kesilmemesi adına bottom padding verdik
-                contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 200.dp),
+                contentPadding = PaddingValues(
+                    top = 16.dp,
+                    start = 16.dp,
+                    end = 16.dp,
+                    // KLAVYE AÇILDIĞINDA LİSTENİN ALTINA BOŞLUK EKLE
+                    // Böylece son eleman klavyenin üstüne kayabilir.
+                    bottom = 200.dp + imeBottomPadding
+                ),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // 1. Bölüm: Girdi Alanları
                 item {
                     AdvancedInputSection(
                         lengthValue = viewModel.totalLengthInput,
@@ -113,28 +111,15 @@ fun HomeScreen(
                     )
                 }
 
-                // 2. Bölüm: Başlık ve Düzenle Butonu
                 item {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "GİDER KALEMLERİ",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.weight(1f)
-                        )
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                        Text("GİDER KALEMLERİ", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary, modifier = Modifier.weight(1f))
                         TextButton(onClick = { showSettingsSheet = true }) {
-                            Text(
-                                text = "Değerleri Düzenle",
-                                style = MaterialTheme.typography.labelSmall
-                            )
+                            Text("Değerleri Düzenle", style = MaterialTheme.typography.labelSmall)
                         }
                     }
                 }
 
-                // 3. Bölüm: Hesaplama Sonuçları
                 items(viewModel.results, key = { it.id }) { item ->
                     val rawPrice = viewModel.getPriceString(item.id)
                     SwapLayoutResultRow(
@@ -152,49 +137,24 @@ fun HomeScreen(
             )
         }
 
-        // BOTTOM SHEET (Ayarlar)
         if (showSettingsSheet) {
             ModalBottomSheet(
                 onDismissRequest = { showSettingsSheet = false },
                 sheetState = sheetState,
-                containerColor = MaterialTheme.colorScheme.surface,
-                //windowInsets = WindowInsets.ime
+                containerColor = MaterialTheme.colorScheme.surface
             ) {
-                // SettingsSheetContent'i buraya bağlıyoruz
-                SettingsSheetContent(viewModel = viewModel) {
-                    showSettingsSheet = false
-                }
+                SettingsSheetContent(viewModel = viewModel) { showSettingsSheet = false }
             }
         }
 
-        // YÜKLENİYOR DIALOG (PDF Oluşturulurken)
         if (isGeneratingPdf) {
-            Dialog(onDismissRequest = { /* Kapatılamaz */ }) {
-                Card(
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(48.dp)
-                        )
+            Dialog(onDismissRequest = {}) {
+                Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), modifier = Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(48.dp))
                         Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "PDF Raporu Hazırlanıyor...",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "Lütfen bekleyin.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.Gray
-                        )
+                        Text("PDF Raporu Hazırlanıyor...", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text("Lütfen bekleyin.", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                     }
                 }
             }
