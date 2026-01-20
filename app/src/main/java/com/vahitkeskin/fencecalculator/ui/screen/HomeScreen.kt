@@ -37,8 +37,6 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
 
     Scaffold(
-        // TOOLBAR BURADA TANIMLANDIĞI İÇİN SABİT KALIR
-        // Scaffold'un kendisine .imePadding() VERMEYİN!
         topBar = {
             TopAppBar(
                 title = {
@@ -77,26 +75,35 @@ fun HomeScreen(
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
-        }
+        },
+        // Scaffold'un kendi window inset yönetimini iptal edip kontrolü ele alıyoruz.
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { innerPadding ->
 
-        // Klavye yüksekliğini hesapla
-        val imeBottomPadding = WindowInsets.ime.asPaddingValues().calculateBottomPadding()
+        // %100 ÇÖZÜM MANTIĞI:
+        // 1. Box, ekranın tamamını kaplar.
+        // 2. .imePadding() ekleyerek, klavye açıldığında Box'ın boyunu ZORLA kısaltırız.
+        //    (Manifest ayarı çalışsa da çalışmasa da bu kod çalışır).
+        // 3. Böylece AnimatedWaveBottomBar her zaman klavyenin hemen tepesinde durur.
+        // 4. Listenin altına da Alt Barın yüksekliği kadar (örn: 250dp) sabit boşluk veririz.
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding) // TopBar'ın yüksekliği kadar içeriği aşağı iter
+                .padding(innerPadding) // Topbar boşluğu
+                .imePadding()          // KRİTİK: Klavye açılınca Box'ı yukarı it/sıkıştır
+                .navigationBarsPadding() // Sanal tuşlar varsa üstüne binmesin
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
+                // Alt Bar'ın yaklaşık yüksekliği + ekstra güvenli boşluk.
+                // AnimatedWaveBottomBar genelde 150-200dp yer kaplar.
+                // Biz 260.dp vererek son item'ın barın üstüne rahatça çıkmasını garantiliyoruz.
                 contentPadding = PaddingValues(
                     top = 16.dp,
                     start = 16.dp,
                     end = 16.dp,
-                    // KLAVYE AÇILDIĞINDA LİSTENİN ALTINA BOŞLUK EKLE
-                    // Böylece son eleman klavyenin üstüne kayabilir.
-                    bottom = 200.dp + imeBottomPadding
+                    bottom = 260.dp
                 ),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -130,13 +137,16 @@ fun HomeScreen(
                 }
             }
 
-            // ALT BAR (Animasyonlu Toplam Tutar)
+            // ALT BAR
+            // Box .imePadding() aldığı için, klavye açıldığında Box küçülür
+            // ve bottom'a hizalı olan bu bar otomatik olarak klavyenin üzerine çıkar.
             AnimatedWaveBottomBar(
                 totalCost = viewModel.grandTotalCost,
                 modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
 
+        // --- Sheet ve Dialog Kodları Aynı ---
         if (showSettingsSheet) {
             ModalBottomSheet(
                 onDismissRequest = { showSettingsSheet = false },
