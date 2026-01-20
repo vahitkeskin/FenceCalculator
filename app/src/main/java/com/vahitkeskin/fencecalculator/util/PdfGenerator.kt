@@ -19,17 +19,18 @@ object PdfGenerator {
         context: Context,
         results: List<CalculationItem>,
         totalCost: Double,
-        length: String
+        length: String,
+        customerTitle: String
     ) {
         val pdfDocument = PdfDocument()
-        val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // A4
+        val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // A4 Boyutu
         val page = pdfDocument.startPage(pageInfo)
         val canvas = page.canvas
         val paint = Paint()
 
-        // --- TASARIM ---
+        // --- TASARIM BAŞLANGICI ---
 
-        // 1. Üst Dalga
+        // 1. Üst Dalga Tasarımı
         paint.color = android.graphics.Color.parseColor("#3F51B5")
         paint.style = Paint.Style.FILL
         val path = Path()
@@ -40,7 +41,7 @@ object PdfGenerator {
         path.close()
         canvas.drawPath(path, paint)
 
-        // 2. Başlıklar
+        // 2. Başlık ve Alt Başlık
         paint.color = Color.WHITE
         paint.textSize = 24f
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
@@ -49,10 +50,10 @@ object PdfGenerator {
         paint.textSize = 14f
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
         paint.alpha = 200
-        canvas.drawText("Vahit Keskin Fence Calculator", 30f, 85f, paint)
+        canvas.drawText(customerTitle, 30f, 85f, paint)
         paint.alpha = 255
 
-        // 3. Bilgi Kartı
+        // 3. Bilgi Kartı (Uzunluk Bilgisi)
         paint.color = Color.WHITE
         paint.clearShadowLayer()
         canvas.drawRoundRect(30f, 140f, 565f, 200f, 10f, 10f, paint)
@@ -66,63 +67,98 @@ object PdfGenerator {
         paint.textSize = 16f
         canvas.drawText("$length Metre", 200f, 175f, paint)
 
-        // 4. Tablo
+        // 4. TABLO BAŞLIKLARI
         var yPos = 250f
-        val df = DecimalFormat("#,##0") // Adetler tam sayı görünsün
-        val cf = DecimalFormat("#,##0.00")
+        val dfQty = DecimalFormat("#,##0")     // Miktar için (Virgülsüz)
+        val dfPrice = DecimalFormat("#,##0.00") // Para birimleri için (Kuruşlu)
 
-        // Başlıklar
-        paint.color = Color.DKGRAY
-        paint.textSize = 12f
+        paint.textSize = 11f
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        canvas.drawText("MALZEME", 30f, yPos, paint)
-        canvas.drawText("MİKTAR", 300f, yPos, paint)
-        canvas.drawText("TUTAR", 480f, yPos, paint)
+        paint.color = Color.DKGRAY
 
+        // Sütun X Koordinatları
+        val xMaterial = 30f
+        val xQtyEnd = 320f      // Miktar sütunu bitişi (Sağa dayalı olacak)
+        val xUnitEnd = 430f     // Birim Fiyat sütunu bitişi (Sağa dayalı)
+        val xTotalEnd = 565f    // Tutar sütunu bitişi (Sağa dayalı)
+
+        // Başlıkları Çiz
+        paint.textAlign = Paint.Align.LEFT
+        canvas.drawText("MALZEME", xMaterial, yPos, paint)
+
+        paint.textAlign = Paint.Align.RIGHT
+        canvas.drawText("MİKTAR", xQtyEnd, yPos, paint)
+        canvas.drawText("BİRİM FİYAT", xUnitEnd, yPos, paint) // YENİ SÜTUN
+        canvas.drawText("TUTAR", xTotalEnd, yPos, paint)
+
+        // Çizgi Çek
         yPos += 10f
         paint.strokeWidth = 1f
         paint.color = Color.LTGRAY
         canvas.drawLine(30f, yPos, 565f, yPos, paint)
         yPos += 25f
 
-        // İçerik
+        // 5. TABLO İÇERİĞİ
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
         paint.color = Color.BLACK
         paint.textSize = 12f
 
         results.forEach { item ->
-            // FİLTRELEME: Sadece tutarı 0'dan büyük olanları yazdır
+            // Sadece tutarı 0'dan büyük olan kalemleri göster
             if (item.totalCost > 0.0) {
-                // Başlık
-                canvas.drawText(item.title, 30f, yPos, paint)
 
-                // Miktar
-                canvas.drawText("${df.format(item.quantity)} ${item.unit}", 300f, yPos, paint)
+                // Birim Fiyatı Hesapla (Tutar / Miktar)
+                val unitPrice = if (item.quantity != 0.0) item.totalCost / item.quantity else 0.0
 
-                // Tutar
-                val costStr = "${cf.format(item.totalCost)} ₺"
-                val textWidth = paint.measureText(costStr)
-                canvas.drawText(costStr, 565f - textWidth, yPos, paint)
+                // 1. Malzeme Adı (Sola Dayalı)
+                paint.textAlign = Paint.Align.LEFT
+                // Eğer isim çok uzunsa diye basit bir kısaltma önlemi (opsiyonel)
+                val displayName = if (item.title.length > 28) item.title.take(28) + "..." else item.title
+                canvas.drawText(displayName, xMaterial, yPos, paint)
 
+                // 2. Miktar (Sağa Dayalı - Birim ile beraber)
+                paint.textAlign = Paint.Align.RIGHT
+                canvas.drawText("${dfQty.format(item.quantity)} ${item.unit}", xQtyEnd, yPos, paint)
+
+                // 3. Birim Fiyat (Sağa Dayalı) - YENİ EKLENEN KISIM
+                canvas.drawText("${dfPrice.format(unitPrice)} ₺", xUnitEnd, yPos, paint)
+
+                // 4. Toplam Tutar (Sağa Dayalı)
+                paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD) // Tutarı kalın yapalım
+                canvas.drawText("${dfPrice.format(item.totalCost)} ₺", xTotalEnd, yPos, paint)
+                paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL) // Normale dön
+
+                // Satır boşluğu
                 yPos += 30f
             }
         }
 
-        // 5. Genel Toplam
+        // 6. GENEL TOPLAM ALANI
         yPos += 20f
-        paint.color = android.graphics.Color.parseColor("#1E1E1E")
+
+        // Gri arka plan şeridi
+        paint.color = android.graphics.Color.parseColor("#F5F5F5")
+        paint.style = Paint.Style.FILL
         canvas.drawRect(0f, yPos, 595f, yPos + 60f, paint)
 
-        paint.color = Color.WHITE
+        // Koyu şerit çizgisi
+        paint.color = android.graphics.Color.parseColor("#3F51B5")
+        canvas.drawRect(0f, yPos, 5f, yPos + 60f, paint)
+
+        // Etiket
+        paint.color = Color.BLACK
         paint.textSize = 14f
+        paint.textAlign = Paint.Align.LEFT
         canvas.drawText("GENEL TOPLAM MALİYET", 30f, yPos + 35f, paint)
 
-        paint.textSize = 20f
+        // Değer
+        paint.textSize = 22f
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        val totalStr = "${cf.format(totalCost)} ₺"
-        val totalWidth = paint.measureText(totalStr)
-        canvas.drawText(totalStr, 565f - totalWidth, yPos + 38f, paint)
+        paint.textAlign = Paint.Align.RIGHT
+        paint.color = android.graphics.Color.parseColor("#3F51B5")
+        canvas.drawText("${dfPrice.format(totalCost)} ₺", 565f, yPos + 38f, paint)
 
+        // --- BİTİŞ ---
         pdfDocument.finishPage(page)
 
         val file = File(context.cacheDir, "Cit_Maliyet_Teklifi.pdf")
@@ -148,7 +184,7 @@ object PdfGenerator {
             type = "application/pdf"
             putExtra(Intent.EXTRA_STREAM, uri)
             putExtra(Intent.EXTRA_SUBJECT, "Çit Maliyet Teklifi")
-            putExtra(Intent.EXTRA_TEXT, "Ekte çit maliyet hesaplama raporunu bulabilirsiniz.")
+            putExtra(Intent.EXTRA_TEXT, "Ekte çit maliyet hesaplama detaylı raporunu bulabilirsiniz.")
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
 
