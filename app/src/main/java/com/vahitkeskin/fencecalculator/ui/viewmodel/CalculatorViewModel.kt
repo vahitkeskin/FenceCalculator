@@ -145,6 +145,14 @@ class CalculatorViewModel @Inject constructor() : ViewModel() {
         val rawBaglama = gergiTeli / 3.0 // Yuvarlanmış gergi üzerinden hesaplamak daha güvenli
         val baglamaTeli = ceilAndLog("Bağlama Teli (Kg)", rawBaglama)
 
+        // 8. Çimento (50 Kg - Adet)
+        val rawCimento = direkSayisi / 6.0
+        val cimentoSayisi = ceilAndLog("Çimento Sayısı", rawCimento)
+
+        // 9. Hazır Beton (m3)
+        val rawBeton = direkSayisi / 30.0
+        val hazirBetonM3 = ceilAndLog("Hazır Beton (m3)", rawBeton)
+
         println("----------------- HESAPLAMA BİTTİ -----------------")
 
         fun getP(id: String) = priceMap[id]?.toDoubleOrNull() ?: 0.0
@@ -157,7 +165,9 @@ class CalculatorViewModel @Inject constructor() : ViewModel() {
             createItem("kafes_kg", "1 Top Tel Ağırlığı", "1 Rulo ($meshLen m) ağırlığıdır.", oneRollWeight, "Kg", Icons.Filled.Scale, Color(0xFF00796B), ::getP),
             createItem("diken", "Dikenli Tel", "${barbedRows.toInt()} Sıra ($barbedLen m/top)", dikenliTelTopSayisi, "Top", Icons.Filled.Warning, Color(0xFFD32F2F), ::getP),
             createItem("gergi", "Gergi Teli", "Uzunluk / 6.66", gergiTeli, "Kg", Icons.Filled.LinearScale, Color(0xFFFF9800), ::getP),
-            createItem("baglama", "Bağlama Teli", "Gergi Telinin 1/3'ü", baglamaTeli, "Kg", Icons.Filled.AllInclusive, Color(0xFF795548), ::getP)
+            createItem("baglama", "Bağlama Teli", "Gergi Telinin 1/3'ü", baglamaTeli, "Kg", Icons.Filled.AllInclusive, Color(0xFF795548), ::getP),
+            createItem("cimento", "Çimento (50 Kg)", "Direk Sayısı / 6", cimentoSayisi, "Adet", Icons.Filled.Layers, Color(0xFF607D8B), ::getP),
+            createItem("beton", "Hazır Beton", "Direk Sayısı / 30", hazirBetonM3, "m³", Icons.Filled.PrecisionManufacturing, Color(0xFF455A64), ::getP)
         )
 
         results = list

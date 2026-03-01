@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChangeHistory
 import androidx.compose.material.icons.filled.GridOn
 import androidx.compose.material.icons.filled.Scale
+import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,6 +37,17 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
         Text("Hesaplama Parametreleri", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
         Text("Değerleri değiştirdiğinizde anlık olarak hesaplanır.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Grup: Temel Ölçüler
+        SettingsGroupTitle("Çit ve Direk Ölçüleri", Icons.Filled.Straighten)
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            SmartSettingsInput("Çit Yüksekliği (m)", viewModel.fenceHeightInput, CalculatorViewModel.Defaults.HEIGHT, viewModel::onFenceHeightChange, Modifier.weight(1f), focusManager)
+            SmartSettingsInput("Direk Aralığı (m)", viewModel.poleSpacingInput, CalculatorViewModel.Defaults.SPACING, viewModel::onPoleSpacingChange, Modifier.weight(1f), focusManager)
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+        Divider(color = MaterialTheme.colorScheme.outlineVariant)
         Spacer(modifier = Modifier.height(24.dp))
 
         // Grup: Tel Ağırlık

@@ -30,22 +30,16 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AdvancedInputSection(
-    lengthValue: String, onLengthChange: (String) -> Unit,
-    heightValue: String, onHeightChange: (String) -> Unit,
-    spacingValue: String, onSpacingChange: (String) -> Unit
+    lengthValue: String, onLengthChange: (String) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     Card(
         elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            CompactInput("Arazi Uzunluğu (m)", lengthValue, onLengthChange, Icons.Filled.Straighten, Modifier.fillMaxWidth(), focusManager)
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                CompactInput("Çit Yüksekliği (m)", heightValue, onHeightChange, Icons.Filled.Height, Modifier.weight(1f), focusManager)
-                CompactInput("Direk Aralığı (m)", spacingValue, onSpacingChange, Icons.Filled.Settings, Modifier.weight(1f), focusManager, true)
-            }
+            CompactInput("Arazi Uzunluğu (m)", lengthValue, onLengthChange, Icons.Filled.Straighten, Modifier.fillMaxWidth(), focusManager, isLast = true)
         }
     }
 }
