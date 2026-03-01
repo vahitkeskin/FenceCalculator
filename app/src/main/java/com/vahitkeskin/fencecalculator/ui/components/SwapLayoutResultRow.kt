@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vahitkeskin.fencecalculator.data.model.CalculationItem
@@ -50,13 +51,40 @@ fun SwapLayoutResultRow(
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Column {
-                            Text(item.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold, color = onSurfaceColor)
-                            Text(item.description, style = MaterialTheme.typography.bodySmall, color = onSurfaceColor.copy(alpha = 0.6f))
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Column(modifier = Modifier.weight(0.6f)) {
+                            Text(
+                                text = item.title,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = onSurfaceColor,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = item.description,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = onSurfaceColor.copy(alpha = 0.6f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
-                        Surface(color = onSurfaceColor.copy(alpha = 0.1f), shape = RoundedCornerShape(8.dp), tonalElevation = 0.dp) {
-                            Text("${df.format(item.quantity)} ${item.unit}", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = onSurfaceColor, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Surface(
+                            modifier = Modifier.weight(0.4f, fill = false),
+                            color = onSurfaceColor.copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(8.dp),
+                            tonalElevation = 0.dp
+                        ) {
+                            Text(
+                                text = "${df.format(item.quantity)} ${item.unit}",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = onSurfaceColor,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.height(12.dp))
