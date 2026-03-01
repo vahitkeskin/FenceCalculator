@@ -13,8 +13,35 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlin.math.ceil
 
+import androidx.lifecycle.viewModelScope
+import com.vahitkeskin.fencecalculator.util.DataStoreManager
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+
+enum class AppTheme { LIGHT, DARK, SYSTEM }
+
 @HiltViewModel
-class CalculatorViewModel @Inject constructor() : ViewModel() {
+class CalculatorViewModel @Inject constructor(
+    private val dataStoreManager: DataStoreManager
+) : ViewModel() {
+
+    // --- PERSISTENT STATE ---
+    var companyName by mutableStateOf(""); private set
+    fun onCompanyNameChange(name: String) {
+        companyName = name
+        viewModelScope.launch {
+            dataStoreManager.saveCompanyName(name)
+        }
+    }
+
+    // --- THEME STATE ---
+    var currentTheme by mutableStateOf(AppTheme.SYSTEM); private set
+    fun onThemeChange(theme: AppTheme) {
+        currentTheme = theme
+        viewModelScope.launch {
+            dataStoreManager.saveTheme(theme.name)
+        }
+    }
 
     // --- CONSTANTS ---
     object Defaults {
@@ -44,11 +71,74 @@ class CalculatorViewModel @Inject constructor() : ViewModel() {
     var weightConstantInput by mutableStateOf(Defaults.WEIGHT_CONSTANT); private set
     var meshEyeInput by mutableStateOf(Defaults.MESH_EYE); private set
 
+    // --- ADVANCED PARAMETERS (PERSISTENT) ---
+    var poleLengthInput by mutableStateOf("2.4"); private set
+    fun onPoleLengthChange(v: String) = updateIfValid(v) { 
+        poleLengthInput = it 
+        viewModelScope.launch { dataStoreManager.savePoleLength(it) }
+    }
+
+    var pipeLengthInput by mutableStateOf("6.0"); private set
+    fun onPipeLengthChange(v: String) = updateIfValid(v) { 
+        pipeLengthInput = it 
+        viewModelScope.launch { dataStoreManager.savePipeLength(it) }
+    }
+
+    var tensionFactorInput by mutableStateOf("6.66"); private set
+    fun onTensionFactorChange(v: String) = updateIfValid(v) { 
+        tensionFactorInput = it 
+        viewModelScope.launch { dataStoreManager.saveTensionFactor(it) }
+    }
+
+    var bindingFactorInput by mutableStateOf("3.0"); private set
+    fun onBindingFactorChange(v: String) = updateIfValid(v) { 
+        bindingFactorInput = it 
+        viewModelScope.launch { dataStoreManager.saveBindingFactor(it) }
+    }
+
+    var cementFactorInput by mutableStateOf("6.0"); private set
+    fun onCementFactorChange(v: String) = updateIfValid(v) { 
+        cementFactorInput = it 
+        viewModelScope.launch { dataStoreManager.saveCementFactor(it) }
+    }
+
+    var concreteFactorInput by mutableStateOf("30.0"); private set
+    fun onConcreteFactorChange(v: String) = updateIfValid(v) { 
+        concreteFactorInput = it 
+        viewModelScope.launch { dataStoreManager.saveConcreteFactor(it) }
+    }
+
     private var priceMap = mutableMapOf<String, String>()
     var results by mutableStateOf<List<CalculationItem>>(emptyList()); private set
     var grandTotalCost by mutableStateOf(0.0); private set
 
-    init { calculateValues() }
+    init {
+        calculateValues()
+        observeDataStore()
+    }
+
+    private fun observeDataStore() {
+        viewModelScope.launch {
+            dataStoreManager.companyName.collectLatest { name ->
+                companyName = name
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.theme.collectLatest { themeName ->
+                currentTheme = try {
+                    AppTheme.valueOf(themeName)
+                } catch (e: Exception) {
+                    AppTheme.SYSTEM
+                }
+            }
+        }
+        viewModelScope.launch { dataStoreManager.poleLength.collectLatest { poleLengthInput = it; calculateValues() } }
+        viewModelScope.launch { dataStoreManager.pipeLength.collectLatest { pipeLengthInput = it; calculateValues() } }
+        viewModelScope.launch { dataStoreManager.tensionFactor.collectLatest { tensionFactorInput = it; calculateValues() } }
+        viewModelScope.launch { dataStoreManager.bindingFactor.collectLatest { bindingFactorInput = it; calculateValues() } }
+        viewModelScope.launch { dataStoreManager.cementFactor.collectLatest { cementFactorInput = it; calculateValues() } }
+        viewModelScope.launch { dataStoreManager.concreteFactor.collectLatest { concreteFactorInput = it; calculateValues() } }
+    }
 
     // --- EVENTS ---
     fun onTotalLengthChange(v: String) = updateIfValid(v) { totalLengthInput = it }
@@ -96,7 +186,7 @@ class CalculatorViewModel @Inject constructor() : ViewModel() {
     private fun calculateValues() {
         val length = totalLengthInput.toDoubleOrNull() ?: 0.0
         val height = fenceHeightInput.toDoubleOrNull() ?: 0.0
-        val spacing = poleSpacingInput.toDoubleOrNull() ?: 0.0
+        val spacing = poleSpacingInput.toDoubleOrNull() ?: 3.5
         val strutFreq = strutIntervalInput.toDoubleOrNull() ?: 15.0
         val strutCnt = strutCountInput.toDoubleOrNull() ?: 2.0
         val meshLen = meshRollLengthInput.toDoubleOrNull() ?: 20.0
@@ -105,6 +195,14 @@ class CalculatorViewModel @Inject constructor() : ViewModel() {
         val thickness = wireThicknessInput.toDoubleOrNull() ?: 2.5
         val constant = weightConstantInput.toDoubleOrNull() ?: 1.3
         val eye = meshEyeInput.toDoubleOrNull() ?: 6.5
+
+        // Advanced Parameters
+        val pLength = poleLengthInput.toDoubleOrNull() ?: 2.4
+        val pipeLen = pipeLengthInput.toDoubleOrNull() ?: 6.0
+        val tFactor = tensionFactorInput.toDoubleOrNull() ?: 6.66
+        val bFactor = bindingFactorInput.toDoubleOrNull() ?: 3.0
+        val cemFactor = cementFactorInput.toDoubleOrNull() ?: 6.0
+        val concFactor = concreteFactorInput.toDoubleOrNull() ?: 30.0
 
         if (length == 0.0 || spacing <= 0.0 || height == 0.0) {
             results = emptyList()
@@ -138,20 +236,25 @@ class CalculatorViewModel @Inject constructor() : ViewModel() {
         val dikenliTelTopSayisi = ceilAndLog("Dikenli Tel (Top)", rawDiken)
 
         // 6. Gergi Teli (Kg)
-        val rawGergi = length / 6.66
+        val rawGergi = length / tFactor
         val gergiTeli = ceilAndLog("Gergi Teli (Kg)", rawGergi)
 
         // 7. Bağlama Teli (Kg)
-        val rawBaglama = gergiTeli / 3.0 // Yuvarlanmış gergi üzerinden hesaplamak daha güvenli
+        val rawBaglama = gergiTeli / bFactor // Yuvarlanmış gergi üzerinden hesaplamak daha güvenli
         val baglamaTeli = ceilAndLog("Bağlama Teli (Kg)", rawBaglama)
 
         // 8. Çimento (50 Kg - Adet)
-        val rawCimento = direkSayisi / 6.0
+        val rawCimento = direkSayisi / cemFactor
         val cimentoSayisi = ceilAndLog("Çimento Sayısı", rawCimento)
 
         // 9. Hazır Beton (m3)
-        val rawBeton = direkSayisi / 30.0
+        val rawBeton = direkSayisi / concFactor
         val hazirBetonM3 = ceilAndLog("Hazır Beton (m3)", rawBeton)
+
+        // 10. Boy Demir Boru (6m)
+        // Her direk pLength, her boru pipeLen.
+        val rawBoyDemir = (direkSayisi * pLength) / pipeLen
+        val boyDemirSayisi = ceilAndLog("Boy Demir Boru ($pipeLen m)", rawBoyDemir)
 
         println("----------------- HESAPLAMA BİTTİ -----------------")
 
@@ -159,6 +262,7 @@ class CalculatorViewModel @Inject constructor() : ViewModel() {
 
         val list = mutableListOf(
             createItem("direk", "Direk", "Her $spacing m'de bir", direkSayisi, "Adet", Icons.Filled.Straighten, Color(0xFF3F51B5), ::getP),
+            createItem("boy_demir", "Boy Demir Boru", "$pipeLen m (Her borudan $pLength m'lik direk)", boyDemirSayisi, "Adet", Icons.Filled.FormatLineSpacing, Color(0xFF5C6BC0), ::getP),
             createItem("payanda", "Payanda", "Her $strutFreq direkte $strutCnt adet", payandaSayisi, "Adet", Icons.Filled.ChangeHistory, Color(0xFF9C27B0), ::getP),
             createItem("kafes_top", "Kafes Tel (Toplam)", "$meshLen m'lik top ($height m Yükseklik)", kafesTopSayisi, "Top", Icons.Filled.GridOn, Color(0xFF009688), ::getP),
             // Dikkat: oneRollWeight sadece bilgi amaçlı, toplam maliyete doğrudan adet olarak eklenmiyor, birim fiyat belirlemede kullanılıyor.

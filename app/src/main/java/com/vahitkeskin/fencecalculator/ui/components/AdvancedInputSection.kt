@@ -26,6 +26,7 @@ import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.focus.onFocusEvent
+import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.launch
 
 @Composable
@@ -33,9 +34,7 @@ fun AdvancedInputSection(
     lengthValue: String, onLengthChange: (String) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    Card(
-        elevation = CardDefaults.cardElevation(2.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+    PremiumGlassCard(
         modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -55,18 +54,17 @@ fun CompactInput(
     focusManager: androidx.compose.ui.focus.FocusManager,
     isLast: Boolean = false
 ) {
-    // 1. Scroll İsteği İçin Gerekli Değişkenler
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
     val coroutineScope = rememberCoroutineScope()
+    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
 
     Column(modifier) {
-        Text(label, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+        Text(label, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = onSurfaceColor.copy(alpha = 0.5f))
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier
                 .fillMaxWidth()
-                // 2. Inputa tıklandığında (Focus olduğunda) ekrana getir
                 .bringIntoViewRequester(bringIntoViewRequester)
                 .onFocusEvent { focusState ->
                     if (focusState.isFocused) {
@@ -75,17 +73,19 @@ fun CompactInput(
                         }
                     }
                 },
-            textStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+            textStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold, color = onSurfaceColor),
             singleLine = true,
-            leadingIcon = { Icon(icon, null, Modifier.size(18.dp)) },
+            leadingIcon = { Icon(icon, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = if(isLast) ImeAction.Done else ImeAction.Next),
             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-            shape = RoundedCornerShape(10.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                focusedTextColor = onSurfaceColor,
+                unfocusedTextColor = onSurfaceColor,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = onSurfaceColor.copy(alpha = 0.1f)
             )
         )
     }
