@@ -119,11 +119,9 @@ fun HomeScreen(
         // HATALI SATIR KALDIRILDI: contentWindowInsets = WindowInsets(0, 0, 0, 0)
         // Scaffold artık Status Bar'ı otomatik yönetiyor.
     ) { innerPadding ->
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding) // Toolbar'ın altına iner
                 .imePadding()          // Klavye açılınca Box'ı sıkıştırır (Alt bar yukarı çıkar)
         ) {
             LazyColumn(
@@ -162,11 +160,7 @@ fun HomeScreen(
                 item {
                     AdvancedInputSection(
                         lengthValue = viewModel.totalLengthInput,
-                        onLengthChange = viewModel::onTotalLengthChange,
-                        heightValue = viewModel.fenceHeightInput,
-                        onHeightChange = viewModel::onFenceHeightChange,
-                        spacingValue = viewModel.poleSpacingInput,
-                        onSpacingChange = viewModel::onPoleSpacingChange
+                        onLengthChange = viewModel::onTotalLengthChange
                     )
                 }
 
