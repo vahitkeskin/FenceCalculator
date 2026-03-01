@@ -33,14 +33,17 @@ fun AnimatedWaveBottomBar(
     val infiniteTransition = rememberInfiniteTransition(label = "wave")
     val wavePhase by infiniteTransition.animateFloat(initialValue = 0f, targetValue = 2f * Math.PI.toFloat(), animationSpec = infiniteRepeatable(tween(4000, easing = LinearEasing), RepeatMode.Restart), label = "phase")
 
-    val backgroundColor = Color(0xFF1E1E1E)
-    val waveColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+    val backgroundColor = MaterialTheme.colorScheme.surface
+    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val waveColor = primaryColor.copy(alpha = 0.3f)
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
             .background(backgroundColor)
+            .padding(bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding())
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
             val w = size.width; val h = size.height; val amp = 15.dp.toPx()
@@ -58,18 +61,17 @@ fun AnimatedWaveBottomBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.ime.union(WindowInsets.navigationBars))
                 .padding(24.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                Text("TOPLAM MALİYET", style = MaterialTheme.typography.labelSmall, color = Color.White.copy(0.7f), letterSpacing = 1.sp)
+                Text("TOPLAM MALİYET", style = MaterialTheme.typography.labelSmall, color = onSurfaceColor.copy(0.7f), letterSpacing = 1.sp)
                 Spacer(Modifier.height(4.dp))
-                Text("Hesaplanan Tutar", style = MaterialTheme.typography.titleMedium, color = Color.White, fontWeight = FontWeight.SemiBold)
+                Text("Hesaplanan Tutar", style = MaterialTheme.typography.titleMedium, color = onSurfaceColor, fontWeight = FontWeight.SemiBold)
             }
-            Surface(color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(12.dp), shadowElevation = 8.dp) {
-                Text("${currencyFormat.format(animatedTotalCost)} ₺", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold), color = Color.White, modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp))
+            Surface(color = primaryColor, shape = RoundedCornerShape(12.dp), shadowElevation = 0.dp, tonalElevation = 0.dp) {
+                Text("${currencyFormat.format(animatedTotalCost)} ₺", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp))
             }
         }
     }
