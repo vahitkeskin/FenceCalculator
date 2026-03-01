@@ -4,28 +4,45 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import com.vahitkeskin.fencecalculator.ui.components.AnimatedSplashScreen
 import com.vahitkeskin.fencecalculator.ui.screen.HomeScreen
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
+import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
 import dagger.hilt.android.AndroidEntryPoint
+
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val viewModel: CalculatorViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            var showSplash by remember { mutableStateOf(true) }
+
             FenceCalculatorTheme(
-                darkTheme = false
+                appTheme = viewModel.currentTheme
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeScreen()
+                    if (showSplash) {
+                        AnimatedSplashScreen(onAnimationFinished = {
+                            showSplash = false
+                        })
+                    } else {
+                        HomeScreen(viewModel = viewModel)
+                    }
                 }
             }
         }

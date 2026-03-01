@@ -45,6 +45,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -68,6 +69,7 @@ dependencies {
     // Hilt & Navigation
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.datastore.preferences)
 
     // ÖNEMLİ: kapt yerine ksp kullanıyoruz
     ksp(libs.hilt.compiler)

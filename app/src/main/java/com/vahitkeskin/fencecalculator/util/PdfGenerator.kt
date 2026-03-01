@@ -15,13 +15,17 @@ import java.text.DecimalFormat
 
 object PdfGenerator {
 
-    fun generateAndSharePdf(
+    /**
+     * Generates a PDF and returns the file path.
+     */
+    fun generatePdf(
         context: Context,
         results: List<CalculationItem>,
         totalCost: Double,
         length: String,
-        customerTitle: String
-    ) {
+        customerTitle: String,
+        companyName: String = ""
+    ): File? {
         val pdfDocument = PdfDocument()
         val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // A4 Boyutu
         val page = pdfDocument.startPage(pageInfo)
@@ -33,24 +37,25 @@ object PdfGenerator {
         // 1. Üst Dalga Tasarımı
         paint.color = android.graphics.Color.parseColor("#3F51B5")
         paint.style = Paint.Style.FILL
-        val path = Path()
-        path.moveTo(0f, 0f)
-        path.lineTo(0f, 180f)
-        path.cubicTo(150f, 220f, 400f, 100f, 595f, 160f)
-        path.lineTo(595f, 0f)
-        path.close()
-        canvas.drawPath(path, paint)
+        val pathBoundary = Path()
+        pathBoundary.moveTo(0f, 0f)
+        pathBoundary.lineTo(0f, 180f)
+        pathBoundary.cubicTo(150f, 220f, 400f, 100f, 595f, 160f)
+        pathBoundary.lineTo(595f, 0f)
+        pathBoundary.close()
+        canvas.drawPath(pathBoundary, paint)
 
         // 2. Başlık ve Alt Başlık
         paint.color = Color.WHITE
         paint.textSize = 24f
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        canvas.drawText("ÇİT MALİYET RAPORU", 30f, 60f, paint)
+        val mainTitle = if (companyName.isNotBlank()) companyName.uppercase() else "ÇİT HESAPLAMA"
+        canvas.drawText(mainTitle, 30f, 75f, paint)
 
         paint.textSize = 14f
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
         paint.alpha = 200
-        canvas.drawText(customerTitle, 30f, 85f, paint)
+        canvas.drawText(customerTitle, 30f, 105f, paint)
         paint.alpha = 255
 
         // 3. Bilgi Kartı (Uzunluk Bilgisi)
@@ -88,7 +93,7 @@ object PdfGenerator {
 
         paint.textAlign = Paint.Align.RIGHT
         canvas.drawText("MİKTAR", xQtyEnd, yPos, paint)
-        canvas.drawText("BİRİM FİYAT", xUnitEnd, yPos, paint) // YENİ SÜTUN
+        canvas.drawText("BİRİM FİYAT", xUnitEnd, yPos, paint) 
         canvas.drawText("TUTAR", xTotalEnd, yPos, paint)
 
         // Çizgi Çek
@@ -104,76 +109,64 @@ object PdfGenerator {
         paint.textSize = 12f
 
         results.forEach { item ->
-            // Sadece tutarı 0'dan büyük olan kalemleri göster
             if (item.totalCost > 0.0) {
-
-                // Birim Fiyatı Hesapla (Tutar / Miktar)
                 val unitPrice = if (item.quantity != 0.0) item.totalCost / item.quantity else 0.0
 
-                // 1. Malzeme Adı (Sola Dayalı)
                 paint.textAlign = Paint.Align.LEFT
-                // Eğer isim çok uzunsa diye basit bir kısaltma önlemi (opsiyonel)
                 val displayName = if (item.title.length > 28) item.title.take(28) + "..." else item.title
                 canvas.drawText(displayName, xMaterial, yPos, paint)
 
-                // 2. Miktar (Sağa Dayalı - Birim ile beraber)
                 paint.textAlign = Paint.Align.RIGHT
                 canvas.drawText("${dfQty.format(item.quantity)} ${item.unit}", xQtyEnd, yPos, paint)
-
-                // 3. Birim Fiyat (Sağa Dayalı) - YENİ EKLENEN KISIM
                 canvas.drawText("${dfPrice.format(unitPrice)} ₺", xUnitEnd, yPos, paint)
 
-                // 4. Toplam Tutar (Sağa Dayalı)
-                paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD) // Tutarı kalın yapalım
+                paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 canvas.drawText("${dfPrice.format(item.totalCost)} ₺", xTotalEnd, yPos, paint)
-                paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL) // Normale dön
+                paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
 
-                // Satır boşluğu
                 yPos += 30f
             }
         }
 
         // 6. GENEL TOPLAM ALANI
         yPos += 20f
-
-        // Gri arka plan şeridi
         paint.color = android.graphics.Color.parseColor("#F5F5F5")
         paint.style = Paint.Style.FILL
         canvas.drawRect(0f, yPos, 595f, yPos + 60f, paint)
 
-        // Koyu şerit çizgisi
         paint.color = android.graphics.Color.parseColor("#3F51B5")
         canvas.drawRect(0f, yPos, 5f, yPos + 60f, paint)
 
-        // Etiket
         paint.color = Color.BLACK
         paint.textSize = 14f
         paint.textAlign = Paint.Align.LEFT
         canvas.drawText("GENEL TOPLAM MALİYET", 30f, yPos + 35f, paint)
 
-        // Değer
         paint.textSize = 22f
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         paint.textAlign = Paint.Align.RIGHT
         paint.color = android.graphics.Color.parseColor("#3F51B5")
         canvas.drawText("${dfPrice.format(totalCost)} ₺", 565f, yPos + 38f, paint)
 
-        // --- BİTİŞ ---
         pdfDocument.finishPage(page)
 
-        val file = File(context.cacheDir, "Cit_Maliyet_Teklifi.pdf")
-        try {
+        // Dinamik dosya adı
+        val safeCompanyName = if (companyName.isBlank()) "Cit_Hesaplama" else companyName.trim().replace("\\s+".toRegex(), "_")
+        val fileName = "${safeCompanyName}.pdf"
+        
+        val file = File(context.cacheDir, fileName)
+        return try {
             pdfDocument.writeTo(FileOutputStream(file))
+            file
         } catch (e: Exception) {
             e.printStackTrace()
+            null
         } finally {
             pdfDocument.close()
         }
-
-        sharePdfFile(context, file)
     }
 
-    private fun sharePdfFile(context: Context, file: File) {
+    fun sharePdfFile(context: Context, file: File) {
         val uri = FileProvider.getUriForFile(
             context,
             "${context.packageName}.provider",
