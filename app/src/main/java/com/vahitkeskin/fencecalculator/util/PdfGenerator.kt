@@ -102,7 +102,7 @@ object PdfGenerator {
 
         paint.textAlign = Paint.Align.RIGHT
         canvas.drawText("MİKTAR", xQtyEnd, yPos, paint)
-        canvas.drawText("BİRİM FİYAT", xUnitEnd, yPos, paint) 
+        canvas.drawText("BİRİM FİYAT", xUnitEnd, yPos, paint)
         canvas.drawText("TUTAR", xTotalEnd, yPos, paint)
 
         // Çizgi Çek
@@ -122,7 +122,8 @@ object PdfGenerator {
                 val unitPrice = if (item.quantity != 0.0) item.totalCost / item.quantity else 0.0
 
                 paint.textAlign = Paint.Align.LEFT
-                val displayName = if (item.title.length > 28) item.title.take(28) + "..." else item.title
+                val displayName =
+                    if (item.title.length > 28) item.title.take(28) + "..." else item.title
                 canvas.drawText(displayName, xMaterial, yPos, paint)
 
                 paint.textAlign = Paint.Align.RIGHT
@@ -160,9 +161,10 @@ object PdfGenerator {
         pdfDocument.finishPage(page)
 
         // Dinamik dosya adı
-        val safeCompanyName = if (companyName.isBlank()) "Cit_Hesaplama" else companyName.trim().replace("\\s+".toRegex(), "_")
+        val safeCompanyName = if (companyName.isBlank()) "Cit_Hesaplama" else companyName.trim()
+            .replace("\\s+".toRegex(), "_")
         val fileName = "${safeCompanyName}.pdf"
-        
+
         val file = File(context.cacheDir, fileName)
         return try {
             pdfDocument.writeTo(FileOutputStream(file))
@@ -186,7 +188,10 @@ object PdfGenerator {
             type = "application/pdf"
             putExtra(Intent.EXTRA_STREAM, uri)
             putExtra(Intent.EXTRA_SUBJECT, "Çit Maliyet Teklifi")
-            putExtra(Intent.EXTRA_TEXT, "Ekte çit maliyet hesaplama detaylı raporunu bulabilirsiniz.")
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "Ekte çit maliyet hesaplama detaylı raporunu bulabilirsiniz."
+            )
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
 
