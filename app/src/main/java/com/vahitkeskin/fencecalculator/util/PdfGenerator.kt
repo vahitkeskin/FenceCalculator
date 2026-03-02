@@ -12,6 +12,9 @@ import com.vahitkeskin.fencecalculator.data.model.CalculationItem
 import java.io.File
 import java.io.FileOutputStream
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 object PdfGenerator {
 
@@ -56,6 +59,12 @@ object PdfGenerator {
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
         paint.alpha = 200
         canvas.drawText(customerTitle, 30f, 105f, paint)
+
+        // Tarih Bilgisi
+        val sdf = SimpleDateFormat("dd MMMM yyyy", Locale("tr"))
+        val currentDate = sdf.format(Date())
+        paint.textSize = 12f
+        canvas.drawText(currentDate, 30f, 125f, paint)
         paint.alpha = 255
 
         // 3. Bilgi Kartı (Uzunluk Bilgisi)

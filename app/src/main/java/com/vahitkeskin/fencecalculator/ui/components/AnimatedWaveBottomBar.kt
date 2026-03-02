@@ -43,35 +43,40 @@ fun AnimatedWaveBottomBar(
             .fillMaxWidth()
             .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
             .background(backgroundColor)
-            .padding(bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding())
     ) {
-        Canvas(modifier = Modifier.matchParentSize()) {
-            val w = size.width; val h = size.height; val amp = 15.dp.toPx()
-            val path = Path().apply {
-                moveTo(0f, h)
-                lineTo(0f, h * 0.5f)
-                for(x in 0..w.toInt() step 10) {
-                    lineTo(x.toFloat(), (h * 0.6f) + amp * sin((x / w) * (2 * Math.PI) * 1f + wavePhase).toFloat())
-                }
-                lineTo(w, h)
-                close()
-            }
-            drawPath(path = path, brush = Brush.verticalGradient(listOf(waveColor, Color.Transparent), h * 0.4f, h), style = Fill)
-        }
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
         ) {
-            Column {
-                Text("TOPLAM MALİYET", style = MaterialTheme.typography.labelSmall, color = onSurfaceColor.copy(0.7f), letterSpacing = 1.sp)
-                Spacer(Modifier.height(4.dp))
-                Text("Hesaplanan Tutar", style = MaterialTheme.typography.titleMedium, color = onSurfaceColor, fontWeight = FontWeight.SemiBold)
+            Canvas(modifier = Modifier.matchParentSize()) {
+                val w = size.width; val h = size.height; val amp = 15.dp.toPx()
+                val path = Path().apply {
+                    moveTo(0f, h)
+                    lineTo(0f, h * 0.5f)
+                    for(x in 0..w.toInt() step 10) {
+                        lineTo(x.toFloat(), (h * 0.6f) + amp * sin((x / w) * (2 * Math.PI) * 1f + wavePhase).toFloat())
+                    }
+                    lineTo(w, h)
+                    close()
+                }
+                drawPath(path = path, brush = Brush.verticalGradient(listOf(waveColor, Color.Transparent), h * 0.4f, h), style = Fill)
             }
-            Surface(color = primaryColor, shape = RoundedCornerShape(12.dp), shadowElevation = 0.dp, tonalElevation = 0.dp) {
-                Text("${currencyFormat.format(animatedTotalCost)} ₺", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text("TOPLAM MALİYET", style = MaterialTheme.typography.labelSmall, color = onSurfaceColor.copy(0.7f), letterSpacing = 1.sp)
+                    Spacer(Modifier.height(4.dp))
+                    Text("Hesaplanan Tutar", style = MaterialTheme.typography.titleMedium, color = onSurfaceColor, fontWeight = FontWeight.SemiBold)
+                }
+                Surface(color = primaryColor, shape = RoundedCornerShape(12.dp), shadowElevation = 0.dp, tonalElevation = 0.dp) {
+                    Text("${currencyFormat.format(animatedTotalCost)} ₺", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp))
+                }
             }
         }
     }

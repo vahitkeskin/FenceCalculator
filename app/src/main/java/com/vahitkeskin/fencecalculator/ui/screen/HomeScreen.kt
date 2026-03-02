@@ -47,9 +47,13 @@ fun HomeScreen(viewModel: CalculatorViewModel = hiltViewModel()) {
         return if (name.isBlank()) "" else name.uppercase()
     }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
+    Box(modifier = Modifier.fillMaxSize()) {
+        MeshBackground()
+
+        Scaffold(
+            containerColor = Color.Transparent,
+            contentWindowInsets = WindowInsets.safeDrawing,
+            topBar = {
             CenterAlignedTopAppBar(
                 title = { 
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -86,11 +90,13 @@ fun HomeScreen(viewModel: CalculatorViewModel = hiltViewModel()) {
                     scrolledContainerColor = Color.Transparent
                 )
             )
+        },
+        bottomBar = {
+            AnimatedWaveBottomBar(
+                totalCost = viewModel.grandTotalCost
+            )
         }
     ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize()) {
-            MeshBackground()
-
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -200,14 +206,9 @@ fun HomeScreen(viewModel: CalculatorViewModel = hiltViewModel()) {
                     }
                 }
 
-                // Alt boşluk (Bottom bar için)
-                item { Spacer(modifier = Modifier.height(100.dp)) }
+                // Alt boşluk (Daha iyi UI için liste altında hafif pay)
+                item { Spacer(modifier = Modifier.height(20.dp)) }
             }
-
-            AnimatedWaveBottomBar(
-                totalCost = viewModel.grandTotalCost,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
         }
 
         if (showSettingsSheet) {
