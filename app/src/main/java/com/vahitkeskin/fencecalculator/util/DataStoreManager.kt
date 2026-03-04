@@ -27,6 +27,7 @@ class DataStoreManager @Inject constructor(
         val BINDING_FACTOR_KEY = stringPreferencesKey("binding_factor")
         val CEMENT_FACTOR_KEY = stringPreferencesKey("cement_factor")
         val CONCRETE_FACTOR_KEY = stringPreferencesKey("concrete_factor")
+        val CUSTOM_CARDS_KEY = stringPreferencesKey("custom_cards")
     }
 
     val companyName: Flow<String> = context.dataStore.data.map { preferences ->
@@ -44,6 +45,8 @@ class DataStoreManager @Inject constructor(
     val cementFactor: Flow<String> = context.dataStore.data.map { it[CEMENT_FACTOR_KEY] ?: "6.0" }
     val concreteFactor: Flow<String> = context.dataStore.data.map { it[CONCRETE_FACTOR_KEY] ?: "30.0" }
 
+    val customCards: Flow<String> = context.dataStore.data.map { it[CUSTOM_CARDS_KEY] ?: "[]" }
+
     suspend fun saveCompanyName(name: String) {
         context.dataStore.edit { preferences ->
             preferences[COMPANY_NAME_KEY] = name
@@ -54,6 +57,10 @@ class DataStoreManager @Inject constructor(
         context.dataStore.edit { preferences ->
             preferences[THEME_KEY] = theme
         }
+    }
+
+    suspend fun saveCustomCards(json: String) {
+        context.dataStore.edit { it[CUSTOM_CARDS_KEY] = json }
     }
 
     suspend fun savePoleLength(v: String) = context.dataStore.edit { it[POLE_LENGTH_KEY] = v }

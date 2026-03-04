@@ -1,6 +1,7 @@
 package com.vahitkeskin.fencecalculator.ui.screen
 
 import androidx.compose.animation.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -21,7 +23,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.vahitkeskin.fencecalculator.ui.components.*
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
 import com.vahitkeskin.fencecalculator.util.PdfGenerator
@@ -30,7 +32,10 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: CalculatorViewModel = hiltViewModel()) {
+fun HomeScreen(
+    viewModel: CalculatorViewModel,
+    navController: NavController
+) {
     val context = LocalContext.current
     var showSettingsSheet by remember { mutableStateOf(false) }
     var isGeneratingPdf by remember { mutableStateOf(false) }
@@ -203,6 +208,67 @@ fun HomeScreen(viewModel: CalculatorViewModel = hiltViewModel()) {
                                 onPriceChange = { newPrice -> viewModel.onPriceChange(item.id, newPrice) }
                             )
                         }
+                    }
+                }
+
+                // --- ÖZEL KARTLAR BÖLÜMÜ ---
+                val customCardResults = viewModel.customCardResults
+                if (customCardResults.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = "ÖZEL KARTLAR",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = onBackgroundColor.copy(alpha = 0.4f),
+                            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+                            letterSpacing = 1.sp
+                        )
+                    }
+                    items(customCardResults, key = { it.id }) { item ->
+                        // custom_XXX formatından gerçek ID'yi al
+                        val realId = item.id.removePrefix("custom_")
+                        PremiumGlassCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    navController.navigate("add_edit_card/$realId")
+                                }
+                        ) {
+                            SwapLayoutResultRow(
+                                item = item,
+                                currentPriceInput = "",
+                                onPriceChange = { }
+                            )
+                        }
+                    }
+                }
+
+                // --- KART EKLE BUTONU ---
+                item {
+                    Button(
+                        onClick = { navController.navigate("add_edit_card/new") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = primaryColor.copy(alpha = 0.15f)
+                        )
+                    ) {
+                        Icon(
+                            Icons.Default.AddCircleOutline,
+                            contentDescription = null,
+                            tint = primaryColor,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            "KART EKLE",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = primaryColor,
+                            letterSpacing = 1.sp
+                        )
                     }
                 }
 
