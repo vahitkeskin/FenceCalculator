@@ -10,7 +10,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.vahitkeskin.fencecalculator.ui.components.AnimatedSplashScreen
+import com.vahitkeskin.fencecalculator.ui.screen.AddEditCardScreen
 import com.vahitkeskin.fencecalculator.ui.screen.HomeScreen
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
@@ -28,6 +32,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             var showSplash by remember { mutableStateOf(true) }
+            val navController = rememberNavController()
 
             FenceCalculatorTheme(
                 appTheme = viewModel.currentTheme
@@ -41,7 +46,26 @@ class MainActivity : ComponentActivity() {
                             showSplash = false
                         })
                     } else {
-                        HomeScreen(viewModel = viewModel)
+                        NavHost(
+                            navController = navController,
+                            startDestination = "home"
+                        ) {
+                            composable("home") {
+                                HomeScreen(
+                                    viewModel = viewModel,
+                                    navController = navController
+                                )
+                            }
+                            composable("add_edit_card/{cardId}") { backStackEntry ->
+                                val cardId = backStackEntry.arguments?.getString("cardId")
+                                val editId = if (cardId == "new") null else cardId
+                                AddEditCardScreen(
+                                    viewModel = viewModel,
+                                    editCardId = editId,
+                                    onNavigateBack = { navController.popBackStack() }
+                                )
+                            }
+                        }
                     }
                 }
             }

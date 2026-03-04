@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import com.vahitkeskin.fencecalculator.data.model.CalculationItem
+import com.vahitkeskin.fencecalculator.data.model.CustomCardItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlin.math.ceil
@@ -17,6 +18,8 @@ import androidx.lifecycle.viewModelScope
 import com.vahitkeskin.fencecalculator.util.DataStoreManager
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 enum class AppTheme { LIGHT, DARK, SYSTEM }
 
@@ -112,6 +115,64 @@ class CalculatorViewModel @Inject constructor(
     var results by mutableStateOf<List<CalculationItem>>(emptyList()); private set
     var grandTotalCost by mutableStateOf(0.0); private set
 
+    // --- CUSTOM CARDS ---
+    var customCards by mutableStateOf<List<CustomCardItem>>(emptyList()); private set
+
+    var customCardResults by mutableStateOf<List<CalculationItem>>(emptyList()); private set
+
+    fun addOrUpdateCustomCard(card: CustomCardItem) {
+        val current = customCards.toMutableList()
+        val index = current.indexOfFirst { it.id == card.id }
+        if (index >= 0) {
+            current[index] = card
+        } else {
+            current.add(card)
+        }
+        customCards = current
+        updateCustomCardResults()
+        viewModelScope.launch {
+            dataStoreManager.saveCustomCards(Json.encodeToString(current))
+        }
+    }
+
+    fun deleteCustomCard(id: String) {
+        val current = customCards.toMutableList()
+        current.removeAll { it.id == id }
+        customCards = current
+        updateCustomCardResults()
+        viewModelScope.launch {
+            dataStoreManager.saveCustomCards(Json.encodeToString(current))
+        }
+    }
+
+    fun getCustomCardById(id: String): CustomCardItem? {
+        return customCards.find { it.id == id }
+    }
+
+    private fun updateCustomCardResults() {
+        customCardResults = customCards.map { card ->
+            val color = try {
+                Color(android.graphics.Color.parseColor(card.colorHex))
+            } catch (e: Exception) {
+                Color(0xFF607D8B)
+            }
+            val totalCost = card.quantity * card.unitPrice
+            CalculationItem(
+                id = "custom_${card.id}",
+                title = card.title,
+                description = card.description,
+                quantity = card.quantity,
+                unit = card.unit,
+                unitPrice = card.unitPrice,
+                totalCost = totalCost,
+                icon = Icons.Filled.Extension,
+                color = color
+            )
+        }
+        // Recalculate grand total including custom cards
+        grandTotalCost = results.sumOf { it.totalCost } + customCardResults.sumOf { it.totalCost }
+    }
+
     init {
         calculateValues()
         observeDataStore()
@@ -138,6 +199,16 @@ class CalculatorViewModel @Inject constructor(
         viewModelScope.launch { dataStoreManager.bindingFactor.collectLatest { bindingFactorInput = it; calculateValues() } }
         viewModelScope.launch { dataStoreManager.cementFactor.collectLatest { cementFactorInput = it; calculateValues() } }
         viewModelScope.launch { dataStoreManager.concreteFactor.collectLatest { concreteFactorInput = it; calculateValues() } }
+        viewModelScope.launch {
+            dataStoreManager.customCards.collectLatest { json ->
+                customCards = try {
+                    Json.decodeFromString(json)
+                } catch (e: Exception) {
+                    emptyList()
+                }
+                updateCustomCardResults()
+            }
+        }
     }
 
     // --- EVENTS ---
@@ -206,7 +277,7 @@ class CalculatorViewModel @Inject constructor(
 
         if (length == 0.0 || spacing <= 0.0 || height == 0.0) {
             results = emptyList()
-            grandTotalCost = 0.0
+            grandTotalCost = 0.0 + customCardResults.sumOf { it.totalCost }
             return
         }
 
@@ -275,7 +346,7 @@ class CalculatorViewModel @Inject constructor(
         )
 
         results = list
-        grandTotalCost = list.sumOf { it.totalCost }
+        grandTotalCost = list.sumOf { it.totalCost } + customCardResults.sumOf { it.totalCost }
     }
 
     private fun createItem(id: String, t: String, d: String, q: Double, u: String, i: ImageVector, c: Color, p: (String) -> Double) =
