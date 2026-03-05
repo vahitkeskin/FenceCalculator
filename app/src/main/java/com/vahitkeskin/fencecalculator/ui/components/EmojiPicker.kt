@@ -1,33 +1,63 @@
 package com.vahitkeskin.fencecalculator.ui.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-val presetEmojis = listOf(
-    "📦", "🔩", "🧱", "🪵", "🪨", "⚙️",
-    "🔧", "🔨", "🪛", "🪜", "🏗️", "🚧",
-    "💡", "🔌", "🪣", "🧲", "⛓️", "🪤",
-    "🛠️", "📐", "📏", "✂️", "🪚", "🔑",
-    "🏠", "🚪", "🪟", "🧹", "💰", "📋",
-    "🎨", "🌿", "🌲", "💧", "🔥", "⚡"
+data class EmojiCategory(
+    val label: String,
+    val icon: String,
+    val emojis: List<String>
 )
+
+val emojiCategories = listOf(
+    EmojiCategory("İnşaat", "🏗️", listOf(
+        "🧱", "🪵", "🪨", "🏗️", "🚧", "🪜", "🏠", "🏢",
+        "🏭", "🏚️", "🪟", "🚪", "🧲", "⛓️", "🪤", "🪣"
+    )),
+    EmojiCategory("Aletler", "🔧", listOf(
+        "🔧", "🔨", "🪛", "🪚", "🛠️", "⚙️", "🔩", "📐",
+        "📏", "✂️", "🔑", "🗜️", "⛏️", "🪓", "🔗", "🧰"
+    )),
+    EmojiCategory("Malzeme", "📦", listOf(
+        "📦", "🪤", "🧲", "💡", "🔌", "🔋", "💎", "🪙",
+        "🧪", "🧫", "🧬", "🪢", "🧵", "🪡", "📎", "🖇️"
+    )),
+    EmojiCategory("Doğa", "🌿", listOf(
+        "🌿", "🌲", "🌳", "🌴", "🍀", "🌾", "🌻", "🌺",
+        "💧", "🌊", "❄️", "☀️", "🌈", "⭐", "🍂", "🪴"
+    )),
+    EmojiCategory("Enerji", "⚡", listOf(
+        "⚡", "🔥", "💥", "✨", "🌡️", "☢️", "♻️", "🔆",
+        "🔅", "💫", "🌪️", "☁️", "🌤️", "⛅", "🌙", "🔮"
+    )),
+    EmojiCategory("Finans", "💰", listOf(
+        "💰", "💵", "💳", "📋", "📊", "📈", "📉", "🧾",
+        "💼", "🏦", "🪪", "📑", "📄", "📝", "🗂️", "🏷️"
+    ))
+)
+
+val presetEmojis = emojiCategories.flatMap { it.emojis }.distinct()
 
 @Composable
 fun EmojiPicker(
@@ -37,6 +67,7 @@ fun EmojiPicker(
 ) {
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
     val primaryColor = MaterialTheme.colorScheme.primary
+    var selectedCategory by remember { mutableIntStateOf(0) }
 
     Column(modifier = modifier) {
         Text(
@@ -47,13 +78,62 @@ fun EmojiPicker(
             letterSpacing = 1.sp,
             modifier = Modifier.padding(bottom = 12.dp)
         )
+
+        // Category tabs
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(bottom = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            emojiCategories.forEachIndexed { index, category ->
+                val isSelected = index == selectedCategory
+                val bgColor by animateColorAsState(
+                    if (isSelected) primaryColor.copy(alpha = 0.15f)
+                    else onSurfaceColor.copy(alpha = 0.05f),
+                    label = "tabBg"
+                )
+                val borderColor by animateColorAsState(
+                    if (isSelected) primaryColor.copy(alpha = 0.4f)
+                    else onSurfaceColor.copy(alpha = 0.08f),
+                    label = "tabBorder"
+                )
+
+                Surface(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .clickable { selectedCategory = index },
+                    shape = RoundedCornerShape(20.dp),
+                    color = bgColor,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, borderColor)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(text = category.icon, fontSize = 16.sp)
+                        Text(
+                            text = category.label,
+                            fontSize = 11.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            color = if (isSelected) primaryColor else onSurfaceColor.copy(alpha = 0.6f)
+                        )
+                    }
+                }
+            }
+        }
+
+        // Emoji grid
+        val currentEmojis = emojiCategories[selectedCategory].emojis
         LazyVerticalGrid(
             columns = GridCells.Fixed(6),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.heightIn(max = 260.dp)
+            modifier = Modifier.heightIn(max = 220.dp)
         ) {
-            items(presetEmojis) { emoji ->
+            items(currentEmojis) { emoji ->
                 val isSelected = emoji == selectedEmoji
                 Box(
                     modifier = Modifier
