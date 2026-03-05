@@ -117,8 +117,81 @@ class CalculatorViewModel @Inject constructor(
 
     // --- CUSTOM CARDS ---
     var customCards by mutableStateOf<List<CustomCardItem>>(emptyList()); private set
-
     var customCardResults by mutableStateOf<List<CalculationItem>>(emptyList()); private set
+
+    // --- HIDDEN & ORDER ---
+    var hiddenCardIds by mutableStateOf<Set<String>>(emptySet()); private set
+    var cardOrder by mutableStateOf<List<String>>(emptyList()); private set
+
+    // Tüm kartları (varsayılan + özel) sıralı ve filtrelenmiş şekilde döndür
+    var orderedVisibleItems by mutableStateOf<List<CalculationItem>>(emptyList()); private set
+
+    private fun rebuildOrderedVisibleItems() {
+        val allItems = results + customCardResults
+        val visibleItems = allItems.filter { it.id !in hiddenCardIds }
+
+        orderedVisibleItems = if (cardOrder.isNotEmpty()) {
+            val orderMap = cardOrder.withIndex().associate { (i, id) -> id to i }
+            val ordered = visibleItems.sortedBy { orderMap[it.id] ?: Int.MAX_VALUE }
+            ordered
+        } else {
+            visibleItems
+        }
+        // Recalculate grand total from visible items
+        grandTotalCost = orderedVisibleItems.sumOf { it.totalCost }
+    }
+
+    fun hideCard(id: String) {
+        hiddenCardIds = hiddenCardIds + id
+        // Özel kartsa tamamen sil
+        if (id.startsWith("custom_")) {
+            deleteCustomCard(id.removePrefix("custom_"))
+        }
+        saveHiddenCards()
+        rebuildOrderedVisibleItems()
+    }
+
+    fun restoreDefaultCards() {
+        hiddenCardIds = emptySet()
+        cardOrder = emptyList()
+        saveHiddenCards()
+        saveCardOrder()
+        rebuildOrderedVisibleItems()
+    }
+
+    fun moveCardUp(id: String) {
+        val currentList = orderedVisibleItems.map { it.id }.toMutableList()
+        val idx = currentList.indexOf(id)
+        if (idx > 0) {
+            currentList[idx] = currentList[idx - 1].also { currentList[idx - 1] = currentList[idx] }
+            cardOrder = currentList
+            saveCardOrder()
+            rebuildOrderedVisibleItems()
+        }
+    }
+
+    fun moveCardDown(id: String) {
+        val currentList = orderedVisibleItems.map { it.id }.toMutableList()
+        val idx = currentList.indexOf(id)
+        if (idx >= 0 && idx < currentList.size - 1) {
+            currentList[idx] = currentList[idx + 1].also { currentList[idx + 1] = currentList[idx] }
+            cardOrder = currentList
+            saveCardOrder()
+            rebuildOrderedVisibleItems()
+        }
+    }
+
+    private fun saveHiddenCards() {
+        viewModelScope.launch {
+            dataStoreManager.saveHiddenCards(hiddenCardIds.joinToString(","))
+        }
+    }
+
+    private fun saveCardOrder() {
+        viewModelScope.launch {
+            dataStoreManager.saveCardOrder(cardOrder.joinToString(","))
+        }
+    }
 
     fun addOrUpdateCustomCard(card: CustomCardItem) {
         val current = customCards.toMutableList()
@@ -170,8 +243,7 @@ class CalculatorViewModel @Inject constructor(
                 emoji = card.emoji
             )
         }
-        // Recalculate grand total including custom cards
-        grandTotalCost = results.sumOf { it.totalCost } + customCardResults.sumOf { it.totalCost }
+        rebuildOrderedVisibleItems()
     }
 
     init {
@@ -208,6 +280,18 @@ class CalculatorViewModel @Inject constructor(
                     emptyList()
                 }
                 updateCustomCardResults()
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.hiddenCards.collectLatest { csv ->
+                hiddenCardIds = if (csv.isBlank()) emptySet() else csv.split(",").toSet()
+                rebuildOrderedVisibleItems()
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.cardOrder.collectLatest { csv ->
+                cardOrder = if (csv.isBlank()) emptyList() else csv.split(",")
+                rebuildOrderedVisibleItems()
             }
         }
     }
@@ -347,7 +431,7 @@ class CalculatorViewModel @Inject constructor(
         )
 
         results = list
-        grandTotalCost = list.sumOf { it.totalCost } + customCardResults.sumOf { it.totalCost }
+        rebuildOrderedVisibleItems()
     }
 
     private fun createItem(id: String, t: String, d: String, q: Double, u: String, i: ImageVector, c: Color, p: (String) -> Double) =
