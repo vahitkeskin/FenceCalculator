@@ -85,7 +85,7 @@ fun CompactInput(
                 focusedTextColor = onSurfaceColor,
                 unfocusedTextColor = onSurfaceColor,
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = onSurfaceColor.copy(alpha = 0.1f)
+                unfocusedBorderColor = Color(0xFFCBD5E1)
             )
         )
     }

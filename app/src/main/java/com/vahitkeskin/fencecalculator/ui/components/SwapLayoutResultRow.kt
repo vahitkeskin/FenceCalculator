@@ -115,12 +115,12 @@ fun SwapLayoutResultRow(
                             focusedTextColor = onSurfaceColor,
                             unfocusedTextColor = onSurfaceColor,
                             focusedBorderColor = item.color.copy(alpha = 0.8f),
-                            unfocusedBorderColor = onSurfaceColor.copy(alpha = 0.1f)
+                            unfocusedBorderColor = Color(0xFFCBD5E1)
                         )
                     )
                 }
             }
-            Box(modifier = Modifier.fillMaxWidth().background(onSurfaceColor.copy(alpha = 0.05f))) {
+            Box(modifier = Modifier.fillMaxWidth().background(item.color.copy(alpha = 0.04f))) {
                 Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Text("TOPLAM", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = onSurfaceColor.copy(alpha = 0.4f), letterSpacing = 1.sp)
                     Text("${currencyFormat.format(item.totalCost)} ₺", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold), color = item.color)

@@ -379,9 +379,9 @@ private fun outlinedTextFieldColors(
     primaryColor: Color
 ) = OutlinedTextFieldDefaults.colors(
     focusedBorderColor = primaryColor,
-    unfocusedBorderColor = onBackgroundColor.copy(alpha = 0.1f),
-    focusedContainerColor = onBackgroundColor.copy(alpha = 0.05f),
-    unfocusedContainerColor = onBackgroundColor.copy(alpha = 0.05f),
+    unfocusedBorderColor = Color(0xFFCBD5E1),
+    focusedContainerColor = Color.Transparent,
+    unfocusedContainerColor = Color.Transparent,
     focusedTextColor = onBackgroundColor,
     unfocusedTextColor = onBackgroundColor
 )
