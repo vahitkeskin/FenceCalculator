@@ -166,7 +166,8 @@ class CalculatorViewModel @Inject constructor(
                 unitPrice = card.unitPrice,
                 totalCost = totalCost,
                 icon = Icons.Filled.Extension,
-                color = color
+                color = color,
+                emoji = card.emoji
             )
         }
         // Recalculate grand total including custom cards

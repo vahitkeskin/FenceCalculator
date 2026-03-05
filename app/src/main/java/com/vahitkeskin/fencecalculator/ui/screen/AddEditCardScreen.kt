@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vahitkeskin.fencecalculator.data.model.CustomCardItem
 import com.vahitkeskin.fencecalculator.ui.components.ColorPickerCircle
+import com.vahitkeskin.fencecalculator.ui.components.EmojiPicker
 import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.PremiumGlassCard
 import com.vahitkeskin.fencecalculator.ui.components.presetColors
@@ -42,6 +43,7 @@ fun AddEditCardScreen(
     var unit by remember { mutableStateOf(existingCard?.unit ?: "") }
     var unitPrice by remember { mutableStateOf(existingCard?.unitPrice?.toString() ?: "") }
     var selectedColorHex by remember { mutableStateOf(existingCard?.colorHex ?: presetColors.first()) }
+    var selectedEmoji by remember { mutableStateOf(existingCard?.emoji ?: "📦") }
 
     val isEditing = existingCard != null
     val onBackgroundColor = MaterialTheme.colorScheme.onBackground
@@ -211,6 +213,16 @@ fun AddEditCardScreen(
                     )
                 }
 
+                // --- Emoji Seçici ---
+                PremiumGlassCard {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        EmojiPicker(
+                            selectedEmoji = selectedEmoji,
+                            onEmojiSelected = { selectedEmoji = it }
+                        )
+                    }
+                }
+
                 // --- Renk Seçici ---
                 PremiumGlassCard {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -246,11 +258,9 @@ fun AddEditCardScreen(
                                     modifier = Modifier.size(48.dp)
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
-                                        Icon(
-                                            Icons.Filled.Extension,
-                                            null,
-                                            tint = previewColor,
-                                            modifier = Modifier.size(26.dp)
+                                        Text(
+                                            text = selectedEmoji,
+                                            fontSize = 24.sp
                                         )
                                     }
                                 }
@@ -308,7 +318,8 @@ fun AddEditCardScreen(
                             quantity = quantity.toDoubleOrNull() ?: 0.0,
                             unit = unit.trim(),
                             unitPrice = unitPrice.toDoubleOrNull() ?: 0.0,
-                            colorHex = selectedColorHex
+                            colorHex = selectedColorHex,
+                            emoji = selectedEmoji
                         )
                         viewModel.addOrUpdateCustomCard(card)
                         onNavigateBack()
