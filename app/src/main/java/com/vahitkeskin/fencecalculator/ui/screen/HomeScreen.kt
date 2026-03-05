@@ -102,6 +102,9 @@ fun HomeScreen(
             )
         }
     ) { paddingValues ->
+            var isEditMode by remember { mutableStateOf(false) }
+            val orderedItems = viewModel.orderedVisibleItems
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -170,75 +173,83 @@ fun HomeScreen(
                     )
                 }
 
+
                 item {
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                         Text("HESAPLAMA DETAYLARI", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.ExtraBold, color = onBackgroundColor.copy(alpha = 0.5f), modifier = Modifier.weight(1f), letterSpacing = 2.sp)
+                        IconButton(onClick = { isEditMode = !isEditMode }) {
+                            Icon(
+                                if (isEditMode) Icons.Default.Check else Icons.Default.Edit,
+                                contentDescription = if (isEditMode) "Bitti" else "Düzenle",
+                                tint = if (isEditMode) primaryColor else onBackgroundColor.copy(alpha = 0.5f),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                         TextButton(onClick = { showSettingsSheet = true }) {
                             Text("Parametreleri Düzenle", style = MaterialTheme.typography.labelSmall, color = primaryColor)
                         }
                     }
                 }
 
-                // --- GRUPLANMIŞ SONUÇLAR ---
-                val resultGroups = listOf(
-                    "Konstrüksiyon" to listOf("direk", "boy_demir", "payanda"),
-                    "Tel Örgü Sistemi" to listOf("kafes_top", "kafes_kg", "diken"),
-                    "Bağlantı & Gergi" to listOf("gergi", "baglama"),
-                    "Beton & Zemin" to listOf("cimento", "beton")
-                )
+                // --- UNIFIED ORDERED ITEMS ---
+                items(orderedItems, key = { it.id }) { item ->
+                    val isCustom = item.id.startsWith("custom_")
+                    val realId = if (isCustom) item.id.removePrefix("custom_") else item.id
 
-                resultGroups.forEach { (groupTitle, itemIds) ->
-                    val groupItems = viewModel.results.filter { it.id in itemIds }
-                    if (groupItems.isNotEmpty()) {
-                        item {
-                            Text(
-                                text = groupTitle.uppercase(),
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = onBackgroundColor.copy(alpha = 0.4f),
-                                modifier = Modifier.padding(bottom = 8.dp),
-                                letterSpacing = 1.sp
-                            )
-                        }
-                        items(groupItems, key = { it.id }) { item ->
-                            val rawPrice = viewModel.getPriceString(item.id)
-                            SwapLayoutResultRow(
-                                item = item,
-                                currentPriceInput = rawPrice,
-                                onPriceChange = { newPrice -> viewModel.onPriceChange(item.id, newPrice) }
-                            )
-                        }
-                    }
-                }
-
-                // --- ÖZEL KARTLAR BÖLÜMÜ ---
-                val customCardResults = viewModel.customCardResults
-                if (customCardResults.isNotEmpty()) {
-                    item {
-                        Text(
-                            text = "ÖZEL KARTLAR",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = onBackgroundColor.copy(alpha = 0.4f),
-                            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
-                            letterSpacing = 1.sp
-                        )
-                    }
-                    items(customCardResults, key = { it.id }) { item ->
-                        // custom_XXX formatından gerçek ID'yi al
-                        val realId = item.id.removePrefix("custom_")
-                        PremiumGlassCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    navController.navigate("add_edit_card/$realId")
-                                }
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            SwapLayoutResultRow(
-                                item = item,
-                                currentPriceInput = "",
-                                onPriceChange = { }
-                            )
+                            // Edit controls (left side)
+                            if (isEditMode) {
+                                Column(
+                                    verticalArrangement = Arrangement.Center,
+                                    modifier = Modifier.padding(end = 4.dp)
+                                ) {
+                                    IconButton(
+                                        onClick = { viewModel.moveCardUp(item.id) },
+                                        modifier = Modifier.size(32.dp)
+                                    ) {
+                                        Icon(Icons.Default.KeyboardArrowUp, "Yukarı", tint = onBackgroundColor.copy(alpha = 0.6f), modifier = Modifier.size(20.dp))
+                                    }
+                                    IconButton(
+                                        onClick = { viewModel.moveCardDown(item.id) },
+                                        modifier = Modifier.size(32.dp)
+                                    ) {
+                                        Icon(Icons.Default.KeyboardArrowDown, "Aşağı", tint = onBackgroundColor.copy(alpha = 0.6f), modifier = Modifier.size(20.dp))
+                                    }
+                                }
+                            }
+
+                            // Card content
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .then(
+                                        if (isCustom && !isEditMode) {
+                                            Modifier.clickable { navController.navigate("add_edit_card/$realId") }
+                                        } else Modifier
+                                    )
+                            ) {
+                                SwapLayoutResultRow(
+                                    item = item,
+                                    currentPriceInput = if (isCustom) "" else viewModel.getPriceString(item.id),
+                                    onPriceChange = { newPrice ->
+                                        if (!isCustom) viewModel.onPriceChange(item.id, newPrice)
+                                    }
+                                )
+                            }
+
+                            // Delete button (right side)
+                            if (isEditMode) {
+                                IconButton(
+                                    onClick = { viewModel.hideCard(item.id) },
+                                    modifier = Modifier.size(36.dp).padding(start = 4.dp)
+                                ) {
+                                    Icon(Icons.Default.Close, "Sil", tint = Color(0xFFD32F2F), modifier = Modifier.size(18.dp))
+                                }
+                            }
                         }
                     }
                 }
@@ -272,7 +283,7 @@ fun HomeScreen(
                     }
                 }
 
-                // Alt boşluk (Daha iyi UI için liste altında hafif pay)
+                // Alt boşluk
                 item { Spacer(modifier = Modifier.height(20.dp)) }
             }
         }

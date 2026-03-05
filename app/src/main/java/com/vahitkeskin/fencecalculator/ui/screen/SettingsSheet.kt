@@ -145,6 +145,24 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
         }
 
         Spacer(modifier = Modifier.height(32.dp))
+
+        // Varsayılan kartları yükle butonu
+        OutlinedButton(
+            onClick = {
+                viewModel.restoreDefaultCards()
+            },
+            modifier = Modifier.fillMaxWidth().height(50.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.primary
+            )
+        ) {
+            Icon(Icons.Filled.RestartAlt, null, modifier = Modifier.size(20.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Varsayılan Kartları Yükle", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
         Button(onClick = onDismiss, modifier = Modifier.fillMaxWidth().height(50.dp), shape = RoundedCornerShape(12.dp), colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)) {
             Text("Kaydet ve Kapat", fontSize = 16.sp, color = MaterialTheme.colorScheme.onPrimary)
         }
