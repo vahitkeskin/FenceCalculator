@@ -12,5 +12,6 @@ data class CalculationItem(
     val unitPrice: Double,
     val totalCost: Double,
     val icon: ImageVector,
-    val color: Color
+    val color: Color,
+    val emoji: String? = null
 )

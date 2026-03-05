@@ -47,7 +47,11 @@ fun SwapLayoutResultRow(
         Column {
             Row(modifier = Modifier.padding(16.dp).fillMaxWidth(), verticalAlignment = Alignment.Top) {
                 Box(modifier = Modifier.size(48.dp).clip(RoundedCornerShape(14.dp)).background(item.color.copy(alpha = 0.15f)), contentAlignment = Alignment.Center) {
-                    Icon(item.icon, null, tint = item.color, modifier = Modifier.size(26.dp))
+                    if (item.emoji != null) {
+                        Text(text = item.emoji, fontSize = 24.sp)
+                    } else {
+                        Icon(item.icon, null, tint = item.color, modifier = Modifier.size(26.dp))
+                    }
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
