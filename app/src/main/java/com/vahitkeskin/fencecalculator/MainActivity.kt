@@ -72,6 +72,12 @@ class MainActivity : ComponentActivity() {
                                     navController = navController
                                 )
                             }
+                            composable("personal_info") {
+                                com.vahitkeskin.fencecalculator.ui.screen.PersonalInfoScreen(
+                                    viewModel = viewModel,
+                                    navController = navController
+                                )
+                            }
                         }
                     }
                 }
