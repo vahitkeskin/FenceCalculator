@@ -187,6 +187,10 @@ fun HomeScreen(
                             colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor)
                         )
 
+                        val isIbanValid = remember(viewModel.iban) {
+                            viewModel.iban.isBlank() || com.vahitkeskin.fencecalculator.util.IbanValidator.isValidIban(viewModel.iban)
+                        }
+
                         OutlinedTextField(
                             value = viewModel.iban,
                             onValueChange = { viewModel.onIbanChange(it) },
@@ -197,15 +201,24 @@ fun HomeScreen(
                                     Icon(Icons.Default.QrCodeScanner, "Karekod Tara", tint = primaryColor)
                                 }
                             },
+                            isError = !isIbanValid && viewModel.iban.isNotBlank(),
+                            supportingText = {
+                                if (!isIbanValid && viewModel.iban.isNotBlank()) {
+                                    Text("Geçersiz IBAN formatı", color = MaterialTheme.colorScheme.error)
+                                }
+                            },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
                             maxLines = 2,
                             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Done),
-                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor)
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = primaryColor,
+                                errorBorderColor = MaterialTheme.colorScheme.error
+                            )
                         )
 
                         val qrBitmap = remember(viewModel.iban) {
-                            if (viewModel.iban.isNotBlank()) {
+                            if (com.vahitkeskin.fencecalculator.util.IbanValidator.isValidIban(viewModel.iban)) {
                                 QrGenerator.generateQrCode(viewModel.iban, 300)
                             } else null
                         }

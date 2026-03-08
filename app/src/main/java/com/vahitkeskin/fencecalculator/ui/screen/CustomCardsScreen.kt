@@ -1,5 +1,6 @@
 package com.vahitkeskin.fencecalculator.ui.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -38,12 +40,14 @@ fun CustomCardsScreen(
                     Text("ÖZEL KARTLAR", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
                 },
                 actions = {
-                    IconButton(onClick = { isEditMode = !isEditMode }) {
-                        Icon(
-                            if (isEditMode) Icons.Default.Check else Icons.Default.Edit,
-                            null,
-                            tint = if (isEditMode) primaryColor else LocalContentColor.current
-                        )
+                    if (customItems.isNotEmpty()) {
+                        IconButton(onClick = { isEditMode = !isEditMode }) {
+                            Icon(
+                                if (isEditMode) Icons.Default.Check else Icons.Default.Edit,
+                                null,
+                                tint = if (isEditMode) primaryColor else LocalContentColor.current
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
@@ -55,8 +59,46 @@ fun CustomCardsScreen(
             ) {
                 if (customItems.isEmpty()) {
                     item {
-                        Box(modifier = Modifier.fillMaxWidth().padding(top = 100.dp), contentAlignment = Alignment.Center) {
-                            Text("Henüz özel kart eklenmemiş.", color = Color.Gray)
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 80.dp, bottom = 40.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(120.dp)
+                                    .clip(androidx.compose.foundation.shape.CircleShape)
+                                    .background(primaryColor.copy(alpha = 0.05f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Extension,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(60.dp),
+                                    tint = primaryColor.copy(alpha = 0.3f)
+                                )
+                            }
+                            
+                            Spacer(modifier = Modifier.height(24.dp))
+                            
+                            Text(
+                                text = "Henüz Kart Yok",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            Text(
+                                text = "Kendi özel hesaplama kartlarınızı oluşturarak uygulamayı kişiselleştirin.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                modifier = Modifier.padding(horizontal = 32.dp)
+                            )
                         }
                     }
                 }
