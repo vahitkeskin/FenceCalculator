@@ -66,7 +66,7 @@ class CalculatorViewModel @Inject constructor(
 
     // --- CONSTANTS ---
     object Defaults {
-        const val LENGTH = "300"
+        const val LENGTH = "0"
         const val SPACING = "3.5"
         const val HEIGHT = "1.5"
         const val STRUT_INTERVAL = "15"

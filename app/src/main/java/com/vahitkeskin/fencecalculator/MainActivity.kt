@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.vahitkeskin.fencecalculator.ui.components.AnimatedSplashScreen
 import com.vahitkeskin.fencecalculator.ui.screen.AddEditCardScreen
 import com.vahitkeskin.fencecalculator.ui.screen.HomeScreen
+import com.vahitkeskin.fencecalculator.ui.screen.SettingsScreen
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,6 +64,12 @@ class MainActivity : ComponentActivity() {
                                     viewModel = viewModel,
                                     editCardId = editId,
                                     onNavigateBack = { navController.popBackStack() }
+                                )
+                            }
+                            composable("settings_detail") {
+                                SettingsScreen(
+                                    viewModel = viewModel,
+                                    navController = navController
                                 )
                             }
                         }
