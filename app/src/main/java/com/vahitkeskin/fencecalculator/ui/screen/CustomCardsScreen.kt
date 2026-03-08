@@ -1,10 +1,8 @@
 package com.vahitkeskin.fencecalculator.ui.screen
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -21,7 +19,7 @@ import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.SwapLayoutResultRow
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun CustomCardsScreen(
     viewModel: CalculatorViewModel,
@@ -55,7 +53,8 @@ fun CustomCardsScreen(
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                overscrollEffect = null
             ) {
                 if (customItems.isEmpty()) {
                     item {

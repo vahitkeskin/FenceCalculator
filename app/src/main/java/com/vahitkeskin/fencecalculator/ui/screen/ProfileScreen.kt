@@ -1,26 +1,23 @@
 package com.vahitkeskin.fencecalculator.ui.screen
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,98 +29,102 @@ import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.PremiumGlassCard
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    viewModel: CalculatorViewModel,
-    navController: NavController
+    navController: NavController,
+    viewModel: CalculatorViewModel
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     Box(modifier = Modifier.fillMaxSize()) {
         MeshBackground()
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            overscrollEffect = null
         ) {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "PROFİL",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 2.sp
-                    )
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Profile Header
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { navController.navigate("personal_info") },
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val initials = androidx.compose.runtime.remember(viewModel.companyName) {
-                    val words = viewModel.companyName.trim().split("\\s+".toRegex())
-                    when {
-                        words.isEmpty() || viewModel.companyName.isBlank() -> null
-                        words.size == 1 -> words.first().take(2).uppercase()
-                        else -> {
-                            val first = words.first().firstOrNull()?.uppercase() ?: ""
-                            val last = words.last().firstOrNull()?.uppercase() ?: ""
-                            "$first$last"
-                        }
-                    }
-                }
-
-                Box(
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (initials != null) {
+            item {
+                CenterAlignedTopAppBar(
+                    title = {
                         Text(
-                            text = initials,
-                            style = MaterialTheme.typography.headlineLarge,
+                            "PROFİL",
+                            style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Black,
-                            color = MaterialTheme.colorScheme.primary
+                            letterSpacing = 2.sp
                         )
-                    } else {
-                        Icon(
-                            Icons.Default.Person,
-                            contentDescription = null,
-                            modifier = Modifier.size(60.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = if (viewModel.companyName.isBlank()) "Firma Adı Girin" else viewModel.companyName,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = if (viewModel.companyName.isBlank()) MaterialTheme.colorScheme.onSurface.copy(
-                        alpha = 0.3f
-                    ) else MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = "Profil Ayarları",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            item { Spacer(modifier = Modifier.height(24.dp)) }
 
-            // Settings Section
-            PaddingValues(horizontal = 24.dp).let { padding ->
-                Column(modifier = Modifier.padding(padding)) {
+            item {
+                // Profile Header
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { navController.navigate("personal_info") },
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val initials = androidx.compose.runtime.remember(viewModel.companyName) {
+                        val words = viewModel.companyName.trim().split("\\s+".toRegex())
+                        when {
+                            words.isEmpty() || viewModel.companyName.isBlank() -> null
+                            words.size == 1 -> words.first().take(2).uppercase()
+                            else -> {
+                                val first = words.first().firstOrNull()?.uppercase() ?: ""
+                                val last = words.last().firstOrNull()?.uppercase() ?: ""
+                                "$first$last"
+                            }
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (initials != null) {
+                            Text(
+                                text = initials,
+                                style = MaterialTheme.typography.headlineLarge,
+                                fontWeight = FontWeight.Black,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        } else {
+                            Icon(
+                                Icons.Default.Person,
+                                contentDescription = null,
+                                modifier = Modifier.size(60.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = if (viewModel.companyName.isBlank()) "Firma Adı Girin" else viewModel.companyName,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = if (viewModel.companyName.isBlank()) MaterialTheme.colorScheme.onSurface.copy(
+                            alpha = 0.3f
+                        ) else MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "Profil Ayarları",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
+            item { Spacer(modifier = Modifier.height(32.dp)) }
+
+            item {
+                // Settings Section
+                Column(modifier = Modifier.padding(horizontal = 24.dp)) {
                     Text(
                         text = "Hesap ve Uygulama",
                         style = MaterialTheme.typography.titleSmall,
@@ -154,63 +155,78 @@ fun ProfileScreen(
                         icon = Icons.Default.Info,
                         title = "Hakkında",
                         subtitle = "Uygulama versiyonu ve bilgiler",
-                        onClick = { /* Navigate to About */ }
+                        onClick = { navController.navigate("about") }
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
+                    val appName = stringResource(id = R.string.app_name)
+                    val shareMessage = """
+                        Çit ve örgü tel ihtiyaçlarınıza profesyonel çözüm!
+                        $appName uygulamasını hemen indirin:
+                        https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator
+                    """.trimIndent()
+                    
                     ProfileMenuItem(
                         icon = Icons.Default.Share,
                         title = "Paylaş",
                         subtitle = "Uygulamayı arkadaşlarınla paylaş",
-                        onClick = { /* Share app */ }
+                        onClick = {
+                            val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(android.content.Intent.EXTRA_TEXT, shareMessage)
+                            }
+                            context.startActivity(android.content.Intent.createChooser(intent, "Paylaş"))
+                        }
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(48.dp))
 
-            val context = androidx.compose.ui.platform.LocalContext.current
-            val packageInfo = remember {
-                try {
-                    context.packageManager.getPackageInfo(context.packageName, 0)
-                } catch (e: Exception) {
-                    null
+            item { Spacer(modifier = Modifier.height(48.dp)) }
+
+            item {
+                val packageInfo = remember {
+                    try {
+                        context.packageManager.getPackageInfo(context.packageName, 0)
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
+                val versionName = packageInfo?.versionName ?: "1.0"
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.app_icon_professional),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(14.dp))
+                            .size(60.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = stringResource(id = R.string.app_name).uppercase(),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Black,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                        letterSpacing = 1.5.sp
+                    )
+
+                    Text(
+                        text = "v$versionName",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                    )
                 }
             }
-            val versionName = packageInfo?.versionName ?: "1.0"
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.app_icon_professional),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(14.dp))
-                        .size(60.dp)
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Black,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-                    letterSpacing = 1.5.sp
-                )
-
-                Text(
-                    text = "v$versionName",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(80.dp)) // Bottom bar padding
+            item { Spacer(modifier = Modifier.height(80.dp)) } // Bottom bar padding
         }
     }
 }

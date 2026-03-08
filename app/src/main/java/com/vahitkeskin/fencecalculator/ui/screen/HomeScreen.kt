@@ -1,12 +1,15 @@
 package com.vahitkeskin.fencecalculator.ui.screen
 
 import androidx.compose.animation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
@@ -100,74 +103,83 @@ fun HomeScreen(
                 )
             },
         ) { paddingValues ->
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(horizontal = 20.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                overscrollEffect = null
             ) {
-
+                item { Spacer(modifier = Modifier.height(8.dp)) }
 
                 // Müşteri Bilgileri
-                PremiumGlassCard {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text(
-                            "MÜŞTERİ BİLGİLERİ",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = onBackgroundColor.copy(alpha = 0.5f),
-                            letterSpacing = 1.sp
-                        )
-                        
-                        OutlinedTextField(
-                            value = viewModel.customerName,
-                            onValueChange = { viewModel.onCustomerNameChange(it) },
-                            label = { Text("Müşteri Adı Soyadı", color = onBackgroundColor.copy(alpha = 0.5f)) },
-                            leadingIcon = { Icon(Icons.Default.Person, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next),
-                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor)
-                        )
+                item {
+                    PremiumGlassCard {
+                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Text(
+                                "MÜŞTERİ BİLGİLERİ",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = onBackgroundColor.copy(alpha = 0.5f),
+                                letterSpacing = 1.sp
+                            )
+                            
+                            OutlinedTextField(
+                                value = viewModel.customerName,
+                                onValueChange = { viewModel.onCustomerNameChange(it) },
+                                label = { Text("Müşteri Adı Soyadı", color = onBackgroundColor.copy(alpha = 0.5f)) },
+                                leadingIcon = { Icon(Icons.Default.Person, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next),
+                                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor)
+                            )
 
-                        OutlinedTextField(
-                            value = viewModel.customerPhone,
-                            onValueChange = { viewModel.onCustomerPhoneChange(it) },
-                            label = { Text("Müşteri Telefon No", color = onBackgroundColor.copy(alpha = 0.5f)) },
-                            leadingIcon = { Icon(Icons.Default.Phone, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
-                            placeholder = { Text("905xxxxxxxxx", color = onBackgroundColor.copy(alpha = 0.2f)) },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone, imeAction = ImeAction.Next),
-                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor)
-                        )
+                            OutlinedTextField(
+                                value = viewModel.customerPhone,
+                                onValueChange = { viewModel.onCustomerPhoneChange(it) },
+                                label = { Text("Müşteri Telefon No", color = onBackgroundColor.copy(alpha = 0.5f)) },
+                                leadingIcon = { Icon(Icons.Default.Phone, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
+                                placeholder = { Text("905xxxxxxxxx", color = onBackgroundColor.copy(alpha = 0.2f)) },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone, imeAction = ImeAction.Next),
+                                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor)
+                            )
+                        }
                     }
                 }
 
                 // Ana Parametreler
-                AdvancedInputSection(
-                    lengthValue = viewModel.totalLengthInput,
-                    onLengthChange = viewModel::onTotalLengthChange
-                )
+                item {
+                    AdvancedInputSection(
+                        lengthValue = viewModel.totalLengthInput,
+                        onLengthChange = viewModel::onTotalLengthChange
+                    )
+                }
 
                 // --- FAVORİ HESAPLAMALAR ---
                 if (viewModel.pinnedItems.isNotEmpty()) {
-                    Divider(color = onBackgroundColor.copy(alpha = 0.1f), modifier = Modifier.padding(vertical = 8.dp))
+                    item {
+                        Divider(color = onBackgroundColor.copy(alpha = 0.1f), modifier = Modifier.padding(vertical = 8.dp))
+                    }
                     
-                    Text(
-                        "FAVORİ HESAPLAMALAR",
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = onBackgroundColor.copy(alpha = 0.5f),
-                        letterSpacing = 2.sp,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
+                    item {
+                        Text(
+                            "FAVORİ HESAPLAMALAR",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = onBackgroundColor.copy(alpha = 0.5f),
+                            letterSpacing = 2.sp,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                    }
                     
-                    viewModel.pinnedItems.forEach { item ->
+                    items(viewModel.pinnedItems.size) { index ->
+                        val item = viewModel.pinnedItems[index]
                         val isCustom = item.id.startsWith("custom_")
                         val realId = if (isCustom) item.id.removePrefix("custom_") else item.id
                         
@@ -188,15 +200,17 @@ fun HomeScreen(
                 }
 
                 // Hızlı Bilgi
-                Text(
-                    "Hesaplama detaylarını görmek için alttaki 'Hesaplar' veya 'Özel' sekmelerini kullanın.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = onBackgroundColor.copy(alpha = 0.4f),
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
+                item {
+                    Text(
+                        "Hesaplama detaylarını görmek için alttaki 'Hesaplar' veya 'Özel' sekmelerini kullanın.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = onBackgroundColor.copy(alpha = 0.4f),
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                }
 
                 // Klavye ve Toplam Maliyet kartının üstünde kalması için büyük boşluk
-                Spacer(modifier = Modifier.height(90.dp))
+                item { Spacer(modifier = Modifier.height(90.dp)) }
             }
         }
 

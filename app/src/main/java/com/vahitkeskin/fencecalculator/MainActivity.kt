@@ -17,6 +17,8 @@ import com.vahitkeskin.fencecalculator.ui.components.AnimatedSplashScreen
 import com.vahitkeskin.fencecalculator.ui.screen.AddEditCardScreen
 import com.vahitkeskin.fencecalculator.ui.screen.HomeScreen
 import com.vahitkeskin.fencecalculator.ui.screen.SettingsScreen
+import com.vahitkeskin.fencecalculator.ui.screen.PersonalInfoScreen
+import com.vahitkeskin.fencecalculator.ui.screen.AboutScreen
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -75,6 +77,11 @@ class MainActivity : ComponentActivity() {
                             composable("personal_info") {
                                 com.vahitkeskin.fencecalculator.ui.screen.PersonalInfoScreen(
                                     viewModel = viewModel,
+                                    navController = navController
+                                )
+                            }
+                            composable("about") {
+                                AboutScreen(
                                     navController = navController
                                 )
                             }
