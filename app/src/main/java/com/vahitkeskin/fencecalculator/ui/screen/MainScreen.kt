@@ -25,7 +25,7 @@ sealed class Screen(val route: String, val title: String, val icon: androidx.com
     object Home : Screen("home_tab", "Anasayfa", Icons.Default.Home)
     object Calculations : Screen("calculations_tab", "Hesaplar", Icons.Default.Calculate)
     object Custom : Screen("custom_cards_tab", "Özel", Icons.Default.Extension)
-    object Settings : Screen("settings_tab", "Ayarlar", Icons.Default.Settings)
+    object Profile : Screen("profile_tab", "Profil", Icons.Default.Person)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,7 +35,7 @@ fun MainScreen(
     globalNavController: NavController
 ) {
     val innerNavController = rememberNavController()
-    val items = listOf(Screen.Home, Screen.Calculations, Screen.Custom, Screen.Settings)
+    val items = listOf(Screen.Home, Screen.Calculations, Screen.Custom, Screen.Profile)
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -101,8 +101,8 @@ fun MainScreen(
                 composable(Screen.Custom.route) {
                     CustomCardsScreen(viewModel = viewModel, navController = globalNavController)
                 }
-                composable(Screen.Settings.route) {
-                    SettingsScreen(viewModel = viewModel)
+                composable(Screen.Profile.route) {
+                    ProfileScreen(viewModel = viewModel, navController = globalNavController)
                 }
             }
             
