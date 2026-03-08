@@ -7,12 +7,17 @@ import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
@@ -31,7 +36,8 @@ import java.text.DecimalFormat
 fun SwapLayoutResultRow(
     item: CalculationItem,
     currentPriceInput: String,
-    onPriceChange: (String) -> Unit
+    onPriceChange: (String) -> Unit,
+    onPinToggle: () -> Unit = {}
 ) {
     val df = DecimalFormat("#,##0.##")
     val currencyFormat = DecimalFormat("#,##0.00")
@@ -65,13 +71,6 @@ fun SwapLayoutResultRow(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
-                            Text(
-                                text = item.description,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = onSurfaceColor.copy(alpha = 0.6f),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
                             if (item.dependencyInfo != null) {
                                 Text(
                                     text = item.dependencyInfo,
@@ -85,21 +84,35 @@ fun SwapLayoutResultRow(
                             }
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        Surface(
-                            modifier = Modifier.weight(0.4f, fill = false),
-                            color = onSurfaceColor.copy(alpha = 0.1f),
-                            shape = RoundedCornerShape(8.dp),
-                            tonalElevation = 0.dp
-                        ) {
-                            Text(
-                                text = "${df.format(item.quantity)} ${item.unit}",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = onSurfaceColor,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Surface(
+                                modifier = Modifier.wrapContentSize(),
+                                color = onSurfaceColor.copy(alpha = 0.1f),
+                                shape = RoundedCornerShape(8.dp),
+                                tonalElevation = 0.dp
+                            ) {
+                                Text(
+                                    text = "${df.format(item.quantity)} ${item.unit}",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = onSurfaceColor,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(4.dp))
+                            IconButton(
+                                onClick = onPinToggle,
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(
+                                    imageVector = if (item.isPinned) Icons.Default.CheckBox else Icons.Default.CheckBoxOutlineBlank,
+                                    contentDescription = "Pin",
+                                    tint = if (item.isPinned) Color(0xFF4CAF50) else Color.Gray.copy(alpha = 0.3f),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                         }
                     }
                     Spacer(modifier = Modifier.height(12.dp))
