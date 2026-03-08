@@ -35,9 +35,10 @@ import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    viewModel: CalculatorViewModel,
-    navController: NavController
+    navController: NavController,
+    viewModel: CalculatorViewModel
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     Box(modifier = Modifier.fillMaxSize()) {
         MeshBackground()
 
@@ -154,16 +155,28 @@ fun ProfileScreen(
                         icon = Icons.Default.Info,
                         title = "Hakkında",
                         subtitle = "Uygulama versiyonu ve bilgiler",
-                        onClick = { /* Navigate to About */ }
+                        onClick = { navController.navigate("about") }
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
+                    val shareMessage = """
+                        Çit ve örgü tel ihtiyaçlarınıza profesyonel çözüm!
+                        Fence Calculator uygulamasını hemen indirin:
+                        https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator
+                    """.trimIndent()
+                    
                     ProfileMenuItem(
                         icon = Icons.Default.Share,
                         title = "Paylaş",
                         subtitle = "Uygulamayı arkadaşlarınla paylaş",
-                        onClick = { /* Share app */ }
+                        onClick = {
+                            val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(android.content.Intent.EXTRA_TEXT, shareMessage)
+                            }
+                            context.startActivity(android.content.Intent.createChooser(intent, "Paylaş"))
+                        }
                     )
                 }
             }
