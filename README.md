@@ -1,4 +1,4 @@
-# Fence Calculator (Çit Hesaplama)
+# Tel Çit Hesaplama (Fence Calculator)
 
 Profesyonel çit maliyet hesaplama ve raporlama uygulaması.
 
@@ -6,7 +6,7 @@ Profesyonel çit maliyet hesaplama ve raporlama uygulaması.
 
 Uygulamanın en güncel sürümünü aşağıdaki bağlantıdan indirebilirsiniz:
 
-👉 **[FenceCalculator.apk İNDİR](FenceCalculator.apk)**
+👉 **[TelCitHesaplama.apk İNDİR](FenceCalculator.apk)**
 
 ---
 

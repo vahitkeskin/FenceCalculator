@@ -27,7 +27,7 @@ fun shareCalculationResults(context: Context, results: List<CalculationItem>, to
     report.append("\n=========================\n")
     report.append("💰 GENEL TOPLAM: ${cf.format(totalCost)} ₺\n")
     report.append("=========================\n")
-    report.append("Vahit Keskin Fence Calculator ile hesaplandı.")
+    report.append("Vahit Keskin Tel Çit Hesaplama ile hesaplandı.")
 
     val sendIntent: Intent = Intent().apply {
         action = Intent.ACTION_SEND
