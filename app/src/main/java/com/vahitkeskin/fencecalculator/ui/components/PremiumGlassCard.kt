@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun PremiumGlassCard(
     modifier: Modifier = Modifier,
-    cornerRadius: Dp = 24.dp,
+    cornerRadius: Dp = 5.dp,
     content: @Composable () -> Unit
 ) {
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f

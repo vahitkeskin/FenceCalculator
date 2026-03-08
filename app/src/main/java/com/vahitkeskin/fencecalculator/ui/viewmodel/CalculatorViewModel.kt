@@ -518,7 +518,7 @@ class CalculatorViewModel @Inject constructor(
         val cemFactor = cementFactorInput.toDoubleOrNull() ?: 6.0
         val concFactor = concreteFactorInput.toDoubleOrNull() ?: 30.0
 
-        if (length == 0.0 || spacing <= 0.0 || height == 0.0) {
+        if (spacing <= 0.0 || height == 0.0) {
             results = emptyList()
             grandTotalCost = 0.0 + customCardResults.sumOf { it.totalCost }
             return
