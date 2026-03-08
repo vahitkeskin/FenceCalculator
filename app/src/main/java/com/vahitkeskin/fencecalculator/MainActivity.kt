@@ -48,12 +48,12 @@ class MainActivity : ComponentActivity() {
                     } else {
                         NavHost(
                             navController = navController,
-                            startDestination = "home"
+                            startDestination = "main"
                         ) {
-                            composable("home") {
-                                HomeScreen(
+                            composable("main") {
+                                com.vahitkeskin.fencecalculator.ui.screen.MainScreen(
                                     viewModel = viewModel,
-                                    navController = navController
+                                    globalNavController = navController
                                 )
                             }
                             composable("add_edit_card/{cardId}") { backStackEntry ->

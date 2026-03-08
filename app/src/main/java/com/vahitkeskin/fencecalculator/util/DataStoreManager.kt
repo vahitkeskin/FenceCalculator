@@ -30,6 +30,10 @@ class DataStoreManager @Inject constructor(
         val CUSTOM_CARDS_KEY = stringPreferencesKey("custom_cards")
         val HIDDEN_CARDS_KEY = stringPreferencesKey("hidden_cards")
         val CARD_ORDER_KEY = stringPreferencesKey("card_order")
+        val PINNED_CARDS_KEY = stringPreferencesKey("pinned_cards")
+        val CUSTOMER_NAME_KEY = stringPreferencesKey("customer_name")
+        val CUSTOMER_PHONE_KEY = stringPreferencesKey("customer_phone")
+        val CUSTOMER_MESSAGE_KEY = stringPreferencesKey("customer_message")
     }
 
     val companyName: Flow<String> = context.dataStore.data.map { preferences ->
@@ -50,6 +54,10 @@ class DataStoreManager @Inject constructor(
     val customCards: Flow<String> = context.dataStore.data.map { it[CUSTOM_CARDS_KEY] ?: "[]" }
     val hiddenCards: Flow<String> = context.dataStore.data.map { it[HIDDEN_CARDS_KEY] ?: "" }
     val cardOrder: Flow<String> = context.dataStore.data.map { it[CARD_ORDER_KEY] ?: "" }
+    val pinnedCards: Flow<String> = context.dataStore.data.map { it[PINNED_CARDS_KEY] ?: "direk,payanda,kafes_top,diken,baglama,gergi" }
+    val customerName: Flow<String> = context.dataStore.data.map { it[CUSTOMER_NAME_KEY] ?: "" }
+    val customerPhone: Flow<String> = context.dataStore.data.map { it[CUSTOMER_PHONE_KEY] ?: "" }
+    val customerMessage: Flow<String> = context.dataStore.data.map { it[CUSTOMER_MESSAGE_KEY] ?: "" }
 
     suspend fun saveCompanyName(name: String) {
         context.dataStore.edit { preferences ->
@@ -74,6 +82,14 @@ class DataStoreManager @Inject constructor(
     suspend fun saveCardOrder(csv: String) {
         context.dataStore.edit { it[CARD_ORDER_KEY] = csv }
     }
+
+    suspend fun savePinnedCards(csv: String) {
+        context.dataStore.edit { it[PINNED_CARDS_KEY] = csv }
+    }
+
+    suspend fun saveCustomerName(v: String) = context.dataStore.edit { it[CUSTOMER_NAME_KEY] = v }
+    suspend fun saveCustomerPhone(v: String) = context.dataStore.edit { it[CUSTOMER_PHONE_KEY] = v }
+    suspend fun saveCustomerMessage(v: String) = context.dataStore.edit { it[CUSTOMER_MESSAGE_KEY] = v }
 
     suspend fun savePoleLength(v: String) = context.dataStore.edit { it[POLE_LENGTH_KEY] = v }
     suspend fun savePipeLength(v: String) = context.dataStore.edit { it[PIPE_LENGTH_KEY] = v }

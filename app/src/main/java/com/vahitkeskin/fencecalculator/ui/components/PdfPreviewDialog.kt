@@ -9,8 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,6 +28,8 @@ import java.io.File
 @Composable
 fun PdfPreviewDialog(
     file: File,
+    phoneNumber: String = "",
+    message: String = "",
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
@@ -117,19 +118,45 @@ fun PdfPreviewDialog(
                     }
                 }
                 
-                // Bottom Action
-                Button(
-                    onClick = { PdfGenerator.sharePdfFile(context, file) },
+                // Bottom Actions
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
-                        .height(56.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Icon(Icons.Default.Share, null)
-                    Spacer(Modifier.width(8.dp))
-                    Text("PDF Olarak Paylaş", fontWeight = FontWeight.Bold)
+                    // WhatsApp Button (Only if phone provided)
+                    if (phoneNumber.isNotBlank()) {
+                        Button(
+                            onClick = { PdfGenerator.shareViaWhatsApp(context, file, phoneNumber, message) },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(56.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF25D366), // WhatsApp Green
+                                contentColor = Color.White
+                            )
+                        ) {
+                            Icon(Icons.Default.Send, null)
+                            Spacer(Modifier.width(8.dp))
+                            Text("WhatsApp", fontWeight = FontWeight.Bold)
+                        }
+                    }
+
+                    // Standard Share Button
+                    Button(
+                        onClick = { PdfGenerator.sharePdfFile(context, file) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Icon(Icons.Default.Share, null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(if (phoneNumber.isNotBlank()) "Paylaş" else "PDF Olarak Paylaş", fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }
