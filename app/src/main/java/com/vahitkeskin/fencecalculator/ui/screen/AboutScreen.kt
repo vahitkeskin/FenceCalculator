@@ -1,12 +1,13 @@
 package com.vahitkeskin.fencecalculator.ui.screen
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -29,7 +30,7 @@ import com.vahitkeskin.fencecalculator.R
 import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.PremiumGlassCard
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AboutScreen(navController: NavController) {
     val context = LocalContext.current
@@ -44,6 +45,7 @@ fun AboutScreen(navController: NavController) {
 
     Scaffold(
         topBar = {
+            @OptIn(ExperimentalMaterial3Api::class)
             TopAppBar(
                 title = { Text("Hakkında", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
@@ -61,99 +63,118 @@ fun AboutScreen(navController: NavController) {
     ) { padding ->
         MeshBackground()
         
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            overscrollEffect = null
         ) {
-            // App Icon & Name
-            Image(
-                painter = painterResource(id = R.drawable.app_icon_professional),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(RoundedCornerShape(24.dp))
-            )
+            item { Spacer(modifier = Modifier.height(24.dp)) }
+
+            item {
+                // App Icon & Name
+                Image(
+                    painter = painterResource(id = R.drawable.app_icon_professional),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(RoundedCornerShape(24.dp))
+                )
+            }
             
-            Spacer(modifier = Modifier.height(16.dp))
+            item { Spacer(modifier = Modifier.height(16.dp)) }
             
-            Text(
-                text = stringResource(id = R.string.app_name),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Black,
-                color = MaterialTheme.colorScheme.primary
-            )
+            item {
+                Text(
+                    text = stringResource(id = R.string.app_name),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Black,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
             
-            Text(
-                text = "v$versionName",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-            )
+            item {
+                Text(
+                    text = "v$versionName",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                )
+            }
             
-            Spacer(modifier = Modifier.height(32.dp))
+            item { Spacer(modifier = Modifier.height(32.dp)) }
             
-            // App Description
-            PremiumGlassCard(
-                modifier = Modifier.fillMaxWidth(),
-                cornerRadius = 24.dp
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text(
-                        text = "Uygulama Hakkında",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "${stringResource(id = R.string.app_name)}, çit ve örgü tel ihtiyaçlarınız için profesyonel bir hesaplama asistanıdır. Malzeme ihtiyaçlarını en doğru şekilde analiz ederek işinizi kolaylaştırır.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        lineHeight = 20.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-                    )
+            item {
+                // App Description
+                PremiumGlassCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    cornerRadius = 24.dp
+                ) {
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Text(
+                            text = "Uygulama Hakkında",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "${stringResource(id = R.string.app_name)}, çit ve örgü tel ihtiyaçlarınız için profesyonel bir hesaplama asistanıdır. Malzeme ihtiyaçlarını en doğru şekilde analiz ederek işinizi kolaylaştırır.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            lineHeight = 20.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                        )
+                    }
                 }
             }
             
-            Spacer(modifier = Modifier.height(16.dp))
+            item { Spacer(modifier = Modifier.height(16.dp)) }
             
-            // Info Items
-            AboutInfoItem(
-                icon = Icons.Default.Person,
-                title = "Geliştirici",
-                value = "Vahit Keskin"
-            )
+            item {
+                // Info Items
+                AboutInfoItem(
+                    icon = Icons.Default.Person,
+                    title = "Geliştirici",
+                    value = "Vahit Keskin"
+                )
+            }
             
-            Spacer(modifier = Modifier.height(12.dp))
+            item { Spacer(modifier = Modifier.height(12.dp)) }
             
-            AboutInfoItem(
-                icon = Icons.Default.BugReport,
-                title = "Geri Bildirim",
-                value = "Hata bildir veya öneri sun"
-            )
+            item {
+                AboutInfoItem(
+                    icon = Icons.Default.BugReport,
+                    title = "Geri Bildirim",
+                    value = "Hata bildir veya öneri sun"
+                )
+            }
             
-            Spacer(modifier = Modifier.height(12.dp))
+            item { Spacer(modifier = Modifier.height(12.dp)) }
             
-            AboutInfoItem(
-                icon = Icons.Default.Description,
-                title = "Lisanslar",
-                value = "Açık kaynak kütüphaneleri"
-            )
+            item {
+                AboutInfoItem(
+                    icon = Icons.Default.Description,
+                    title = "Lisanslar",
+                    value = "Açık kaynak kütüphaneleri"
+                )
+            }
             
-            Spacer(modifier = Modifier.weight(1f))
-            Spacer(modifier = Modifier.height(48.dp))
+            item { Spacer(modifier = Modifier.height(48.dp)) }
             
-            Text(
-                text = "© 2026 ${stringResource(id = R.string.app_name)}. Tüm hakları saklıdır.",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
+            item {
+                val currentYear = remember { java.util.Calendar.getInstance().get(java.util.Calendar.YEAR) }
+                
+                Text(
+                    text = "© $currentYear ${stringResource(id = R.string.app_name)}. Tüm hakları saklıdır.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
             
-            Spacer(modifier = Modifier.height(40.dp))
+            item { Spacer(modifier = Modifier.height(40.dp)) }
         }
     }
 }

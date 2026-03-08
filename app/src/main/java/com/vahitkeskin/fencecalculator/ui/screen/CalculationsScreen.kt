@@ -1,12 +1,10 @@
 package com.vahitkeskin.fencecalculator.ui.screen
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,13 +38,14 @@ fun CalculationsScreen(viewModel: CalculatorViewModel) {
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                overscrollEffect = null
             ) {
                 groupedItems.forEach { (category, items) ->
-                    stickyHeader {
+                    item {
                         Surface(
                             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                            color = MaterialTheme.colorScheme.surface,
                             shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
                         ) {
                             Text(

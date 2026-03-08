@@ -54,6 +54,11 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.foundation) {
+        version {
+            strictly(libs.versions.composeFoundation.get())
+        }
+    }
 
     // TOML'da tanımladığımız extended icons
     implementation(libs.androidx.compose.material.icons.extended)
