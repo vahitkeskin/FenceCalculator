@@ -160,9 +160,10 @@ fun ProfileScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
+                    val appName = stringResource(id = R.string.app_name)
                     val shareMessage = """
                         Çit ve örgü tel ihtiyaçlarınıza profesyonel çözüm!
-                        Fence Calculator uygulamasını hemen indirin:
+                        $appName uygulamasını hemen indirin:
                         https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator
                     """.trimIndent()
                     
@@ -209,7 +210,7 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = stringResource(R.string.app_name),
+                    text = stringResource(id = R.string.app_name).uppercase(),
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Black,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),

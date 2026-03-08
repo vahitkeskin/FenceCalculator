@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -80,7 +81,7 @@ fun AboutScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
             
             Text(
-                text = "Fence Calculator",
+                text = stringResource(id = R.string.app_name),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Black,
                 color = MaterialTheme.colorScheme.primary
@@ -108,7 +109,7 @@ fun AboutScreen(navController: NavController) {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Fence Calculator, çit ve örgü tel ihtiyaçlarınız için profesyonel bir hesaplama asistanıdır. Malzeme ihtiyaçlarını en doğru şekilde analiz ederek işinizi kolaylaştırır.",
+                        text = "${stringResource(id = R.string.app_name)}, çit ve örgü tel ihtiyaçlarınız için profesyonel bir hesaplama asistanıdır. Malzeme ihtiyaçlarını en doğru şekilde analiz ederek işinizi kolaylaştırır.",
                         style = MaterialTheme.typography.bodyMedium,
                         lineHeight = 20.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
@@ -145,7 +146,7 @@ fun AboutScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(48.dp))
             
             Text(
-                text = "© 2026 Fence Calculator. Tüm hakları saklıdır.",
+                text = "© 2026 ${stringResource(id = R.string.app_name)}. Tüm hakları saklıdır.",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                 textAlign = TextAlign.Center,
