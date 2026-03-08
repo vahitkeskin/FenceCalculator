@@ -11,5 +11,8 @@ data class CustomCardItem(
     val unit: String,
     val unitPrice: Double,
     val colorHex: String, // "#FF9800" gibi hex renk kodu
-    val emoji: String = "📦" // Kart emojisi
+    val emoji: String = "📦", // Kart emojisi
+    val dependentCardId: String? = null,
+    val dependentRatio: Double? = null,
+    val dependentOperation: String = "*" // "+", "-", "*", "/"
 )
