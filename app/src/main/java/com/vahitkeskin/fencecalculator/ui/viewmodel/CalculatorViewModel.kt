@@ -223,24 +223,57 @@ class CalculatorViewModel @Inject constructor(
     }
 
     private fun updateCustomCardResults() {
+        val allStaticResults = results // Varsayılan kart sonuçları
+
         customCardResults = customCards.map { card ->
             val color = try {
                 Color(android.graphics.Color.parseColor(card.colorHex))
             } catch (e: Exception) {
                 Color(0xFF607D8B)
             }
-            val totalCost = card.quantity * card.unitPrice
+
+            // Bağımlılık hesabı
+            val calculationResult = if (card.dependentCardId != null && card.dependentRatio != null) {
+                // Önce varsayılan ürünlerde ara (id as is)
+                val baseItem = allStaticResults.find { it.id == card.dependentCardId }
+                    // Eğer orada yoksa özel kartlarda ara
+                    ?: customCards.find { it.id == card.dependentCardId }?.let { depCard ->
+                        CalculationItem(id="", title=depCard.title, description="", quantity=depCard.quantity, unit="", unitPrice=0.0, totalCost=0.0, icon=Icons.Filled.Block, color=Color.Transparent)
+                    }
+                
+                val baseQty = baseItem?.quantity ?: 0.0
+                val ratio = card.dependentRatio
+                
+                val result = when (card.dependentOperation) {
+                    "+" -> baseQty + ratio
+                    "-" -> baseQty - ratio
+                    "÷", "/" -> if (ratio != 0.0) baseQty / ratio else baseQty
+                    else -> baseQty * ratio // Varsayılan çarpma "*"
+                }
+                
+                val depInfo = if (baseItem != null) {
+                    "${baseItem.title} (${baseQty.toInt()} ${baseItem.unit}) ${card.dependentOperation} $ratio"
+                } else null
+
+                ceil(result) to depInfo
+            } else {
+                card.quantity to null
+            }
+
+            val (finalQty, dependencyInfo) = calculationResult
+            val totalCost = finalQty * card.unitPrice
             CalculationItem(
                 id = "custom_${card.id}",
                 title = card.title,
                 description = card.description,
-                quantity = card.quantity,
+                quantity = finalQty,
                 unit = card.unit,
                 unitPrice = card.unitPrice,
                 totalCost = totalCost,
-                icon = Icons.Filled.Extension,
+                icon = Icons.Default.Extension,
                 color = color,
-                emoji = card.emoji
+                emoji = card.emoji,
+                dependencyInfo = dependencyInfo
             )
         }
         rebuildOrderedVisibleItems()
@@ -431,6 +464,7 @@ class CalculatorViewModel @Inject constructor(
         )
 
         results = list
+        updateCustomCardResults() // Özel kartları da güncelle (bağımlılıklar için)
         rebuildOrderedVisibleItems()
     }
 

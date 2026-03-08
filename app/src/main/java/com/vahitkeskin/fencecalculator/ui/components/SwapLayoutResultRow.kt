@@ -72,6 +72,17 @@ fun SwapLayoutResultRow(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
+                            if (item.dependencyInfo != null) {
+                                Text(
+                                    text = item.dependencyInfo,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = item.color.copy(alpha = 0.8f),
+                                    fontWeight = FontWeight.Bold,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.padding(top = 2.dp)
+                                )
+                            }
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         Surface(
