@@ -49,10 +49,10 @@ class CalculatorViewModel @Inject constructor(
         viewModelScope.launch { dataStoreManager.saveCustomerPhone(v) }
     }
 
-    var customerMessage by mutableStateOf(""); private set
-    fun onCustomerMessageChange(v: String) {
-        customerMessage = v
-        viewModelScope.launch { dataStoreManager.saveCustomerMessage(v) }
+    var iban by mutableStateOf(""); private set
+    fun onIbanChange(v: String) {
+        iban = v
+        viewModelScope.launch { dataStoreManager.saveIban(v) }
     }
 
     // --- THEME STATE ---
@@ -417,8 +417,8 @@ class CalculatorViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            dataStoreManager.customerMessage.collectLatest {
-                customerMessage = it
+            dataStoreManager.iban.collectLatest {
+                iban = it
             }
         }
     }
@@ -710,4 +710,21 @@ class CalculatorViewModel @Inject constructor(
             title = t,
             description = d, q, u, p(id), q * p(id), i, c, category = cat
         )
+
+    fun scanQrCode(bitmap: android.graphics.Bitmap) {
+        val image = com.google.mlkit.vision.common.InputImage.fromBitmap(bitmap, 0)
+        val scanner = com.google.mlkit.vision.barcode.BarcodeScanning.getClient()
+        scanner.process(image)
+            .addOnSuccessListener { barcodes ->
+                if (barcodes.isNotEmpty()) {
+                    val rawValue = barcodes.first().rawValue
+                    if (!rawValue.isNullOrBlank()) {
+                        onIbanChange(rawValue)
+                    }
+                }
+            }
+            .addOnFailureListener {
+                // Ignore or log error
+            }
+    }
 }

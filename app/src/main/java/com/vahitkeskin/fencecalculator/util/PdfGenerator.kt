@@ -180,7 +180,7 @@ object PdfGenerator {
         }
     }
 
-    fun shareViaWhatsApp(context: Context, file: File, phoneNumber: String, message: String) {
+    fun shareViaWhatsApp(context: Context, file: File, phoneNumber: String, iban: String) {
         val uri = FileProvider.getUriForFile(
             context,
             "${context.packageName}.provider",
@@ -194,7 +194,7 @@ object PdfGenerator {
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "application/pdf"
             putExtra(Intent.EXTRA_STREAM, uri)
-            putExtra(Intent.EXTRA_TEXT, message)
+            putExtra(Intent.EXTRA_TEXT, iban)
             putExtra(Intent.EXTRA_SUBJECT, "Maliyet Teklifi")
             setPackage("com.whatsapp")
             putExtra("jid", "$finalPhone@s.whatsapp.net")
@@ -203,11 +203,11 @@ object PdfGenerator {
 
         // WhatsApp şu an PDF'lerde Intent üzerinden gelen başlığı (caption) yoksayıyor.
         // Bu yüzden metni panoya kopyalıyoruz, kullanıcı "Açıklama ekleyin" alanına doğrudan yapıştırabilir.
-        if (message.isNotBlank()) {
+        if (iban.isNotBlank()) {
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("WhatsApp Mesajı", message)
+            val clip = ClipData.newPlainText("IBAN", iban)
             clipboard.setPrimaryClip(clip)
-            Toast.makeText(context, "Mesaj kopyalandı! WhatsApp'ta 'Açıklama ekleyin' alanına yapıştırabilirsiniz.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "IBAN kopyalandı! WhatsApp'ta 'Açıklama ekleyin' alanına yapıştırabilirsiniz.", Toast.LENGTH_LONG).show()
         }
 
         try {

@@ -7,6 +7,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
+import android.graphics.BitmapFactory
+import android.provider.MediaStore
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import android.widget.Toast
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -25,9 +34,13 @@ import androidx.navigation.NavController
 import com.vahitkeskin.fencecalculator.ui.components.*
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
 import com.vahitkeskin.fencecalculator.util.PdfGenerator
+import com.vahitkeskin.fencecalculator.util.QrGenerator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.Image
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +52,35 @@ fun HomeScreen(
     var isGeneratingPdf by remember { mutableStateOf(false) }
     var pdfFileForPreview by remember { mutableStateOf<java.io.File?>(null) }
     val scope = rememberCoroutineScope()
+    
+    var showScanSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: android.net.Uri? ->
+        uri?.let {
+            val inputStream = context.contentResolver.openInputStream(it)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+            bitmap?.let { b -> viewModel.scanQrCode(b) }
+        }
+    }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap: android.graphics.Bitmap? ->
+        bitmap?.let { viewModel.scanQrCode(it) }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            cameraLauncher.launch()
+        } else {
+            Toast.makeText(context, "Kamera izni verilmedi!", Toast.LENGTH_SHORT).show()
+        }
+    }
     
     val onBackgroundColor = MaterialTheme.colorScheme.onBackground
     val primaryColor = MaterialTheme.colorScheme.primary
@@ -146,16 +188,55 @@ fun HomeScreen(
                         )
 
                         OutlinedTextField(
-                            value = viewModel.customerMessage,
-                            onValueChange = { viewModel.onCustomerMessageChange(it) },
-                            label = { Text("WhatsApp Mesajı", color = onBackgroundColor.copy(alpha = 0.5f)) },
-                            leadingIcon = { Icon(Icons.Default.Message, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
+                            value = viewModel.iban,
+                            onValueChange = { viewModel.onIbanChange(it) },
+                            label = { Text("IBAN", color = onBackgroundColor.copy(alpha = 0.5f)) },
+                            leadingIcon = { Icon(Icons.Default.AccountBalance, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
+                            trailingIcon = {
+                                IconButton(onClick = { showScanSheet = true }) {
+                                    Icon(Icons.Default.QrCodeScanner, "Karekod Tara", tint = primaryColor)
+                                }
+                            },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
-                            maxLines = 3,
-                            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Done),
+                            maxLines = 2,
+                            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Done),
                             colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor)
                         )
+
+                        val qrBitmap = remember(viewModel.iban) {
+                            if (viewModel.iban.isNotBlank()) {
+                                QrGenerator.generateQrCode(viewModel.iban, 300)
+                            } else null
+                        }
+
+                        qrBitmap?.let { bitmap ->
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                PremiumGlassCard(
+                                    modifier = Modifier
+                                        .size(140.dp)
+                                        .padding(8.dp)
+                                ) {
+                                    Image(
+                                        bitmap = bitmap.asImageBitmap(),
+                                        contentDescription = "IBAN QR Code",
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(4.dp),
+                                        contentScale = ContentScale.Fit
+                                    )
+                                }
+                                Text(
+                                    "IBAN Karekod",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = onBackgroundColor.copy(alpha = 0.5f),
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -227,8 +308,69 @@ fun HomeScreen(
             PdfPreviewDialog(
                 file,
                 viewModel.customerPhone,
-                viewModel.customerMessage
+                viewModel.iban
             ) { pdfFileForPreview = null }
+        }
+
+        if (showScanSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showScanSheet = false },
+                sheetState = sheetState,
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                dragHandle = { BottomSheetDefaults.DragHandle() }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 32.dp, start = 24.dp, end = 24.dp, top = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        "KAREKOD TARA",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    
+                    Button(
+                        onClick = {
+                            showScanSheet = false
+                            val hasPermission = ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.CAMERA
+                            ) == PackageManager.PERMISSION_GRANTED
+                            
+                            if (hasPermission) {
+                                cameraLauncher.launch()
+                            } else {
+                                permissionLauncher.launch(Manifest.permission.CAMERA)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth().height(64.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
+                    ) {
+                        Icon(Icons.Default.PhotoCamera, null)
+                        Spacer(Modifier.width(12.dp))
+                        Text("Kamerayı Kullan", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    }
+                    
+                    OutlinedButton(
+                        onClick = {
+                            showScanSheet = false
+                            galleryLauncher.launch("image/*")
+                        },
+                        modifier = Modifier.fillMaxWidth().height(64.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, primaryColor)
+                    ) {
+                        Icon(Icons.Default.PhotoLibrary, null)
+                        Spacer(Modifier.width(12.dp))
+                        Text("Galeriden Seç", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = primaryColor)
+                    }
+                }
+            }
         }
     }
 }

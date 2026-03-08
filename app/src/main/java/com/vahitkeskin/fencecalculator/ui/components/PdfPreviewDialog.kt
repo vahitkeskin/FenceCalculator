@@ -28,8 +28,8 @@ import java.io.File
 @Composable
 fun PdfPreviewDialog(
     file: File,
-    phoneNumber: String = "",
-    message: String = "",
+    phoneNumber: String,
+    iban: String,
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
@@ -128,7 +128,7 @@ fun PdfPreviewDialog(
                     // WhatsApp Button (Only if phone provided)
                     if (phoneNumber.isNotBlank()) {
                         Button(
-                            onClick = { PdfGenerator.shareViaWhatsApp(context, file, phoneNumber, message) },
+                            onClick = { PdfGenerator.shareViaWhatsApp(context, file, phoneNumber, iban) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(56.dp),

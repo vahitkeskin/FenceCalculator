@@ -76,4 +76,10 @@ dependencies {
 
     // ÖNEMLİ: kapt yerine ksp kullanıyoruz
     ksp(libs.hilt.compiler)
+
+    // ML Kit Barcode Scanning
+    implementation(libs.mlkit.barcode)
+
+    // QR Generation (ZXing)
+    implementation(libs.zxing.core)
 }
