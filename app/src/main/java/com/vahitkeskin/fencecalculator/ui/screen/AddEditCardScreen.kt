@@ -1,5 +1,8 @@
 package com.vahitkeskin.fencecalculator.ui.screen
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -61,6 +65,9 @@ fun AddEditCardScreen(
     
     // Rasyo seçenekleri artık manuel
     // Kullanıcı isteği: miktar/değer alanı ilk başta temiz olsun.
+    
+    var isDependentCardLocked by remember { mutableStateOf(false) }
+    var isDependentUnitLocked by remember { mutableStateOf(false) }
 
     val isEditing = existingCard != null
     val onBackgroundColor = MaterialTheme.colorScheme.onBackground
@@ -171,43 +178,25 @@ fun AddEditCardScreen(
                                 color = onBackgroundColor.copy(alpha = 0.5f),
                                 letterSpacing = 1.sp
                             )
-                            
-                            // Bağımlı Miktar Switch
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    "Oran Kullan",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = onBackgroundColor.copy(alpha = 0.7f)
-                                )
-                                Switch(
-                                    checked = isDependent,
-                                    onCheckedChange = { 
-                                        isDependent = it
-                                        if (it && !isEditing) {
-                                            dependentRatio = "" // Temiz başlasın
-                                        }
-                                    },
-                                    modifier = Modifier.scale(0.7f),
-                                    colors = SwitchDefaults.colors(
-                                        checkedThumbColor = primaryColor,
-                                        checkedTrackColor = primaryColor.copy(alpha = 0.3f)
-                                    )
-                                )
-                            }
                         }
                         
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        if (isDependent) {
+                        // Bağımlılık Ayarları (Her Zaman Görünür)
                             // Bağımlılık Ayarları
                             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                                Text(
-                                    "REFERANS KART SEÇİN",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    color = onBackgroundColor.copy(alpha = 0.5f),
-                                    modifier = Modifier.padding(start = 4.dp)
-                                )
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(start = 4.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        "REFERANS KART SEÇİN",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = onBackgroundColor.copy(alpha = 0.5f)
+                                    )
+                                }
                                 
                                 // Kart Seçici (VerticalPicker)
                                 VerticalPicker(
@@ -220,7 +209,9 @@ fun AddEditCardScreen(
                                         }
                                     },
                                     label = { it.second },
-                                    visibleItemsCount = 3
+                                    visibleItemsCount = 3,
+                                    isLocked = isDependentCardLocked,
+                                    onLockToggle = { isDependentCardLocked = !isDependentCardLocked }
                                 )
 
                                 // İşlem Seçici
@@ -234,31 +225,46 @@ fun AddEditCardScreen(
                                     )
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                                     ) {
-                                        listOf("+", "-", "*", "÷").forEach { op ->
+                                        listOf("+" to "Topla", "-" to "Çıkar", "*" to "Çarp", "÷" to "Böl").forEach { (op, label) ->
                                             val isSelected = dependentOperation == op
-                                            FilterChip(
-                                                selected = isSelected,
-                                                onClick = { dependentOperation = op },
-                                                label = { 
-                                                    Text(
-                                                        op, 
-                                                        fontSize = 18.sp, 
-                                                        fontWeight = FontWeight.Black,
-                                                        modifier = Modifier.padding(horizontal = 8.dp)
-                                                    ) 
-                                                },
-                                                modifier = Modifier.weight(1f),
-                                                shape = RoundedCornerShape(12.dp),
-                                                colors = FilterChipDefaults.filterChipColors(
-                                                    selectedContainerColor = primaryColor,
-                                                    selectedLabelColor = Color.White,
-                                                    containerColor = onBackgroundColor.copy(alpha = 0.05f),
-                                                    labelColor = onBackgroundColor.copy(alpha = 0.6f)
-                                                ),
-                                                border = null
+                                            val animatedContainerColor by animateColorAsState(
+                                                targetValue = if (isSelected) primaryColor else onBackgroundColor.copy(alpha = 0.05f),
+                                                label = "color"
                                             )
+                                            val animatedContentColor by animateColorAsState(
+                                                targetValue = if (isSelected) Color.White else onBackgroundColor.copy(alpha = 0.6f),
+                                                label = "contentColor"
+                                            )
+
+                                            Box(
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .aspectRatio(1f)
+                                                    .clip(RoundedCornerShape(16.dp))
+                                                    .background(animatedContainerColor)
+                                                    .clickable { dependentOperation = op },
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Column(
+                                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                                    verticalArrangement = Arrangement.Center
+                                                ) {
+                                                    Text(
+                                                        text = op, 
+                                                        fontSize = 28.sp, 
+                                                        fontWeight = FontWeight.Black,
+                                                        color = animatedContentColor
+                                                    )
+                                                    Text(
+                                                        text = label,
+                                                        fontSize = 11.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                        color = animatedContentColor.copy(alpha = 0.8f)
+                                                    )
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -306,18 +312,25 @@ fun AddEditCardScreen(
                                     )
                                     
                                     Column(modifier = Modifier.weight(0.6f)) {
-                                        Text(
-                                            "BİRİM",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            fontWeight = FontWeight.Bold,
-                                            color = onBackgroundColor.copy(alpha = 0.5f),
-                                            modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
-                                        )
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth().padding(start = 4.dp, bottom = 4.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                "BİRİM",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                fontWeight = FontWeight.Bold,
+                                                color = onBackgroundColor.copy(alpha = 0.5f)
+                                            )
+                                        }
                                         VerticalPicker(
                                             items = unitOptions,
                                             selectedItem = unitOptions.find { it == unit } ?: unitOptions.first(),
                                             onItemSelected = { unit = it },
-                                            visibleItemsCount = 3
+                                            visibleItemsCount = 3,
+                                            isLocked = isDependentUnitLocked,
+                                            onLockToggle = { isDependentUnitLocked = !isDependentUnitLocked }
                                         )
                                     }
                                 }
@@ -354,45 +367,32 @@ fun AddEditCardScreen(
                                     }
                                 }
                             }
-                        } else {
-                            // Manuel Giriş
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                OutlinedTextField(
-                                    value = quantity,
-                                    onValueChange = { newVal ->
-                                        val s = newVal.replace(',', '.')
-                                        if (s.isEmpty() || (s.all { it.isDigit() || it == '.' } && s.count { it == '.' } <= 1)) {
-                                            quantity = s
-                                        }
-                                    },
-                                    label = { Text("Miktar", color = onBackgroundColor.copy(alpha = 0.5f)) },
-                                    leadingIcon = { Icon(Icons.Default.Numbers, contentDescription = null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
-                                    modifier = Modifier.weight(1f),
-                                    shape = RoundedCornerShape(12.dp),
-                                    singleLine = true,
-                                    keyboardOptions = KeyboardOptions(
-                                        keyboardType = KeyboardType.Number,
-                                        imeAction = ImeAction.Next
-                                    ),
-                                    colors = outlinedTextFieldColors(onBackgroundColor, primaryColor)
-                                )
-                                OutlinedTextField(
-                                    value = unit,
-                                    onValueChange = { unit = it },
-                                    label = { Text("Birim *", color = onBackgroundColor.copy(alpha = 0.5f)) },
-                                    placeholder = { Text("Adet, Kg...", color = onBackgroundColor.copy(alpha = 0.2f)) },
-                                    modifier = Modifier.weight(1f),
-                                    shape = RoundedCornerShape(12.dp),
-                                    singleLine = true,
-                                    keyboardOptions = KeyboardOptions(
-                                        imeAction = ImeAction.Next
-                                    ),
-                                    colors = outlinedTextFieldColors(onBackgroundColor, primaryColor)
-                                )
-                            }
+                        
+                        // Manuel Giriş (Her Zaman Görünür)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = quantity,
+                                onValueChange = { newVal ->
+                                    val s = newVal.replace(',', '.')
+                                    if (s.isEmpty() || (s.all { it.isDigit() || it == '.' } && s.count { it == '.' } <= 1)) {
+                                        quantity = s
+                                    }
+                                },
+                                label = { Text("Miktar", color = onBackgroundColor.copy(alpha = 0.5f)) },
+                                leadingIcon = { Icon(Icons.Default.Numbers, contentDescription = null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Next
+                                ),
+                                colors = outlinedTextFieldColors(onBackgroundColor, primaryColor)
+                            )
                         }
                     }
                 }
@@ -522,14 +522,14 @@ fun AddEditCardScreen(
                             id = existingCard?.id ?: UUID.randomUUID().toString(),
                             title = title.trim(),
                             description = description.trim(),
-                            quantity = if (isDependent) 0.0 else (quantity.toDoubleOrNull() ?: 0.0),
+                            quantity = quantity.toDoubleOrNull() ?: 0.0,
                             unit = unit.trim(),
                             unitPrice = unitPrice.toDoubleOrNull() ?: 0.0,
                             colorHex = selectedColorHex,
                             emoji = selectedEmoji,
-                            dependentCardId = if (isDependent) dependentCardId else null,
-                            dependentRatio = if (isDependent) (dependentRatio.toDoubleOrNull() ?: 0.0) else null,
-                            dependentOperation = if (isDependent) dependentOperation else "*"
+                            dependentCardId = dependentCardId.ifEmpty { null },
+                            dependentRatio = dependentRatio.toDoubleOrNull(),
+                            dependentOperation = dependentOperation
                         )
                         viewModel.addOrUpdateCustomCard(card)
                         onNavigateBack()
@@ -589,6 +589,9 @@ fun AddEditCardScreen(
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))
+                
+                // Klavye açıldığında en alttaki içeriğin yukarı kaydırılabilmesi için spacer
+                Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.ime))
             }
         }
     }

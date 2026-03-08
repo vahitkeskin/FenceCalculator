@@ -37,6 +37,24 @@ class CalculatorViewModel @Inject constructor(
         }
     }
 
+    var customerName by mutableStateOf(""); private set
+    fun onCustomerNameChange(v: String) {
+        customerName = v
+        viewModelScope.launch { dataStoreManager.saveCustomerName(v) }
+    }
+
+    var customerPhone by mutableStateOf(""); private set
+    fun onCustomerPhoneChange(v: String) {
+        customerPhone = v
+        viewModelScope.launch { dataStoreManager.saveCustomerPhone(v) }
+    }
+
+    var customerMessage by mutableStateOf(""); private set
+    fun onCustomerMessageChange(v: String) {
+        customerMessage = v
+        viewModelScope.launch { dataStoreManager.saveCustomerMessage(v) }
+    }
+
     // --- THEME STATE ---
     var currentTheme by mutableStateOf(AppTheme.SYSTEM); private set
     fun onThemeChange(theme: AppTheme) {
@@ -76,38 +94,38 @@ class CalculatorViewModel @Inject constructor(
 
     // --- ADVANCED PARAMETERS (PERSISTENT) ---
     var poleLengthInput by mutableStateOf("2.4"); private set
-    fun onPoleLengthChange(v: String) = updateIfValid(v) { 
-        poleLengthInput = it 
+    fun onPoleLengthChange(v: String) = updateIfValid(v) {
+        poleLengthInput = it
         viewModelScope.launch { dataStoreManager.savePoleLength(it) }
     }
 
     var pipeLengthInput by mutableStateOf("6.0"); private set
-    fun onPipeLengthChange(v: String) = updateIfValid(v) { 
-        pipeLengthInput = it 
+    fun onPipeLengthChange(v: String) = updateIfValid(v) {
+        pipeLengthInput = it
         viewModelScope.launch { dataStoreManager.savePipeLength(it) }
     }
 
     var tensionFactorInput by mutableStateOf("6.66"); private set
-    fun onTensionFactorChange(v: String) = updateIfValid(v) { 
-        tensionFactorInput = it 
+    fun onTensionFactorChange(v: String) = updateIfValid(v) {
+        tensionFactorInput = it
         viewModelScope.launch { dataStoreManager.saveTensionFactor(it) }
     }
 
     var bindingFactorInput by mutableStateOf("3.0"); private set
-    fun onBindingFactorChange(v: String) = updateIfValid(v) { 
-        bindingFactorInput = it 
+    fun onBindingFactorChange(v: String) = updateIfValid(v) {
+        bindingFactorInput = it
         viewModelScope.launch { dataStoreManager.saveBindingFactor(it) }
     }
 
     var cementFactorInput by mutableStateOf("6.0"); private set
-    fun onCementFactorChange(v: String) = updateIfValid(v) { 
-        cementFactorInput = it 
+    fun onCementFactorChange(v: String) = updateIfValid(v) {
+        cementFactorInput = it
         viewModelScope.launch { dataStoreManager.saveCementFactor(it) }
     }
 
     var concreteFactorInput by mutableStateOf("30.0"); private set
-    fun onConcreteFactorChange(v: String) = updateIfValid(v) { 
-        concreteFactorInput = it 
+    fun onConcreteFactorChange(v: String) = updateIfValid(v) {
+        concreteFactorInput = it
         viewModelScope.launch { dataStoreManager.saveConcreteFactor(it) }
     }
 
@@ -122,13 +140,21 @@ class CalculatorViewModel @Inject constructor(
     // --- HIDDEN & ORDER ---
     var hiddenCardIds by mutableStateOf<Set<String>>(emptySet()); private set
     var cardOrder by mutableStateOf<List<String>>(emptyList()); private set
+    var pinnedCardIds by mutableStateOf<Set<String>>(emptySet()); private set
+
+    // Pinned items derived state
+    val pinnedItems: List<CalculationItem>
+        get() = orderedVisibleItems.filter { it.id in pinnedCardIds }
 
     // Tüm kartları (varsayılan + özel) sıralı ve filtrelenmiş şekilde döndür
     var orderedVisibleItems by mutableStateOf<List<CalculationItem>>(emptyList()); private set
 
     private fun rebuildOrderedVisibleItems() {
         val allItems = results + customCardResults
-        val visibleItems = allItems.filter { it.id !in hiddenCardIds }
+        val processedItems = allItems.map { item ->
+            item.copy(isPinned = item.id in pinnedCardIds)
+        }
+        val visibleItems = processedItems.filter { it.id !in hiddenCardIds }
 
         orderedVisibleItems = if (cardOrder.isNotEmpty()) {
             val orderMap = cardOrder.withIndex().associate { (i, id) -> id to i }
@@ -148,6 +174,16 @@ class CalculatorViewModel @Inject constructor(
             deleteCustomCard(id.removePrefix("custom_"))
         }
         saveHiddenCards()
+        rebuildOrderedVisibleItems()
+    }
+
+    fun togglePin(id: String) {
+        pinnedCardIds = if (id in pinnedCardIds) {
+            pinnedCardIds - id
+        } else {
+            pinnedCardIds + id
+        }
+        savePinnedCards()
         rebuildOrderedVisibleItems()
     }
 
@@ -193,6 +229,12 @@ class CalculatorViewModel @Inject constructor(
         }
     }
 
+    private fun savePinnedCards() {
+        viewModelScope.launch {
+            dataStoreManager.savePinnedCards(pinnedCardIds.joinToString(","))
+        }
+    }
+
     fun addOrUpdateCustomCard(card: CustomCardItem) {
         val current = customCards.toMutableList()
         val index = current.indexOfFirst { it.id == card.id }
@@ -233,32 +275,43 @@ class CalculatorViewModel @Inject constructor(
             }
 
             // Bağımlılık hesabı
-            val calculationResult = if (card.dependentCardId != null && card.dependentRatio != null) {
-                // Önce varsayılan ürünlerde ara (id as is)
-                val baseItem = allStaticResults.find { it.id == card.dependentCardId }
+            val calculationResult =
+                if (card.dependentCardId != null && card.dependentRatio != null) {
+                    // Önce varsayılan ürünlerde ara (id as is)
+                    val baseItem = allStaticResults.find { it.id == card.dependentCardId }
                     // Eğer orada yoksa özel kartlarda ara
-                    ?: customCards.find { it.id == card.dependentCardId }?.let { depCard ->
-                        CalculationItem(id="", title=depCard.title, description="", quantity=depCard.quantity, unit="", unitPrice=0.0, totalCost=0.0, icon=Icons.Filled.Block, color=Color.Transparent)
-                    }
-                
-                val baseQty = baseItem?.quantity ?: 0.0
-                val ratio = card.dependentRatio
-                
-                val result = when (card.dependentOperation) {
-                    "+" -> baseQty + ratio
-                    "-" -> baseQty - ratio
-                    "÷", "/" -> if (ratio != 0.0) baseQty / ratio else baseQty
-                    else -> baseQty * ratio // Varsayılan çarpma "*"
-                }
-                
-                val depInfo = if (baseItem != null) {
-                    "${baseItem.title} (${baseQty.toInt()} ${baseItem.unit}) ${card.dependentOperation} $ratio"
-                } else null
+                        ?: customCards.find { it.id == card.dependentCardId }?.let { depCard ->
+                            CalculationItem(
+                                id = "",
+                                title = depCard.title,
+                                description = "",
+                                quantity = depCard.quantity,
+                                unit = "",
+                                unitPrice = 0.0,
+                                totalCost = 0.0,
+                                icon = Icons.Filled.Block,
+                                color = Color.Transparent
+                            )
+                        }
 
-                ceil(result) to depInfo
-            } else {
-                card.quantity to null
-            }
+                    val baseQty = baseItem?.quantity ?: 0.0
+                    val ratio = card.dependentRatio
+
+                    val result = when (card.dependentOperation) {
+                        "+" -> baseQty + ratio
+                        "-" -> baseQty - ratio
+                        "÷", "/" -> if (ratio != 0.0) baseQty / ratio else baseQty
+                        else -> baseQty * ratio // Varsayılan çarpma "*"
+                    }
+
+                    val depInfo = if (baseItem != null) {
+                        "${baseItem.title} (${baseQty.toInt()} ${baseItem.unit}) ${card.dependentOperation} $ratio"
+                    } else null
+
+                    ceil(result) to depInfo
+                } else {
+                    card.quantity to null
+                }
 
             val (finalQty, dependencyInfo) = calculationResult
             val totalCost = finalQty * card.unitPrice
@@ -299,12 +352,36 @@ class CalculatorViewModel @Inject constructor(
                 }
             }
         }
-        viewModelScope.launch { dataStoreManager.poleLength.collectLatest { poleLengthInput = it; calculateValues() } }
-        viewModelScope.launch { dataStoreManager.pipeLength.collectLatest { pipeLengthInput = it; calculateValues() } }
-        viewModelScope.launch { dataStoreManager.tensionFactor.collectLatest { tensionFactorInput = it; calculateValues() } }
-        viewModelScope.launch { dataStoreManager.bindingFactor.collectLatest { bindingFactorInput = it; calculateValues() } }
-        viewModelScope.launch { dataStoreManager.cementFactor.collectLatest { cementFactorInput = it; calculateValues() } }
-        viewModelScope.launch { dataStoreManager.concreteFactor.collectLatest { concreteFactorInput = it; calculateValues() } }
+        viewModelScope.launch {
+            dataStoreManager.poleLength.collectLatest {
+                poleLengthInput = it; calculateValues()
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.pipeLength.collectLatest {
+                pipeLengthInput = it; calculateValues()
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.tensionFactor.collectLatest {
+                tensionFactorInput = it; calculateValues()
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.bindingFactor.collectLatest {
+                bindingFactorInput = it; calculateValues()
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.cementFactor.collectLatest {
+                cementFactorInput = it; calculateValues()
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.concreteFactor.collectLatest {
+                concreteFactorInput = it; calculateValues()
+            }
+        }
         viewModelScope.launch {
             dataStoreManager.customCards.collectLatest { json ->
                 customCards = try {
@@ -327,6 +404,23 @@ class CalculatorViewModel @Inject constructor(
                 rebuildOrderedVisibleItems()
             }
         }
+        viewModelScope.launch {
+            dataStoreManager.pinnedCards.collectLatest { csv ->
+                pinnedCardIds = if (csv.isBlank()) emptySet() else csv.split(",").toSet()
+                rebuildOrderedVisibleItems()
+            }
+        }
+        viewModelScope.launch { dataStoreManager.customerName.collectLatest { customerName = it } }
+        viewModelScope.launch {
+            dataStoreManager.customerPhone.collectLatest {
+                customerPhone = it
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.customerMessage.collectLatest {
+                customerMessage = it
+            }
+        }
     }
 
     // --- EVENTS ---
@@ -337,7 +431,9 @@ class CalculatorViewModel @Inject constructor(
     fun onStrutCountChange(v: String) = updateIfValid(v) { strutCountInput = it }
     fun onMeshRollLengthChange(v: String) = updateIfValid(v) { meshRollLengthInput = it }
     fun onBarbedWireRowsChange(v: String) = updateIfValid(v) { barbedWireRowsInput = it }
-    fun onBarbedWireRollLengthChange(v: String) = updateIfValid(v) { barbedWireRollLengthInput = it }
+    fun onBarbedWireRollLengthChange(v: String) =
+        updateIfValid(v) { barbedWireRollLengthInput = it }
+
     fun onWireThicknessChange(v: String) = updateIfValid(v) { wireThicknessInput = it }
     fun onWeightConstantChange(v: String) = updateIfValid(v) { weightConstantInput = it }
     fun onMeshEyeChange(v: String) = updateIfValid(v) { meshEyeInput = it }
@@ -346,7 +442,27 @@ class CalculatorViewModel @Inject constructor(
         val s = v.replace(',', '.')
         if (isValid(s)) {
             priceMap[id] = s
-            calculateValues()
+            if (id.startsWith("custom_")) {
+                val realId = id.removePrefix("custom_")
+                val card = getCustomCardById(realId)
+                if (card != null) {
+                    val newPrice = s.toDoubleOrNull() ?: 0.0
+                    val updatedCard = card.copy(unitPrice = newPrice)
+                    val current = customCards.toMutableList()
+                    val index = current.indexOfFirst { it.id == realId }
+                    if (index >= 0) {
+                        current[index] = updatedCard
+                        customCards = current
+                        // Güncelle ve hesabı çalıştır
+                        updateCustomCardResults()
+                        viewModelScope.launch {
+                            dataStoreManager.saveCustomCards(Json.encodeToString(current))
+                        }
+                    }
+                }
+            } else {
+                calculateValues()
+            }
         }
     }
 
@@ -362,7 +478,16 @@ class CalculatorViewModel @Inject constructor(
         return input.all { it.isDigit() || it == '.' } && input.count { it == '.' } <= 1
     }
 
-    fun getPriceString(id: String): String = priceMap[id] ?: ""
+    fun getPriceString(id: String): String {
+        return priceMap[id] ?: if (id.startsWith("custom_")) {
+            val realId = id.removePrefix("custom_")
+            val card = getCustomCardById(realId)
+            if (card != null && card.unitPrice > 0) {
+                val formatted = card.unitPrice.toString()
+                if (formatted.endsWith(".0")) formatted.removeSuffix(".0") else formatted
+            } else ""
+        } else ""
+    }
 
     // --- YARDIMCI FONKSİYON: YUVARLAMA VE LOGLAMA ---
     private fun ceilAndLog(label: String, rawValue: Double): Double {
@@ -450,17 +575,118 @@ class CalculatorViewModel @Inject constructor(
         fun getP(id: String) = priceMap[id]?.toDoubleOrNull() ?: 0.0
 
         val list = mutableListOf(
-            createItem("direk", "Direk", "Her $spacing m'de bir", direkSayisi, "Adet", Icons.Filled.Straighten, Color(0xFF3F51B5), ::getP),
-            createItem("boy_demir", "Boy Demir Boru", "$pipeLen m (Her borudan $pLength m'lik direk)", boyDemirSayisi, "Adet", Icons.Filled.FormatLineSpacing, Color(0xFF5C6BC0), ::getP),
-            createItem("payanda", "Payanda", "Her $strutFreq direkte $strutCnt adet", payandaSayisi, "Adet", Icons.Filled.ChangeHistory, Color(0xFF9C27B0), ::getP),
-            createItem("kafes_top", "Kafes Tel (Toplam)", "$meshLen m'lik top ($height m Yükseklik)", kafesTopSayisi, "Top", Icons.Filled.GridOn, Color(0xFF009688), ::getP),
-            // Dikkat: oneRollWeight sadece bilgi amaçlı, toplam maliyete doğrudan adet olarak eklenmiyor, birim fiyat belirlemede kullanılıyor.
-            createItem("kafes_kg", "1 Top Tel Ağırlığı", "1 Rulo ($meshLen m) ağırlığıdır.", oneRollWeight, "Kg", Icons.Filled.Scale, Color(0xFF00796B), ::getP),
-            createItem("diken", "Dikenli Tel", "${barbedRows.toInt()} Sıra ($barbedLen m/top)", dikenliTelTopSayisi, "Top", Icons.Filled.Warning, Color(0xFFD32F2F), ::getP),
-            createItem("gergi", "Gergi Teli", "Uzunluk / 6.66", gergiTeli, "Kg", Icons.Filled.LinearScale, Color(0xFFFF9800), ::getP),
-            createItem("baglama", "Bağlama Teli", "Gergi Telinin 1/3'ü", baglamaTeli, "Kg", Icons.Filled.AllInclusive, Color(0xFF795548), ::getP),
-            createItem("cimento", "Çimento (50 Kg)", "Direk Sayısı / 6", cimentoSayisi, "Adet", Icons.Filled.Layers, Color(0xFF607D8B), ::getP),
-            createItem("beton", "Hazır Beton", "Direk Sayısı / 30", hazirBetonM3, "m³", Icons.Filled.PrecisionManufacturing, Color(0xFF455A64), ::getP)
+            createItem(
+                "direk",
+                "Direk",
+                "Her $spacing m'de bir",
+                direkSayisi,
+                "Adet",
+                Icons.Filled.Straighten,
+                Color(0xFF3F51B5),
+                "METAL",
+                ::getP
+            ),
+            createItem(
+                "boy_demir",
+                "Boy Demir Boru",
+                "$pipeLen m (Her borudan $pLength m'lik direk)",
+                boyDemirSayisi,
+                "Adet",
+                Icons.Filled.FormatLineSpacing,
+                Color(0xFF5C6BC0),
+                "METAL",
+                ::getP
+            ),
+            createItem(
+                "payanda",
+                "Payanda",
+                "Her $strutFreq direkte $strutCnt adet",
+                payandaSayisi,
+                "Adet",
+                Icons.Filled.ChangeHistory,
+                Color(0xFF9C27B0),
+                "METAL",
+                ::getP
+            ),
+
+            createItem(
+                "kafes_top",
+                "Kafes Tel (Toplam)",
+                "$meshLen m'lik top ($height m Yükseklik)",
+                kafesTopSayisi,
+                "Top",
+                Icons.Filled.GridOn,
+                Color(0xFF009688),
+                "TEL",
+                ::getP
+            ),
+            createItem(
+                "kafes_kg",
+                "1 Top Tel Ağırlığı",
+                "1 Rulo ($meshLen m) ağırlığıdır.",
+                oneRollWeight,
+                "Kg",
+                Icons.Filled.Scale,
+                Color(0xFF00796B),
+                "TEL",
+                ::getP
+            ),
+            createItem(
+                "diken",
+                "Dikenli Tel",
+                "${barbedRows.toInt()} Sıra ($barbedLen m/top)",
+                dikenliTelTopSayisi,
+                "Top",
+                Icons.Filled.Warning,
+                Color(0xFFD32F2F),
+                "TEL",
+                ::getP
+            ),
+            createItem(
+                "gergi",
+                "Gergi Teli",
+                "Uzunluk / 6.66",
+                gergiTeli,
+                "Kg",
+                Icons.Filled.LinearScale,
+                Color(0xFFFF9800),
+                "TEL",
+                ::getP
+            ),
+            createItem(
+                "baglama",
+                "Bağlama Teli",
+                "Gergi Telinin 1/3'ü",
+                baglamaTeli,
+                "Kg",
+                Icons.Filled.AllInclusive,
+                Color(0xFF795548),
+                "TEL",
+                ::getP
+            ),
+
+            createItem(
+                "cimento",
+                "Çimento (50 Kg)",
+                "Direk Sayısı / 6",
+                cimentoSayisi,
+                "Adet",
+                Icons.Filled.Layers,
+                Color(0xFF607D8B),
+                "İNŞAAT",
+                ::getP
+            ),
+            createItem(
+                "beton",
+                "Hazır Beton",
+                "Direk Sayısı / 30",
+                hazirBetonM3,
+                "m³",
+                Icons.Filled.PrecisionManufacturing,
+                Color(0xFF455A64),
+                "İNŞAAT",
+                ::getP
+            )
         )
 
         results = list
@@ -468,6 +694,20 @@ class CalculatorViewModel @Inject constructor(
         rebuildOrderedVisibleItems()
     }
 
-    private fun createItem(id: String, t: String, d: String, q: Double, u: String, i: ImageVector, c: Color, p: (String) -> Double) =
-        CalculationItem(id, t, d, q, u, p(id), q * p(id), i, c)
+    private fun createItem(
+        id: String,
+        t: String,
+        d: String,
+        q: Double,
+        u: String,
+        i: ImageVector,
+        c: Color,
+        cat: String,
+        p: (String) -> Double
+    ) =
+        CalculationItem(
+            id = id,
+            title = t,
+            description = d, q, u, p(id), q * p(id), i, c, category = cat
+        )
 }

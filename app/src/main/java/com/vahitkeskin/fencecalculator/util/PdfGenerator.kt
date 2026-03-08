@@ -1,5 +1,7 @@
 package com.vahitkeskin.fencecalculator.util
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -7,6 +9,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.vahitkeskin.fencecalculator.data.model.CalculationItem
 import java.io.File
@@ -174,6 +177,44 @@ object PdfGenerator {
             null
         } finally {
             pdfDocument.close()
+        }
+    }
+
+    fun shareViaWhatsApp(context: Context, file: File, phoneNumber: String, message: String) {
+        val uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            file
+        )
+
+        // Telefon numarasını temizle (sadece rakamlar)
+        val cleanPhone = phoneNumber.filter { it.isDigit() }
+        val finalPhone = if (cleanPhone.startsWith("0")) "9$cleanPhone" else if (!cleanPhone.startsWith("90")) "90$cleanPhone" else cleanPhone
+
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "application/pdf"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            putExtra(Intent.EXTRA_TEXT, message)
+            putExtra(Intent.EXTRA_SUBJECT, "Maliyet Teklifi")
+            setPackage("com.whatsapp")
+            putExtra("jid", "$finalPhone@s.whatsapp.net")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        // WhatsApp şu an PDF'lerde Intent üzerinden gelen başlığı (caption) yoksayıyor.
+        // Bu yüzden metni panoya kopyalıyoruz, kullanıcı "Açıklama ekleyin" alanına doğrudan yapıştırabilir.
+        if (message.isNotBlank()) {
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("WhatsApp Mesajı", message)
+            clipboard.setPrimaryClip(clip)
+            Toast.makeText(context, "Mesaj kopyalandı! WhatsApp'ta 'Açıklama ekleyin' alanına yapıştırabilirsiniz.", Toast.LENGTH_LONG).show()
+        }
+
+        try {
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            // WhatsApp yüklü değilse normal paylaşımı aç
+            sharePdfFile(context, file)
         }
     }
 

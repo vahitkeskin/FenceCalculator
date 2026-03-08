@@ -14,5 +14,7 @@ data class CalculationItem(
     val icon: ImageVector,
     val color: Color,
     val emoji: String? = null,
-    val dependencyInfo: String? = null
+    val dependencyInfo: String? = null,
+    val category: String = "Genel",
+    val isPinned: Boolean = false
 )
