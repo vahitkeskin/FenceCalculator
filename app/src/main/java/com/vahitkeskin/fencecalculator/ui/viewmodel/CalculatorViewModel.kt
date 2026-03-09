@@ -122,10 +122,6 @@ class CalculatorViewModel @Inject constructor(
         calculateValues()
     }
 
-    fun localizedString(key: String, vararg args: Any): String {
-        return Localization.getString(key, selectedLanguage, *args) // Fallback to legacy
-    }
-
     // --- CONSTANTS ---
     object Defaults {
         const val LENGTH = ""
