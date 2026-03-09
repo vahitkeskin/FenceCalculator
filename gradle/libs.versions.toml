@@ -17,6 +17,7 @@ navigationCompose = "2.7.7"
 serializationJson = "1.6.3"
 mlkitBarcode = "17.3.0"
 zxing = "3.5.3"
+libphonenumber = "9.0.24"
 composeFoundation = "1.8.0-beta02"
 
 [libraries]
@@ -49,6 +50,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }
 mlkit-barcode = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "mlkitBarcode" }
 zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
+libphonenumber-android = { group = "io.michaelrocks", name = "libphonenumber-android", version.ref = "libphonenumber" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

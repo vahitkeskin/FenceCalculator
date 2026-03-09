@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -21,11 +22,14 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.vahitkeskin.fencecalculator.R
 import androidx.compose.ui.unit.sp
 import com.vahitkeskin.fencecalculator.data.model.CalculationItem
 import kotlinx.coroutines.launch
@@ -33,9 +37,13 @@ import java.text.DecimalFormat
 import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 
+import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
+import com.vahitkeskin.fencecalculator.util.DataStoreManager
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SwapLayoutResultRow(
+    viewModel: CalculatorViewModel,
     item: CalculationItem,
     currentPriceInput: String,
     onPriceChange: (String) -> Unit,
@@ -109,10 +117,10 @@ fun SwapLayoutResultRow(
                                 modifier = Modifier.size(24.dp)
                             ) {
                                 Icon(
-                                    imageVector = if (item.isPinned) Icons.Default.CheckBox else Icons.Default.CheckBoxOutlineBlank,
-                                    contentDescription = "Pin",
-                                    tint = if (item.isPinned) Color(0xFF4CAF50) else Color.Gray.copy(alpha = 0.3f),
-                                    modifier = Modifier.size(20.dp)
+                                    imageVector = Icons.Default.PushPin,
+                                    contentDescription = viewModel.strings.pin,
+                                    modifier = Modifier.size(16.dp),
+                                    tint = if (item.isPinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                                 )
                             }
                         }
@@ -133,7 +141,7 @@ fun SwapLayoutResultRow(
                                     }
                                 }
                             },
-                        label = { Text("Birim Fiyat (₺)", style = MaterialTheme.typography.bodySmall, color = onSurfaceColor.copy(alpha = 0.5f)) },
+                        label = { Text(viewModel.strings.unitPriceTl, style = MaterialTheme.typography.bodySmall, color = onSurfaceColor.copy(alpha = 0.5f)) },
                         placeholder = { Text("0", color = onSurfaceColor.copy(alpha = 0.2f)) },
                         textStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold, color = onSurfaceColor),
                         singleLine = true,
@@ -152,7 +160,7 @@ fun SwapLayoutResultRow(
             }
             Box(modifier = Modifier.fillMaxWidth().background(item.color.copy(alpha = 0.04f))) {
                 Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text("TOPLAM", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = onSurfaceColor.copy(alpha = 0.4f), letterSpacing = 1.sp)
+                    Text(viewModel.strings.totalLabel, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = onSurfaceColor.copy(alpha = 0.4f), letterSpacing = 1.sp)
                     Text("${currencyFormat.format(item.totalCost)} ₺", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold), color = item.color)
                 }
             }
@@ -163,9 +171,14 @@ fun SwapLayoutResultRow(
 @AppPreviews
 @Composable
 fun SwapLayoutResultRowPreview() {
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager, context) }
+    
     FenceCalculatorTheme {
         Box(modifier = Modifier.padding(16.dp)) {
             SwapLayoutResultRow(
+                viewModel = viewModel,
                 item = CalculationItem(
                     id = "preview",
                     title = "Tel Örgü (1.5m)",

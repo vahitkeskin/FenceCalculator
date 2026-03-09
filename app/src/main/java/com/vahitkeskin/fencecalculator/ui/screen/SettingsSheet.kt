@@ -32,7 +32,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.ui.platform.LocalContext
 import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
+import com.vahitkeskin.fencecalculator.ui.theme.shadowlessElevation
 import com.vahitkeskin.fencecalculator.util.DataStoreManager
+import com.vahitkeskin.fencecalculator.R
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -48,41 +51,63 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
         overscrollEffect = null
     ) {
         item {
-            Text("Hesaplama Parametreleri", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = onBackgroundColor)
-            Text("Değerleri değiştirdiğinizde anlık olarak hesaplanır.", style = MaterialTheme.typography.bodyMedium, color = onBackgroundColor.copy(alpha = 0.6f))
+            val strings = viewModel.strings
+            Text(strings.calculationParameters, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = onBackgroundColor)
+            Text(strings.calculationParametersDesc, style = MaterialTheme.typography.bodyMedium, color = onBackgroundColor.copy(alpha = 0.6f))
         }
 
         item { Spacer(modifier = Modifier.height(24.dp)) }
 
         // Grup: Görünüm (Tema)
         item {
-            SettingsGroupTitle("Görünüm Ayarları", Icons.Filled.Palette)
+            val strings = viewModel.strings
+            SettingsGroupTitle(strings.appearanceSettings, Icons.Filled.Palette)
             Row(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 ThemeToggleButton(
-                    text = "Açık",
+                    text = strings.themeLight,
                     icon = Icons.Filled.LightMode,
                     isSelected = viewModel.currentTheme == AppTheme.LIGHT,
                     onClick = { viewModel.onThemeChange(AppTheme.LIGHT) },
                     modifier = Modifier.weight(1f)
                 )
                 ThemeToggleButton(
-                    text = "Koyu",
+                    text = strings.themeDark,
                     icon = Icons.Filled.DarkMode,
                     isSelected = viewModel.currentTheme == AppTheme.DARK,
                     onClick = { viewModel.onThemeChange(AppTheme.DARK) },
                     modifier = Modifier.weight(1f)
                 )
                 ThemeToggleButton(
-                    text = "Sistem",
+                    text = strings.themeSystem,
                     icon = Icons.Filled.SettingsSuggest,
                     isSelected = viewModel.currentTheme == AppTheme.SYSTEM,
                     onClick = { viewModel.onThemeChange(AppTheme.SYSTEM) },
                     modifier = Modifier.weight(1f)
                 )
             }
+        }
+
+        item { Spacer(modifier = Modifier.height(16.dp)) }
+
+        // Grup: Dil Ayarları
+        item {
+            val strings = viewModel.strings
+            SettingsGroupTitle(strings.languageSettings, Icons.Filled.Language)
+            
+            var isLanguageLocked by remember { mutableStateOf(true) }
+            val languages = com.vahitkeskin.fencecalculator.util.AppLanguage.entries
+            com.vahitkeskin.fencecalculator.ui.components.VerticalPicker(
+                items = languages.toList(),
+                selectedItem = viewModel.selectedLanguage,
+                onItemSelected = { viewModel.onLanguageChange(it) },
+                label = { "${it.flag}  ${it.displayName}" },
+                visibleItemsCount = 3,
+                isLocked = isLanguageLocked,
+                onLockToggle = { isLanguageLocked = !isLanguageLocked }
+            )
         }
 
         item {
@@ -93,10 +118,11 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
 
         // Grup: Temel Ölçüler
         item {
-            SettingsGroupTitle("Çit ve Direk Ölçüleri", Icons.Filled.Straighten)
+            val strings = viewModel.strings
+            SettingsGroupTitle(strings.fencePostDimensions, Icons.Filled.Straighten)
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                SmartSettingsInput("Çit Yüksekliği (m)", viewModel.fenceHeightInput, CalculatorViewModel.Defaults.HEIGHT, viewModel::onFenceHeightChange, Modifier.weight(1f), focusManager)
-                SmartSettingsInput("Direk Aralığı (m)", viewModel.poleSpacingInput, CalculatorViewModel.Defaults.SPACING, viewModel::onPoleSpacingChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(strings.fenceHeightM, viewModel.fenceHeightInput, CalculatorViewModel.Defaults.HEIGHT, String.format(strings.defaultValueLabel, CalculatorViewModel.Defaults.HEIGHT), viewModel::onFenceHeightChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(strings.poleSpacingM, viewModel.poleSpacingInput, CalculatorViewModel.Defaults.SPACING, String.format(strings.defaultValueLabel, CalculatorViewModel.Defaults.SPACING), viewModel::onPoleSpacingChange, Modifier.weight(1f), focusManager)
             }
         }
 
@@ -108,60 +134,64 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
 
         // Grup: Tel Ağırlık
         item {
-            SmartSettingsInput("Tel Kalınlığı (mm)", viewModel.wireThicknessInput, CalculatorViewModel.Defaults.WIRE_THICKNESS, viewModel::onWireThicknessChange, Modifier.fillMaxWidth(), focusManager)
+            val strings = viewModel.strings
+            SmartSettingsInput(strings.wireThicknessMm, viewModel.wireThicknessInput, CalculatorViewModel.Defaults.WIRE_THICKNESS, String.format(strings.defaultValueLabel, CalculatorViewModel.Defaults.WIRE_THICKNESS), viewModel::onWireThicknessChange, Modifier.fillMaxWidth(), focusManager)
             Spacer(modifier = Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                SmartSettingsInput("Göz Aralığı (cm)", viewModel.meshEyeInput, CalculatorViewModel.Defaults.MESH_EYE, viewModel::onMeshEyeChange, Modifier.weight(1f), focusManager)
-                SmartSettingsInput("Sabit Çarpan", viewModel.weightConstantInput, CalculatorViewModel.Defaults.WEIGHT_CONSTANT, viewModel::onWeightConstantChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(strings.meshEyeCm, viewModel.meshEyeInput, CalculatorViewModel.Defaults.MESH_EYE, String.format(strings.defaultValueLabel, CalculatorViewModel.Defaults.MESH_EYE), viewModel::onMeshEyeChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(strings.weightConstant, viewModel.weightConstantInput, CalculatorViewModel.Defaults.WEIGHT_CONSTANT, String.format(strings.defaultValueLabel, CalculatorViewModel.Defaults.WEIGHT_CONSTANT), viewModel::onWeightConstantChange, Modifier.weight(1f), focusManager)
             }
         }
 
         // Grup: Payanda
         item {
+            val strings = viewModel.strings
             Spacer(modifier = Modifier.height(24.dp))
             Divider(color = onBackgroundColor.copy(alpha = 0.1f))
             Spacer(modifier = Modifier.height(24.dp))
-            SettingsGroupTitle("Payanda Kurulumu", Icons.Filled.ChangeHistory)
+            SettingsGroupTitle(strings.strutSetup, Icons.Filled.ChangeHistory)
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                SmartSettingsInput("Sıklık (Direk)", viewModel.strutIntervalInput, CalculatorViewModel.Defaults.STRUT_INTERVAL, viewModel::onStrutIntervalChange, Modifier.weight(1f), focusManager)
-                SmartSettingsInput("Adet (Her Sefer)", viewModel.strutCountInput, CalculatorViewModel.Defaults.STRUT_COUNT, viewModel::onStrutCountChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(strings.strutIntervalPosts, viewModel.strutIntervalInput, CalculatorViewModel.Defaults.STRUT_INTERVAL, String.format(strings.defaultValueLabel, CalculatorViewModel.Defaults.STRUT_INTERVAL), viewModel::onStrutIntervalChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(strings.strutCountPer, viewModel.strutCountInput, CalculatorViewModel.Defaults.STRUT_COUNT, String.format(strings.defaultValueLabel, CalculatorViewModel.Defaults.STRUT_COUNT), viewModel::onStrutCountChange, Modifier.weight(1f), focusManager)
             }
         }
 
         // Grup: Rulo
         item {
+            val strings = viewModel.strings
             Spacer(modifier = Modifier.height(24.dp))
             Divider(color = onBackgroundColor.copy(alpha = 0.1f))
             Spacer(modifier = Modifier.height(24.dp))
-            SettingsGroupTitle("Tel Rulo Özellikleri", Icons.Filled.GridOn)
-            SmartSettingsInput("Kafes Tel Top Uzunluğu (m)", viewModel.meshRollLengthInput, CalculatorViewModel.Defaults.MESH_ROLL, viewModel::onMeshRollLengthChange, Modifier.fillMaxWidth(), focusManager)
+            SettingsGroupTitle(strings.meshRollSpecs, Icons.Filled.GridOn)
+            SmartSettingsInput(strings.meshRollLengthM, viewModel.meshRollLengthInput, CalculatorViewModel.Defaults.MESH_ROLL, String.format(strings.defaultValueLabel, CalculatorViewModel.Defaults.MESH_ROLL), viewModel::onMeshRollLengthChange, Modifier.fillMaxWidth(), focusManager)
             Spacer(modifier = Modifier.height(16.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                SmartSettingsInput("Dikenli Tel (Sıra)", viewModel.barbedWireRowsInput, CalculatorViewModel.Defaults.BARBED_ROWS, viewModel::onBarbedWireRowsChange, Modifier.weight(1f), focusManager)
-                SmartSettingsInput("Dikenli Top (m)", viewModel.barbedWireRollLengthInput, CalculatorViewModel.Defaults.BARBED_ROLL, viewModel::onBarbedWireRollLengthChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(strings.barbedWireRows, viewModel.barbedWireRowsInput, CalculatorViewModel.Defaults.BARBED_ROWS, String.format(strings.defaultValueLabel, CalculatorViewModel.Defaults.BARBED_ROWS), viewModel::onBarbedWireRowsChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(strings.barbedWireRollM, viewModel.barbedWireRollLengthInput, CalculatorViewModel.Defaults.BARBED_ROLL, String.format(strings.defaultValueLabel, CalculatorViewModel.Defaults.BARBED_ROLL), viewModel::onBarbedWireRollLengthChange, Modifier.weight(1f), focusManager)
             }
         }
 
         // Grup: Gelişmiş (Advanced)
         item {
+            val strings = viewModel.strings
             Spacer(modifier = Modifier.height(24.dp))
             Divider(color = onBackgroundColor.copy(alpha = 0.1f))
             Spacer(modifier = Modifier.height(24.dp))
-            SettingsGroupTitle("Gelişmiş Parametreler", Icons.Filled.AdminPanelSettings)
+            SettingsGroupTitle(strings.advancedParameters, Icons.Filled.AdminPanelSettings)
             
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                SmartSettingsInput("Direk Boyu (m)", viewModel.poleLengthInput, "2.4", viewModel::onPoleLengthChange, Modifier.weight(1f), focusManager)
-                SmartSettingsInput("Boru Boyu (m)", viewModel.pipeLengthInput, "6.0", viewModel::onPipeLengthChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(strings.poleLengthM, viewModel.poleLengthInput, "2.4", String.format(strings.defaultValueLabel, "2.4"), viewModel::onPoleLengthChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(strings.pipeLengthM, viewModel.pipeLengthInput, "6.0", String.format(strings.defaultValueLabel, "6.0"), viewModel::onPipeLengthChange, Modifier.weight(1f), focusManager)
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                SmartSettingsInput("Gergi Katsayı", viewModel.tensionFactorInput, "6.66", viewModel::onTensionFactorChange, Modifier.weight(1f), focusManager)
-                SmartSettingsInput("Bağlama Katsayı", viewModel.bindingFactorInput, "3.0", viewModel::onBindingFactorChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(strings.tensionFactor, viewModel.tensionFactorInput, "6.66", String.format(strings.defaultValueLabel, "6.66"), viewModel::onTensionFactorChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(strings.bindingFactor, viewModel.bindingFactorInput, "3.0", String.format(strings.defaultValueLabel, "3.0"), viewModel::onBindingFactorChange, Modifier.weight(1f), focusManager)
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                SmartSettingsInput("Çimento Katsayı", viewModel.cementFactorInput, "6.0", viewModel::onCementFactorChange, Modifier.weight(1f), focusManager)
-                SmartSettingsInput("Beton Katsayı", viewModel.concreteFactorInput, "30.0", viewModel::onConcreteFactorChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(strings.cementFactor, viewModel.cementFactorInput, "6.0", String.format(strings.defaultValueLabel, "6.0"), viewModel::onCementFactorChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(strings.concreteFactor, viewModel.concreteFactorInput, "30.0", String.format(strings.defaultValueLabel, "30.0"), viewModel::onConcreteFactorChange, Modifier.weight(1f), focusManager)
             }
         }
 
@@ -169,6 +199,7 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
 
         // Varsayılan kartları yükle butonu
         item {
+            val strings = viewModel.strings
             OutlinedButton(
                 onClick = {
                     viewModel.restoreDefaultCards()
@@ -177,11 +208,12 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colorScheme.primary
-                )
+                ),
+                elevation = shadowlessElevation()
             ) {
                 Icon(Icons.Filled.RestartAlt, null, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Varsayılan Kartları Yükle", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                Text(strings.loadDefaultCards, fontSize = 14.sp, fontWeight = FontWeight.Bold)
             }
         }
 
@@ -206,9 +238,9 @@ fun SettingsGroupTitle(text: String, icon: ImageVector) {
 @Composable
 fun ThemeToggleButton(
     text: String,
-    icon: ImageVector,
     isSelected: Boolean,
     onClick: () -> Unit,
+    icon: ImageVector? = null,
     modifier: Modifier = Modifier
 ) {
     val onSurface = MaterialTheme.colorScheme.onSurface
@@ -218,15 +250,19 @@ fun ThemeToggleButton(
         shape = RoundedCornerShape(12.dp),
         color = if (isSelected) MaterialTheme.colorScheme.primary else onSurface.copy(alpha = 0.05f),
         contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else onSurface.copy(alpha = 0.6f),
-        border = if (isSelected) null else androidx.compose.foundation.BorderStroke(1.dp, onSurface.copy(alpha = 0.1f))
+        border = if (isSelected) null else androidx.compose.foundation.BorderStroke(1.dp, onSurface.copy(alpha = 0.1f)),
+        shadowElevation = 0.dp,
+        tonalElevation = 0.dp
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Icon(icon, null, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(8.dp))
+            if (icon != null) {
+                Icon(icon, null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+            }
             Text(text, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
         }
     }
@@ -237,7 +273,7 @@ fun ThemeToggleButton(
 fun SettingsSheetContentPreview() {
     val context = LocalContext.current
     val dataStoreManager = remember { DataStoreManager(context) }
-    val viewModel = remember { CalculatorViewModel(dataStoreManager) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager, context) }
     
     FenceCalculatorTheme {
         Box(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {

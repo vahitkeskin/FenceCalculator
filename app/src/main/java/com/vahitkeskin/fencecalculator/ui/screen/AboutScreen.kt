@@ -29,13 +29,16 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
-import com.vahitkeskin.fencecalculator.R
+import com.vahitkeskin.fencecalculator.util.DataStoreManager
+import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
+import androidx.navigation.compose.rememberNavController
 import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.PremiumGlassCard
+import com.vahitkeskin.fencecalculator.R
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AboutScreen(navController: NavController) {
+fun AboutScreen(navController: NavController, viewModel: CalculatorViewModel) {
     val context = LocalContext.current
     val packageInfo = remember {
         try {
@@ -50,10 +53,10 @@ fun AboutScreen(navController: NavController) {
         topBar = {
             @OptIn(ExperimentalMaterial3Api::class)
             TopAppBar(
-                title = { Text("Hakkında", fontWeight = FontWeight.Bold) },
+                title = { Text(viewModel.strings.about, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Geri")
+                        Icon(Icons.Default.ArrowBack, contentDescription = viewModel.strings.back)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -91,7 +94,7 @@ fun AboutScreen(navController: NavController) {
             
             item {
                 Text(
-                    text = stringResource(id = R.string.app_name),
+                    text = viewModel.strings.appName,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Black,
                     color = MaterialTheme.colorScheme.primary
@@ -116,14 +119,14 @@ fun AboutScreen(navController: NavController) {
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
                         Text(
-                            text = "Uygulama Hakkında",
+                            text = viewModel.strings.aboutAppTitle,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "${stringResource(id = R.string.app_name)}, çit ve örgü tel ihtiyaçlarınız için profesyonel bir hesaplama asistanıdır. Malzeme ihtiyaçlarını en doğru şekilde analiz ederek işinizi kolaylaştırır.",
+                            text = String.format(viewModel.strings.appDescriptionLong, viewModel.strings.appName),
                             style = MaterialTheme.typography.bodyMedium,
                             lineHeight = 20.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
@@ -138,7 +141,7 @@ fun AboutScreen(navController: NavController) {
                 // Info Items
                 AboutInfoItem(
                     icon = Icons.Default.Person,
-                    title = "Geliştirici",
+                    title = viewModel.strings.developerLabel,
                     value = "Vahit Keskin"
                 )
             }
@@ -148,8 +151,8 @@ fun AboutScreen(navController: NavController) {
             item {
                 AboutInfoItem(
                     icon = Icons.Default.BugReport,
-                    title = "Geri Bildirim",
-                    value = "Hata bildir veya öneri sun"
+                    title = viewModel.strings.feedback,
+                    value = viewModel.strings.feedbackDesc
                 )
             }
             
@@ -158,8 +161,8 @@ fun AboutScreen(navController: NavController) {
             item {
                 AboutInfoItem(
                     icon = Icons.Default.Description,
-                    title = "Lisanslar",
-                    value = "Açık kaynak kütüphaneleri"
+                    title = viewModel.strings.licenses,
+                    value = viewModel.strings.licensesDesc
                 )
             }
             
@@ -169,7 +172,7 @@ fun AboutScreen(navController: NavController) {
                 val currentYear = remember { java.util.Calendar.getInstance().get(java.util.Calendar.YEAR) }
                 
                 Text(
-                    text = "© $currentYear ${stringResource(id = R.string.app_name)}. Tüm hakları saklıdır.",
+                    text = String.format(viewModel.strings.allRightsReserved, currentYear, viewModel.strings.appName),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                     textAlign = TextAlign.Center,
@@ -232,8 +235,11 @@ fun AboutInfoItem(
 @AppPreviews
 @Composable
 fun AboutScreenPreview() {
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager, context) }
     val navController = rememberNavController()
     FenceCalculatorTheme {
-        AboutScreen(navController = navController)
+        AboutScreen(navController = navController, viewModel = viewModel)
     }
 }

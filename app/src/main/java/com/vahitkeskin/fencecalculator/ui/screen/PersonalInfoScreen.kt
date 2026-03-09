@@ -38,8 +38,11 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.PremiumGlassCard
+import com.vahitkeskin.fencecalculator.ui.theme.shadowlessElevation
 import com.vahitkeskin.fencecalculator.util.IbanValidator
 import com.vahitkeskin.fencecalculator.util.QrGenerator
+import androidx.compose.ui.res.stringResource
+import com.vahitkeskin.fencecalculator.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,7 +80,7 @@ fun PersonalInfoScreen(
         if (isGranted) {
             cameraLauncher.launch(null)
         } else {
-            Toast.makeText(context, "Kamera izni gerekli", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, viewModel.strings.cameraPermissionRequired, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -87,11 +90,11 @@ fun PersonalInfoScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             CenterAlignedTopAppBar(
                 title = {
-                    Text("KİŞİSEL BİLGİLER", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
+                    Text(viewModel.strings.personalInfo, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Geri")
+                        Icon(Icons.Default.ArrowBack, contentDescription = viewModel.strings.back)
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
@@ -107,7 +110,7 @@ fun PersonalInfoScreen(
                 item {
                     // Firma Bilgileri
                     Text(
-                        "FİRMA BİLGİLERİ",
+                        viewModel.strings.companyInfoTitle,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.ExtraBold,
                         color = onBackgroundColor.copy(alpha = 0.5f),
@@ -120,13 +123,17 @@ fun PersonalInfoScreen(
                         OutlinedTextField(
                             value = viewModel.companyName,
                             onValueChange = { viewModel.onCompanyNameChange(it) },
-                            label = { Text("Firma Adı", color = onBackgroundColor.copy(alpha = 0.5f)) },
+                            label = { Text(viewModel.strings.companyName, color = onBackgroundColor.copy(alpha = 0.5f)) },
                             leadingIcon = { Icon(Icons.Default.Business, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(16.dp),
                             shape = RoundedCornerShape(12.dp),
                             singleLine = true,
+                            keyboardOptions = KeyboardOptions(
+                                capitalization = KeyboardCapitalization.Words,
+                                imeAction = ImeAction.Next
+                            ),
                             colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor)
                         )
                     }
@@ -137,7 +144,7 @@ fun PersonalInfoScreen(
                 // Ödeme Bilgileri
                 item {
                     Text(
-                        "ÖDEME BİLGİLERİ",
+                        viewModel.strings.paymentInfoTitle,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.ExtraBold,
                         color = onBackgroundColor.copy(alpha = 0.5f),
@@ -155,17 +162,17 @@ fun PersonalInfoScreen(
                             OutlinedTextField(
                                 value = viewModel.iban,
                                 onValueChange = { viewModel.onIbanChange(it) },
-                                label = { Text("IBAN", color = onBackgroundColor.copy(alpha = 0.5f)) },
+                                label = { Text(viewModel.strings.iban, color = onBackgroundColor.copy(alpha = 0.5f)) },
                                 leadingIcon = { Icon(Icons.Default.AccountBalance, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
                                 trailingIcon = {
                                     IconButton(onClick = { showScanSheet = true }) {
-                                        Icon(Icons.Default.QrCodeScanner, "Karekod Tara", tint = primaryColor)
+                                        Icon(Icons.Default.QrCodeScanner, viewModel.strings.scanQrCode, tint = primaryColor)
                                     }
                                 },
                                 isError = !isIbanValid && viewModel.iban.isNotBlank(),
                                 supportingText = {
                                     if (!isIbanValid && viewModel.iban.isNotBlank()) {
-                                        Text("Geçersiz IBAN formatı", color = MaterialTheme.colorScheme.error)
+                                        Text(viewModel.strings.invalidIban, color = MaterialTheme.colorScheme.error)
                                     }
                                 },
                                 modifier = Modifier.fillMaxWidth(),
@@ -196,7 +203,7 @@ fun PersonalInfoScreen(
                                     ) {
                                         Image(
                                             bitmap = bitmap.asImageBitmap(),
-                                            contentDescription = "IBAN QR Code",
+                                            contentDescription = viewModel.strings.ibanQrCodeDesc,
                                             modifier = Modifier
                                                 .fillMaxSize()
                                                 .padding(8.dp),
@@ -204,7 +211,7 @@ fun PersonalInfoScreen(
                                         )
                                     }
                                     Text(
-                                        "Paylaşımda görünecek karekod",
+                                        viewModel.strings.qrCodeSharingDesc,
                                         style = MaterialTheme.typography.labelSmall,
                                         color = onBackgroundColor.copy(alpha = 0.5f),
                                         modifier = Modifier.padding(top = 4.dp)
@@ -232,7 +239,7 @@ fun PersonalInfoScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Text(
-                        "KAREKOD TARA",
+                        viewModel.strings.scanQrCodeTitle,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 8.dp)
@@ -254,11 +261,12 @@ fun PersonalInfoScreen(
                         },
                         modifier = Modifier.fillMaxWidth().height(64.dp),
                         shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
+                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+                        elevation = shadowlessElevation()
                     ) {
                         Icon(Icons.Default.PhotoCamera, null)
                         Spacer(Modifier.width(12.dp))
-                        Text("Kamerayı Kullan", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(viewModel.strings.useCamera, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     }
 
                     OutlinedButton(
@@ -268,11 +276,12 @@ fun PersonalInfoScreen(
                         },
                         modifier = Modifier.fillMaxWidth().height(64.dp),
                         shape = RoundedCornerShape(16.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, primaryColor)
+                        border = androidx.compose.foundation.BorderStroke(1.dp, primaryColor),
+                        elevation = shadowlessElevation()
                     ) {
                         Icon(Icons.Default.PhotoLibrary, null)
                         Spacer(Modifier.width(12.dp))
-                        Text("Galeriden Seç", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = primaryColor)
+                        Text(viewModel.strings.selectFromGallery, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = primaryColor)
                     }
                 }
             }
@@ -285,7 +294,7 @@ fun PersonalInfoScreen(
 fun PersonalInfoScreenPreview() {
     val context = LocalContext.current
     val dataStoreManager = remember { DataStoreManager(context) }
-    val viewModel = remember { CalculatorViewModel(dataStoreManager) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager, context) }
     val navController = rememberNavController()
     
     FenceCalculatorTheme {
