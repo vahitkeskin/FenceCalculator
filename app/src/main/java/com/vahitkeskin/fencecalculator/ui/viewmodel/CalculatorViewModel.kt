@@ -28,6 +28,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.encodeToString
 import kotlinx.coroutines.launch
+import com.vahitkeskin.fencecalculator.util.AdManager
+import android.app.Activity
 
 enum class AppTheme { LIGHT, DARK, SYSTEM }
 
@@ -542,6 +544,10 @@ class CalculatorViewModel @Inject constructor(
         */
         totalLengthInput = totalLengthDraft
         calculateValues()
+        // Her 3 tıklamada bir reklam göstermek için
+        (context as? Activity)?.let {
+            AdManager.onCalculateClicked(it)
+        }
     }
     fun onFenceHeightChange(v: String) = updateIfValid(v) { fenceHeightInput = it }
     fun onPoleSpacingChange(v: String) = updateIfValid(v) { poleSpacingInput = it }

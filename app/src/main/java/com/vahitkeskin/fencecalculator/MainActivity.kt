@@ -1,6 +1,7 @@
 package com.vahitkeskin.fencecalculator
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -22,6 +23,7 @@ import com.vahitkeskin.fencecalculator.ui.screen.PersonalInfoScreen
 import com.vahitkeskin.fencecalculator.ui.screen.AboutScreen
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
+import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.AndroidEntryPoint
 
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -33,6 +35,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        MobileAds.initialize(this) { status ->
+            Log.d("MainActivity", "AdMob Başlatıldı: $status")
+            com.vahitkeskin.fencecalculator.util.AdManager.loadInterstitialAd(this)
+        }
         enableEdgeToEdge()
         setContent {
             var showSplash by remember { mutableStateOf(true) }
