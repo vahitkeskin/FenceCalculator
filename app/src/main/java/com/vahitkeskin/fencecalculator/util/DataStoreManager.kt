@@ -34,6 +34,7 @@ class DataStoreManager @Inject constructor(
         val CUSTOMER_NAME_KEY = stringPreferencesKey("customer_name")
         val CUSTOMER_PHONE_KEY = stringPreferencesKey("customer_phone")
         val IBAN_KEY = stringPreferencesKey("iban")
+        val APP_LANGUAGE_KEY = stringPreferencesKey("app_language")
     }
 
     val companyName: Flow<String> = context.dataStore.data.map { preferences ->
@@ -58,6 +59,7 @@ class DataStoreManager @Inject constructor(
     val customerName: Flow<String> = context.dataStore.data.map { it[CUSTOMER_NAME_KEY] ?: "" }
     val customerPhone: Flow<String> = context.dataStore.data.map { it[CUSTOMER_PHONE_KEY] ?: "" }
     val iban: Flow<String> = context.dataStore.data.map { it[IBAN_KEY] ?: "" }
+    val appLanguage: Flow<String> = context.dataStore.data.map { it[APP_LANGUAGE_KEY] ?: "detect" }
 
     suspend fun saveCompanyName(name: String) {
         context.dataStore.edit { preferences ->
@@ -90,6 +92,7 @@ class DataStoreManager @Inject constructor(
     suspend fun saveCustomerName(v: String) = context.dataStore.edit { it[CUSTOMER_NAME_KEY] = v }
     suspend fun saveCustomerPhone(v: String) = context.dataStore.edit { it[CUSTOMER_PHONE_KEY] = v }
     suspend fun saveIban(v: String) = context.dataStore.edit { it[IBAN_KEY] = v }
+    suspend fun saveAppLanguage(v: String) = context.dataStore.edit { it[APP_LANGUAGE_KEY] = v }
 
     suspend fun savePoleLength(v: String) = context.dataStore.edit { it[POLE_LENGTH_KEY] = v }
     suspend fun savePipeLength(v: String) = context.dataStore.edit { it[PIPE_LENGTH_KEY] = v }

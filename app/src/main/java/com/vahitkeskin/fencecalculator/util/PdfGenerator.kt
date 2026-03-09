@@ -18,6 +18,8 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.vahitkeskin.fencecalculator.R
+import com.vahitkeskin.fencecalculator.util.AppStrings
 
 object PdfGenerator {
 
@@ -30,7 +32,8 @@ object PdfGenerator {
         totalCost: Double,
         length: String,
         customerTitle: String,
-        companyName: String = ""
+        companyName: String = "",
+        viewModel: com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
     ): File? {
         val pdfDocument = PdfDocument()
         val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // A4 Boyutu
@@ -52,10 +55,9 @@ object PdfGenerator {
         canvas.drawPath(pathBoundary, paint)
 
         // 2. Başlık ve Alt Başlık
-        paint.color = Color.WHITE
         paint.textSize = 24f
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        val mainTitle = if (companyName.isNotBlank()) companyName.uppercase() else "ÇİT HESAPLAMA"
+        val mainTitle = if (companyName.isNotBlank()) companyName.uppercase() else viewModel.strings.pdfDefaultTitle
         canvas.drawText(mainTitle, 30f, 75f, paint)
 
         paint.textSize = 14f
@@ -64,7 +66,7 @@ object PdfGenerator {
         canvas.drawText(customerTitle, 30f, 105f, paint)
 
         // Tarih Bilgisi
-        val sdf = SimpleDateFormat("dd MMMM yyyy", Locale("tr"))
+        val sdf = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
         val currentDate = sdf.format(Date())
         paint.textSize = 12f
         canvas.drawText(currentDate, 30f, 125f, paint)
@@ -78,11 +80,11 @@ object PdfGenerator {
         paint.color = Color.BLACK
         paint.textSize = 12f
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        canvas.drawText("Toplam Arazi Uzunluğu:", 50f, 175f, paint)
+        canvas.drawText(viewModel.strings.pdfTotalLengthLabel, 50f, 175f, paint)
 
         paint.color = android.graphics.Color.parseColor("#3F51B5")
         paint.textSize = 16f
-        canvas.drawText("$length Metre", 200f, 175f, paint)
+        canvas.drawText("$length ${viewModel.strings.unitMeter}", 200f, 175f, paint)
 
         // 4. TABLO BAŞLIKLARI
         var yPos = 250f
@@ -101,12 +103,12 @@ object PdfGenerator {
 
         // Başlıkları Çiz
         paint.textAlign = Paint.Align.LEFT
-        canvas.drawText("MALZEME", xMaterial, yPos, paint)
+        canvas.drawText(viewModel.strings.pdfHeaderMaterial, xMaterial, yPos, paint)
 
         paint.textAlign = Paint.Align.RIGHT
-        canvas.drawText("MİKTAR", xQtyEnd, yPos, paint)
-        canvas.drawText("BİRİM FİYAT", xUnitEnd, yPos, paint)
-        canvas.drawText("TUTAR", xTotalEnd, yPos, paint)
+        canvas.drawText(viewModel.strings.pdfHeaderQty, xQtyEnd, yPos, paint)
+        canvas.drawText(viewModel.strings.pdfHeaderUnitPrice, xUnitEnd, yPos, paint)
+        canvas.drawText(viewModel.strings.pdfHeaderTotal, xTotalEnd, yPos, paint)
 
         // Çizgi Çek
         yPos += 10f
@@ -131,10 +133,10 @@ object PdfGenerator {
 
                 paint.textAlign = Paint.Align.RIGHT
                 canvas.drawText("${dfQty.format(item.quantity)} ${item.unit}", xQtyEnd, yPos, paint)
-                canvas.drawText("${dfPrice.format(unitPrice)} ₺", xUnitEnd, yPos, paint)
-
+                canvas.drawText(String.format(viewModel.strings.currencyFormat, dfPrice.format(unitPrice)), xUnitEnd, yPos, paint)
+                
                 paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-                canvas.drawText("${dfPrice.format(item.totalCost)} ₺", xTotalEnd, yPos, paint)
+                canvas.drawText(String.format(viewModel.strings.currencyFormat, dfPrice.format(item.totalCost)), xTotalEnd, yPos, paint)
                 paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
 
                 yPos += 30f
@@ -153,18 +155,19 @@ object PdfGenerator {
         paint.color = Color.BLACK
         paint.textSize = 14f
         paint.textAlign = Paint.Align.LEFT
-        canvas.drawText("GENEL TOPLAM MALİYET", 30f, yPos + 35f, paint)
+        canvas.drawText(viewModel.strings.pdfGrandTotal, 30f, yPos + 35f, paint)
 
         paint.textSize = 22f
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         paint.textAlign = Paint.Align.RIGHT
         paint.color = android.graphics.Color.parseColor("#3F51B5")
-        canvas.drawText("${dfPrice.format(totalCost)} ₺", 565f, yPos + 38f, paint)
+        canvas.drawText(String.format(viewModel.strings.currencyFormat, dfPrice.format(totalCost)), 565f, yPos + 38f, paint)
 
         pdfDocument.finishPage(page)
 
         // Dinamik dosya adı
-        val safeCompanyName = if (companyName.isBlank()) "Cit_Hesaplama" else companyName.trim()
+        val defaultFileName = viewModel.strings.pdfDefaultTitle.replace("\\s+".toRegex(), "_")
+        val safeCompanyName = if (companyName.isBlank()) defaultFileName else companyName.trim()
             .replace("\\s+".toRegex(), "_")
         val fileName = "${safeCompanyName}.pdf"
 
@@ -180,7 +183,7 @@ object PdfGenerator {
         }
     }
 
-    fun shareViaWhatsApp(context: Context, file: File, phoneNumber: String, iban: String) {
+    fun shareViaWhatsApp(context: Context, file: File, phoneNumber: String, iban: String, viewModel: com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel) {
         val uri = FileProvider.getUriForFile(
             context,
             "${context.packageName}.provider",
@@ -195,7 +198,7 @@ object PdfGenerator {
             type = "application/pdf"
             putExtra(Intent.EXTRA_STREAM, uri)
             putExtra(Intent.EXTRA_TEXT, iban)
-            putExtra(Intent.EXTRA_SUBJECT, "Maliyet Teklifi")
+            putExtra(Intent.EXTRA_SUBJECT, viewModel.strings.pdfSharingSubject)
             setPackage("com.whatsapp")
             putExtra("jid", "$finalPhone@s.whatsapp.net")
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -207,35 +210,36 @@ object PdfGenerator {
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("IBAN", iban)
             clipboard.setPrimaryClip(clip)
-            Toast.makeText(context, "IBAN kopyalandı! WhatsApp'ta 'Açıklama ekleyin' alanına yapıştırabilirsiniz.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, viewModel.strings.pdfIbanCopiedToast, Toast.LENGTH_LONG).show()
         }
 
         try {
             context.startActivity(intent)
         } catch (e: Exception) {
             // WhatsApp yüklü değilse normal paylaşımı aç
-            sharePdfFile(context, file)
+            sharePdfFile(context, file, viewModel)
         }
     }
 
-    fun sharePdfFile(context: Context, file: File) {
+    fun sharePdfFile(context: Context, file: File, viewModel: com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel) {
         val uri = FileProvider.getUriForFile(
             context,
             "${context.packageName}.provider",
             file
         )
 
+        val strings = viewModel.strings
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "application/pdf"
             putExtra(Intent.EXTRA_STREAM, uri)
-            putExtra(Intent.EXTRA_SUBJECT, "Çit Maliyet Teklifi")
+            putExtra(Intent.EXTRA_SUBJECT, strings.pdfShareFileSubject)
             putExtra(
                 Intent.EXTRA_TEXT,
-                "Ekte çit maliyet hesaplama detaylı raporunu bulabilirsiniz."
+                strings.pdfShareFileText
             )
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
 
-        context.startActivity(Intent.createChooser(intent, "PDF Raporunu Paylaş"))
+        context.startActivity(Intent.createChooser(intent, strings.pdfShareChooserTitle))
     }
 }

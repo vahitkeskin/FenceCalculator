@@ -11,6 +11,8 @@ import androidx.lifecycle.ViewModel
 import com.vahitkeskin.fencecalculator.data.model.CalculationItem
 import com.vahitkeskin.fencecalculator.data.model.CustomCardItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import android.content.Context
 import javax.inject.Inject
 import kotlin.math.ceil
 
@@ -20,12 +22,16 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import com.vahitkeskin.fencecalculator.util.AppLanguage
+import com.vahitkeskin.fencecalculator.util.Localization
+import com.vahitkeskin.fencecalculator.util.AppStrings
 
 enum class AppTheme { LIGHT, DARK, SYSTEM }
 
 @HiltViewModel
 class CalculatorViewModel @Inject constructor(
-    private val dataStoreManager: DataStoreManager
+    private val dataStoreManager: DataStoreManager,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     // --- PERSISTENT STATE ---
@@ -62,6 +68,24 @@ class CalculatorViewModel @Inject constructor(
         viewModelScope.launch {
             dataStoreManager.saveTheme(theme.name)
         }
+    }
+
+    // --- LANGUAGE STATE ---
+    var selectedLanguage by mutableStateOf(AppLanguage.EN); private set
+    val strings: AppStrings
+        get() = Localization.getStrings(selectedLanguage.code)
+
+    fun onLanguageChange(language: AppLanguage) {
+        selectedLanguage = language
+        viewModelScope.launch {
+            dataStoreManager.saveAppLanguage(language.code)
+        }
+        // Dillere bağlı olarak sonuçları tekrar oluştur
+        calculateValues()
+    }
+
+    fun localizedString(key: String, vararg args: Any): String {
+        return Localization.getString(key, selectedLanguage, *args) // Fallback to legacy
     }
 
     // --- CONSTANTS ---
@@ -421,6 +445,16 @@ class CalculatorViewModel @Inject constructor(
                 iban = it
             }
         }
+        viewModelScope.launch {
+            dataStoreManager.appLanguage.collectLatest { code ->
+                selectedLanguage = if (code == "detect") {
+                    AppLanguage.detectSystemLanguage()
+                } else {
+                    AppLanguage.fromCode(code)
+                }
+                calculateValues()
+            }
+        }
     }
 
     // --- EVENTS ---
@@ -577,114 +611,114 @@ class CalculatorViewModel @Inject constructor(
         val list = mutableListOf(
             createItem(
                 "direk",
-                "Direk",
-                "Her $spacing m'de bir",
+                strings.direkTitle,
+                String.format(strings.direkDesc, spacing.toString()),
                 direkSayisi,
-                "Adet",
+                strings.unitPiece,
                 Icons.Filled.Straighten,
                 Color(0xFF3F51B5),
-                "METAL",
+                strings.catMetal,
                 ::getP
             ),
             createItem(
                 "boy_demir",
-                "Boy Demir Boru",
-                "$pipeLen m (Her borudan $pLength m'lik direk)",
+                strings.boyDemirTitle,
+                String.format(strings.boyDemirDesc, pipeLen.toString(), pLength.toString()),
                 boyDemirSayisi,
-                "Adet",
+                strings.unitPiece,
                 Icons.Filled.FormatLineSpacing,
                 Color(0xFF5C6BC0),
-                "METAL",
+                strings.catMetal,
                 ::getP
             ),
             createItem(
                 "payanda",
-                "Payanda",
-                "Her $strutFreq direkte $strutCnt adet",
+                strings.payandaTitle,
+                String.format(strings.payandaDesc, strutFreq.toInt().toString(), strutCnt.toInt().toString()),
                 payandaSayisi,
-                "Adet",
+                strings.unitPiece,
                 Icons.Filled.ChangeHistory,
                 Color(0xFF9C27B0),
-                "METAL",
+                strings.catMetal,
                 ::getP
             ),
-
+ 
             createItem(
                 "kafes_top",
-                "Kafes Tel (Toplam)",
-                "$meshLen m'lik top ($height m Yükseklik)",
+                strings.kafesTopTitle,
+                String.format(strings.kafesTopDesc, meshLen.toString(), height.toString()),
                 kafesTopSayisi,
-                "Top",
+                strings.unitRoll,
                 Icons.Filled.GridOn,
                 Color(0xFF009688),
-                "TEL",
+                strings.catWire,
                 ::getP
             ),
             createItem(
                 "kafes_kg",
-                "1 Top Tel Ağırlığı",
-                "1 Rulo ($meshLen m) ağırlığıdır.",
+                strings.kafesKgTitle,
+                String.format(strings.kafesKgDesc, meshLen.toString()),
                 oneRollWeight,
-                "Kg",
+                strings.unitKg,
                 Icons.Filled.Scale,
                 Color(0xFF00796B),
-                "TEL",
+                strings.catWire,
                 ::getP
             ),
             createItem(
                 "diken",
-                "Dikenli Tel",
-                "${barbedRows.toInt()} Sıra ($barbedLen m/top)",
+                strings.dikenTitle,
+                String.format(strings.dikenDesc, barbedRows.toInt(), barbedLen.toString()),
                 dikenliTelTopSayisi,
-                "Top",
+                strings.unitRoll,
                 Icons.Filled.Warning,
                 Color(0xFFD32F2F),
-                "TEL",
+                strings.catWire,
                 ::getP
             ),
             createItem(
                 "gergi",
-                "Gergi Teli",
-                "Uzunluk / 6.66",
+                strings.gergiTitle,
+                String.format(strings.gergiDesc, tFactor.toString()),
                 gergiTeli,
-                "Kg",
+                strings.unitKg,
                 Icons.Filled.LinearScale,
                 Color(0xFFFF9800),
-                "TEL",
+                strings.catWire,
                 ::getP
             ),
             createItem(
                 "baglama",
-                "Bağlama Teli",
-                "Gergi Telinin 1/3'ü",
+                strings.baglamaTitle,
+                String.format(strings.baglamaDesc, bFactor.toInt().toString()),
                 baglamaTeli,
-                "Kg",
+                strings.unitKg,
                 Icons.Filled.AllInclusive,
                 Color(0xFF795548),
-                "TEL",
+                strings.catWire,
                 ::getP
             ),
-
+ 
             createItem(
                 "cimento",
-                "Çimento (50 Kg)",
-                "Direk Sayısı / 6",
+                strings.cimentoTitle,
+                String.format(strings.cimentoDesc, cemFactor.toInt().toString()),
                 cimentoSayisi,
-                "Adet",
+                strings.unitPiece,
                 Icons.Filled.Layers,
                 Color(0xFF607D8B),
-                "İNŞAAT",
+                strings.catConstruction,
                 ::getP
             ),
             createItem(
                 "beton",
-                "Hazır Beton",
-                "Direk Sayısı / 30",
+                strings.betonTitle,
+                String.format(strings.betonDesc, concFactor.toInt().toString()),
                 hazirBetonM3,
-                "m³",
+                strings.unitM3,
                 Icons.Filled.PrecisionManufacturing,
                 Color(0xFF455A64),
-                "İNŞAAT",
+                strings.catConstruction,
                 ::getP
             )
         )

@@ -24,15 +24,18 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.vahitkeskin.fencecalculator.ui.theme.shadowlessElevation
 import com.vahitkeskin.fencecalculator.util.PdfGenerator
+import com.vahitkeskin.fencecalculator.R
+import androidx.compose.ui.res.stringResource
 import java.io.File
 
 @Composable
 fun PdfPreviewDialog(
     file: File,
-    phoneNumber: String,
-    iban: String,
+    viewModel: com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel,
     onDismiss: () -> Unit
 ) {
+    val phoneNumber = viewModel.customerPhone
+    val iban = viewModel.iban
     val context = LocalContext.current
     val bitmaps = remember(file) {
         val list = mutableListOf<Bitmap>()
@@ -75,23 +78,23 @@ fun PdfPreviewDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Kapat", tint = MaterialTheme.colorScheme.onSurface)
+                        Icon(Icons.Default.Close, contentDescription = viewModel.strings.close, tint = MaterialTheme.colorScheme.onSurface)
                     }
                     Text(
-                        "Teklif Önizleme",
+                        viewModel.strings.pdfPreviewTitle,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
-                    IconButton(onClick = { PdfGenerator.sharePdfFile(context, file) }) {
-                        Icon(Icons.Default.Share, contentDescription = "Paylaş", tint = MaterialTheme.colorScheme.primary)
+                    IconButton(onClick = { PdfGenerator.sharePdfFile(context, file, viewModel) }) {
+                        Icon(Icons.Default.Share, contentDescription = viewModel.strings.share, tint = MaterialTheme.colorScheme.primary)
                     }
                 }
 
                 // Content
                 if (bitmaps.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("PDF Yüklenemedi", color = MaterialTheme.colorScheme.error)
+                        Text(viewModel.strings.pdfLoadFailed, color = MaterialTheme.colorScheme.error)
                     }
                 } else {
                     LazyColumn(
@@ -129,7 +132,7 @@ fun PdfPreviewDialog(
                     // WhatsApp Button (Only if phone provided)
                     if (phoneNumber.isNotBlank()) {
                         Button(
-                            onClick = { PdfGenerator.shareViaWhatsApp(context, file, phoneNumber, iban) },
+                            onClick = { PdfGenerator.shareViaWhatsApp(context, file, phoneNumber, iban, viewModel) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(56.dp),
@@ -142,13 +145,13 @@ fun PdfPreviewDialog(
                         ) {
                             Icon(Icons.Default.Send, null)
                             Spacer(Modifier.width(8.dp))
-                            Text("WhatsApp", fontWeight = FontWeight.Bold)
+                            Text(viewModel.strings.whatsapp, fontWeight = FontWeight.Bold)
                         }
                     }
 
                     // Standard Share Button
                     Button(
-                        onClick = { PdfGenerator.sharePdfFile(context, file) },
+                        onClick = { PdfGenerator.sharePdfFile(context, file, viewModel) },
                         modifier = Modifier
                             .weight(1f)
                             .height(56.dp),
@@ -158,7 +161,7 @@ fun PdfPreviewDialog(
                     ) {
                         Icon(Icons.Default.Share, null)
                         Spacer(Modifier.width(8.dp))
-                        Text(if (phoneNumber.isNotBlank()) "Paylaş" else "PDF Olarak Paylaş", fontWeight = FontWeight.Bold)
+                        Text(if (phoneNumber.isNotBlank()) viewModel.strings.share else viewModel.strings.shareAsPdf, fontWeight = FontWeight.Bold)
                     }
                 }
             }

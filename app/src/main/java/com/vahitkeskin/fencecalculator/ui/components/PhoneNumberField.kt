@@ -21,6 +21,8 @@ import com.vahitkeskin.fencecalculator.data.model.Country
 import com.vahitkeskin.fencecalculator.data.model.CountryData
 import com.vahitkeskin.fencecalculator.util.PhoneVisualTransformation
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
+import com.vahitkeskin.fencecalculator.R
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,7 +30,9 @@ fun PhoneNumberField(
     phoneNumber: String,
     onPhoneNumberChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    label: String = "Müşteri Telefon No",
+    label: String,
+    selectCountryLabel: String,
+    searchCountryLabel: String,
     primaryColor: Color = MaterialTheme.colorScheme.primary,
     onBackgroundColor: Color = MaterialTheme.colorScheme.onBackground
 ) {
@@ -115,12 +119,10 @@ fun PhoneNumberField(
                 onCountrySelected = {
                     selectedCountry = it
                     showCountryPicker = false
-                    // Temizle veya yeni koda göre düzenle
-                    val digits = phoneNumber.filter { it.isDigit() }
-                    // Eğer eski dialCode ile başlıyorsa onu temizle ve yenisini ekle
-                    // Basitlik için sadece rakamları tutalım ve UI dialCode'u eklesin
                 },
-                onBackgroundColor = onBackgroundColor
+                onBackgroundColor = onBackgroundColor,
+                selectCountryLabel = selectCountryLabel,
+                searchCountryLabel = searchCountryLabel
             )
         }
     }
@@ -129,7 +131,9 @@ fun PhoneNumberField(
 @Composable
 fun CountryPickerDialogContent(
     onCountrySelected: (Country) -> Unit,
-    onBackgroundColor: Color
+    onBackgroundColor: Color,
+    selectCountryLabel: String,
+    searchCountryLabel: String
 ) {
     var searchQuery by remember { mutableStateOf("") }
     val filteredCountries = remember(searchQuery) {
@@ -151,7 +155,7 @@ fun CountryPickerDialogContent(
             .padding(horizontal = 24.dp)
     ) {
         Text(
-            "ÜLKE SEÇİN",
+            selectCountryLabel,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Black,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -160,7 +164,7 @@ fun CountryPickerDialogContent(
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
-            placeholder = { Text("Ülke veya kod ara...", color = onBackgroundColor.copy(alpha = 0.4f)) },
+            placeholder = { Text(searchCountryLabel, color = onBackgroundColor.copy(alpha = 0.4f)) },
             leadingIcon = { Icon(Icons.Default.Search, null) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),

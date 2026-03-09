@@ -82,7 +82,8 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("about") {
                                 AboutScreen(
-                                    navController = navController
+                                    navController = navController,
+                                    viewModel = viewModel
                                 )
                             }
                         }

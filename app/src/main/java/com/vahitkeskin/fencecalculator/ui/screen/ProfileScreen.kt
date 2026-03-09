@@ -51,7 +51,7 @@ fun ProfileScreen(
                 CenterAlignedTopAppBar(
                     title = {
                         Text(
-                            "PROFİL",
+                            viewModel.strings.navProfile.uppercase(),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Black,
                             letterSpacing = 2.sp
@@ -109,7 +109,7 @@ fun ProfileScreen(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = if (viewModel.companyName.isBlank()) "Firma Adı Girin" else viewModel.companyName,
+                        text = if (viewModel.companyName.isBlank()) viewModel.strings.companyName else viewModel.companyName,
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = if (viewModel.companyName.isBlank()) MaterialTheme.colorScheme.onSurface.copy(
@@ -117,7 +117,7 @@ fun ProfileScreen(
                         ) else MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "Profil Ayarları",
+                        text = viewModel.strings.personalInfo,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -130,7 +130,7 @@ fun ProfileScreen(
                 // Settings Section
                 Column(modifier = Modifier.padding(horizontal = 24.dp)) {
                     Text(
-                        text = "Hesap ve Uygulama",
+                        text = viewModel.strings.appName,
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
@@ -139,8 +139,8 @@ fun ProfileScreen(
 
                     ProfileMenuItem(
                         icon = Icons.Default.Badge,
-                        title = "Kişisel Bilgiler",
-                        subtitle = "Firma adı, IBAN ve iletişim bilgileri",
+                        title = viewModel.strings.personalInfo,
+                        subtitle = viewModel.strings.companyInfoTitle,
                         onClick = { navController.navigate("personal_info") }
                     )
 
@@ -148,8 +148,8 @@ fun ProfileScreen(
 
                     ProfileMenuItem(
                         icon = Icons.Default.Settings,
-                        title = "Ayarlar",
-                        subtitle = "Hesaplama parametrelerini ve görünümü düzenle",
+                        title = viewModel.strings.settings,
+                        subtitle = viewModel.strings.calculationParametersDesc,
                         onClick = { navController.navigate("settings_detail") }
                     )
 
@@ -157,30 +157,26 @@ fun ProfileScreen(
 
                     ProfileMenuItem(
                         icon = Icons.Default.Info,
-                        title = "Hakkında",
-                        subtitle = "Uygulama versiyonu ve bilgiler",
+                        title = viewModel.strings.about,
+                        subtitle = viewModel.strings.licensesDesc,
                         onClick = { navController.navigate("about") }
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    val appName = stringResource(id = R.string.app_name)
-                    val shareMessage = """
-                        Çit ve örgü tel ihtiyaçlarınıza profesyonel çözüm!
-                        $appName uygulamasını hemen indirin:
-                        https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator
-                    """.trimIndent()
+                    val appName = viewModel.strings.appName
+                    val shareMessage = String.format(viewModel.strings.shareAppMessage, appName)
                     
                     ProfileMenuItem(
                         icon = Icons.Default.Share,
-                        title = "Paylaş",
-                        subtitle = "Uygulamayı arkadaşlarınla paylaş",
+                        title = viewModel.strings.share,
+                        subtitle = viewModel.strings.feedbackDesc,
                         onClick = {
                             val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
                                 type = "text/plain"
                                 putExtra(android.content.Intent.EXTRA_TEXT, shareMessage)
                             }
-                            context.startActivity(android.content.Intent.createChooser(intent, "Paylaş"))
+                            context.startActivity(android.content.Intent.createChooser(intent, viewModel.strings.shareAppTitle))
                         }
                     )
                 }
@@ -215,7 +211,7 @@ fun ProfileScreen(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
-                        text = stringResource(id = R.string.app_name).uppercase(),
+                        text = viewModel.strings.appName.uppercase(),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Black,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
@@ -290,5 +286,17 @@ fun ProfileMenuItem(
                 tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
             )
         }
+    }
+}
+@AppPreviews
+@Composable
+fun ProfileScreenPreview() {
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager, context) }
+    val navController = rememberNavController()
+    
+    FenceCalculatorTheme {
+        ProfileScreen(navController = navController, viewModel = viewModel)
     }
 }

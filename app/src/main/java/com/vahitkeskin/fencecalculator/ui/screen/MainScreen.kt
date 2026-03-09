@@ -24,12 +24,18 @@ import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import com.vahitkeskin.fencecalculator.util.DataStoreManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.vahitkeskin.fencecalculator.R
 
-sealed class Screen(val route: String, val title: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
-    object Home : Screen("home_tab", "Anasayfa", Icons.Default.Home)
-    object Calculations : Screen("calculations_tab", "Hesaplar", Icons.Default.Calculate)
-    object Custom : Screen("custom_cards_tab", "Özel", Icons.Default.Extension)
-    object Profile : Screen("profile_tab", "Profil", Icons.Default.Person)
+sealed class Screen(
+    val route: String,
+    val title: (com.vahitkeskin.fencecalculator.util.AppStrings) -> String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector
+) {
+    object Home : Screen("home_tab", { it.navHome }, Icons.Default.Home)
+    object Calculations : Screen("calculations_tab", { it.navCalculations }, Icons.Default.Calculate)
+    object Custom : Screen("custom_cards_tab", { it.navCustom }, Icons.Default.Extension)
+    object Profile : Screen("profile_tab", { it.navProfile }, Icons.Default.Person)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,9 +58,10 @@ fun MainScreen(
                     val currentRoute = navBackStackEntry?.destination?.route
     
                     items.forEach { screen ->
+                        val title = screen.title(viewModel.strings)
                         NavigationBarItem(
-                            icon = { Icon(screen.icon, contentDescription = screen.title) },
-                            label = { Text(screen.title) },
+                            icon = { Icon(screen.icon, contentDescription = title) },
+                            label = { Text(title) },
                             selected = currentRoute == screen.route,
                             onClick = {
                                 if (currentRoute != screen.route) {
@@ -123,7 +130,7 @@ fun MainScreen(
 fun MainScreenPreview() {
     val context = LocalContext.current
     val dataStoreManager = remember { DataStoreManager(context) }
-    val viewModel = remember { CalculatorViewModel(dataStoreManager) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager, context) }
     val navController = rememberNavController()
     
     FenceCalculatorTheme {

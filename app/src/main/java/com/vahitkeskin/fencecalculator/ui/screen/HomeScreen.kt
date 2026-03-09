@@ -42,6 +42,8 @@ import androidx.navigation.compose.rememberNavController
 import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import com.vahitkeskin.fencecalculator.util.DataStoreManager
+import com.vahitkeskin.fencecalculator.R
+import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
@@ -78,8 +80,8 @@ fun HomeScreen(
                 CenterAlignedTopAppBar(
                     title = { 
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("ÇİT HESAPLAMA", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = onBackgroundColor, letterSpacing = 2.sp)
-                            Text("PREMIUM ARCHITECTURAL TOOL", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = onBackgroundColor.copy(alpha = 0.5f), letterSpacing = 1.sp)
+                            Text(viewModel.strings.fenceCalculation, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = onBackgroundColor, letterSpacing = 2.sp)
+                            Text(viewModel.strings.premiumArchitecturalTool, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = onBackgroundColor.copy(alpha = 0.5f), letterSpacing = 1.sp)
                         }
                     },
                     actions = {
@@ -94,13 +96,14 @@ fun HomeScreen(
                                     totalCost = viewModel.grandTotalCost,
                                     length = viewModel.totalLengthInput,
                                     customerTitle = finalPdfTitle,
-                                    companyName = viewModel.companyName
+                                    companyName = viewModel.companyName,
+                                    viewModel = viewModel
                                 )
                                 isGeneratingPdf = false
                                 pdfFileForPreview = file
                             }
                         }) {
-                            Icon(Icons.Default.Share, contentDescription = "PDF Paylaş", tint = primaryColor)
+                            Icon(Icons.Default.Share, contentDescription = viewModel.strings.sharePdf, tint = primaryColor)
                         }
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
@@ -122,7 +125,7 @@ fun HomeScreen(
                     PremiumGlassCard {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(
-                                "MÜŞTERİ BİLGİLERİ",
+                                viewModel.strings.customerInfo,
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = onBackgroundColor.copy(alpha = 0.5f),
@@ -132,7 +135,7 @@ fun HomeScreen(
                             OutlinedTextField(
                                 value = viewModel.customerName,
                                 onValueChange = { viewModel.onCustomerNameChange(it) },
-                                label = { Text("Müşteri Adı Soyadı", color = onBackgroundColor.copy(alpha = 0.5f)) },
+                                label = { Text(viewModel.strings.customerNameSurname, color = onBackgroundColor.copy(alpha = 0.5f)) },
                                 leadingIcon = { Icon(Icons.Default.Person, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp),
@@ -144,6 +147,9 @@ fun HomeScreen(
                             PhoneNumberField(
                                 phoneNumber = viewModel.customerPhone,
                                 onPhoneNumberChange = { viewModel.onCustomerPhoneChange(it) },
+                                label = viewModel.strings.customerPhoneNo,
+                                selectCountryLabel = viewModel.strings.selectCountry,
+                                searchCountryLabel = viewModel.strings.searchCountryOrCode,
                                 primaryColor = primaryColor,
                                 onBackgroundColor = onBackgroundColor
                             )
@@ -154,6 +160,7 @@ fun HomeScreen(
                 // Ana Parametreler
                 item {
                     AdvancedInputSection(
+                        labelText = viewModel.strings.pdfTotalLengthLabel.removeSuffix(":"),
                         lengthValue = viewModel.totalLengthInput,
                         onLengthChange = viewModel::onTotalLengthChange
                     )
@@ -167,7 +174,7 @@ fun HomeScreen(
                     
                     item {
                         Text(
-                            "FAVORİ HESAPLAMALAR",
+                            viewModel.strings.favoriteCalculations,
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.ExtraBold,
                             color = onBackgroundColor.copy(alpha = 0.5f),
@@ -187,6 +194,7 @@ fun HomeScreen(
                             }
                         }) {
                             SwapLayoutResultRow(
+                                viewModel = viewModel,
                                 item = item,
                                 currentPriceInput = viewModel.getPriceString(item.id),
                                 onPriceChange = { viewModel.onPriceChange(item.id, it) },
@@ -200,7 +208,7 @@ fun HomeScreen(
                 // Hızlı Bilgi
                 item {
                     Text(
-                        "Hesaplama detaylarını görmek için alttaki 'Hesaplar' veya 'Özel' sekmelerini kullanın.",
+                        viewModel.strings.infoTextHome,
                         style = MaterialTheme.typography.bodySmall,
                         color = onBackgroundColor.copy(alpha = 0.4f),
                         modifier = Modifier.padding(horizontal = 8.dp)
@@ -218,7 +226,7 @@ fun HomeScreen(
                     Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         CircularProgressIndicator(color = primaryColor)
                         Spacer(modifier = Modifier.height(16.dp))
-                        Text("PDF Raporu Hazırlanıyor...", fontWeight = FontWeight.Bold)
+                        Text(viewModel.strings.preparingPdfReport, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -227,8 +235,7 @@ fun HomeScreen(
         pdfFileForPreview?.let { file ->
             PdfPreviewDialog(
                 file,
-                viewModel.customerPhone,
-                viewModel.iban
+                viewModel
             ) { pdfFileForPreview = null }
         }
     }
@@ -239,7 +246,7 @@ fun HomeScreen(
 fun HomeScreenPreview() {
     val context = LocalContext.current
     val dataStoreManager = remember { DataStoreManager(context) }
-    val viewModel = remember { CalculatorViewModel(dataStoreManager) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager, context) }
     val navController = rememberNavController()
     
     FenceCalculatorTheme {
