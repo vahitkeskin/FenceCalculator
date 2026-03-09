@@ -24,7 +24,10 @@ import com.vahitkeskin.fencecalculator.R
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun CalculationsScreen(viewModel: CalculatorViewModel) {
+fun CalculationsScreen(
+    viewModel: CalculatorViewModel,
+    onPremiumClick: () -> Unit
+) {
     val onBackgroundColor = MaterialTheme.colorScheme.onBackground
     val primaryColor = MaterialTheme.colorScheme.primary
     val listState = rememberLazyListState()
@@ -82,7 +85,8 @@ fun CalculationsScreen(viewModel: CalculatorViewModel) {
                             item = item,
                             currentPriceInput = viewModel.getPriceString(item.id),
                             onPriceChange = { viewModel.onPriceChange(item.id, it) },
-                            onPinToggle = { viewModel.togglePin(item.id) }
+                            onPinToggle = { viewModel.togglePin(item.id) },
+                            onPremiumClick = onPremiumClick
                         )
                     }
                 }
@@ -102,6 +106,9 @@ fun CalculationsScreenPreview() {
     val viewModel = remember { CalculatorViewModel(dataStoreManager, context) }
     
     FenceCalculatorTheme {
-        CalculationsScreen(viewModel = viewModel)
+        CalculationsScreen(
+            viewModel = viewModel,
+            onPremiumClick = {}
+        )
     }
 }

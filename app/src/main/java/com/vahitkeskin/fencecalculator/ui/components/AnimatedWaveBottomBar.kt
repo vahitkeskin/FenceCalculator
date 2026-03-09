@@ -6,6 +6,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,6 +18,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.draw.blur
 import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import java.text.DecimalFormat
@@ -22,6 +26,8 @@ import java.text.DecimalFormat
 @Composable
 fun AnimatedWaveBottomBar(
     totalCost: Double,
+    isBlurred: Boolean = false,
+    onClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val currencyFormat = DecimalFormat("#,##0.00")
@@ -87,17 +93,30 @@ fun AnimatedWaveBottomBar(
                         )
                     }
                     Surface(
-                        color = primaryColor,
+                        color = if (isBlurred) primaryColor.copy(alpha = 0.5f) else primaryColor,
                         shape = RoundedCornerShape(12.dp),
                         shadowElevation = 0.dp,
-                        tonalElevation = 0.dp
+                        tonalElevation = 0.dp,
+                        onClick = { if (isBlurred) onClick() }
                     ) {
-                        Text(
-                            "${currencyFormat.format(totalCost)} ₺",
-                            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
-                        )
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                "${currencyFormat.format(totalCost)} ₺",
+                                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                                    .then(if (isBlurred) Modifier.blur(8.dp) else Modifier)
+                            )
+                            if (isBlurred) {
+                                Icon(
+                                    imageVector = Icons.Default.Lock,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }

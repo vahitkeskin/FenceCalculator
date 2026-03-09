@@ -26,6 +26,7 @@ import com.vahitkeskin.fencecalculator.util.DataStoreManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.vahitkeskin.fencecalculator.R
+import com.vahitkeskin.fencecalculator.ui.components.PremiumDialog
 
 sealed class Screen(
     val route: String,
@@ -46,6 +47,14 @@ fun MainScreen(
 ) {
     val innerNavController = rememberNavController()
     val items = listOf(Screen.Home, Screen.Calculations, Screen.Custom, Screen.Profile)
+    var showPremiumPopup by remember { mutableStateOf(false) }
+
+    if (showPremiumPopup) {
+        PremiumDialog(
+            strings = viewModel.strings,
+            onDismiss = { showPremiumPopup = false }
+        )
+    }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -106,13 +115,24 @@ fun MainScreen(
                     .padding(bottom = 72.dp)
             ) {
                 composable(Screen.Home.route) {
-                    HomeScreen(viewModel = viewModel, navController = globalNavController)
+                    HomeScreen(
+                        viewModel = viewModel, 
+                        navController = globalNavController,
+                        onPremiumClick = { showPremiumPopup = true }
+                    )
                 }
                 composable(Screen.Calculations.route) {
-                    CalculationsScreen(viewModel = viewModel)
+                    CalculationsScreen(
+                        viewModel = viewModel,
+                        onPremiumClick = { showPremiumPopup = true }
+                    )
                 }
                 composable(Screen.Custom.route) {
-                    CustomCardsScreen(viewModel = viewModel, navController = globalNavController)
+                    CustomCardsScreen(
+                        viewModel = viewModel, 
+                        navController = globalNavController,
+                        onPremiumClick = { showPremiumPopup = true }
+                    )
                 }
                 composable(Screen.Profile.route) {
                     ProfileScreen(viewModel = viewModel, navController = globalNavController)
@@ -121,6 +141,10 @@ fun MainScreen(
             
             AnimatedWaveBottomBar(
                 totalCost = viewModel.grandTotalCost,
+                // TODO: İstediğim zaman aktif edebileyim - 50 sınırlaması ve premium
+                // isBlurred = !viewModel.isPremium && viewModel.usageCount >= 50,
+                isBlurred = false,
+                onClick = { showPremiumPopup = true },
                 modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
