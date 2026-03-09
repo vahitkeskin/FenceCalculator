@@ -123,11 +123,16 @@ fun SmartSettingsInput(
                 focusedLabelColor = if(isChanged) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
             )
         )
-        AnimatedVisibility(visible = isChanged, enter = fadeIn(), exit = fadeOut()) {
+        AnimatedVisibility(
+            visible = isChanged, 
+            enter = fadeIn(), 
+            exit = fadeOut(),
+            modifier = Modifier.align(Alignment.End)
+        ) {
             TextButton(
                 onClick = { onValueChange(defaultValue) },
                 contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp),
-                modifier = Modifier.height(32.dp).align(Alignment.End)
+                modifier = Modifier.height(32.dp)
             ) {
                 Icon(Icons.Rounded.Refresh, null, Modifier.size(12.dp), MaterialTheme.colorScheme.tertiary)
                 Spacer(Modifier.width(4.dp))

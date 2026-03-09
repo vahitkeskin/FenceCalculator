@@ -132,38 +132,39 @@ fun HomeScreen(
 
                 // Müşteri Bilgileri
                 item {
-                    PremiumGlassCard {
-                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text(
-                                viewModel.strings.customerInfo,
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = onBackgroundColor.copy(alpha = 0.5f),
-                                letterSpacing = 1.sp
-                            )
-                            
-                            OutlinedTextField(
-                                value = viewModel.customerName,
-                                onValueChange = { viewModel.onCustomerNameChange(it) },
-                                label = { Text(viewModel.strings.customerNameSurname, color = onBackgroundColor.copy(alpha = 0.5f)) },
-                                leadingIcon = { Icon(Icons.Default.Person, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next),
-                                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor)
-                            )
+                    PremiumGlassCard(
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            viewModel.strings.customerInfo,
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = onBackgroundColor.copy(alpha = 0.5f),
+                            letterSpacing = 1.sp,
+                            modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                        )
+                        
+                        OutlinedTextField(
+                            value = viewModel.customerName,
+                            onValueChange = { viewModel.onCustomerNameChange(it) },
+                            label = { Text(viewModel.strings.customerNameSurname, color = onBackgroundColor.copy(alpha = 0.5f)) },
+                            leadingIcon = { Icon(Icons.Default.Person, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next),
+                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor)
+                        )
 
-                            PhoneNumberField(
-                                phoneNumber = viewModel.customerPhone,
-                                onPhoneNumberChange = { viewModel.onCustomerPhoneChange(it) },
-                                label = viewModel.strings.customerPhoneNo,
-                                selectCountryLabel = viewModel.strings.selectCountry,
-                                searchCountryLabel = viewModel.strings.searchCountryOrCode,
-                                primaryColor = primaryColor,
-                                onBackgroundColor = onBackgroundColor
-                            )
-                        }
+                        PhoneNumberField(
+                            phoneNumber = viewModel.customerPhone,
+                            onPhoneNumberChange = { viewModel.onCustomerPhoneChange(it) },
+                            label = viewModel.strings.customerPhoneNo,
+                            selectCountryLabel = viewModel.strings.selectCountry,
+                            searchCountryLabel = viewModel.strings.searchCountryOrCode,
+                            primaryColor = primaryColor,
+                            onBackgroundColor = onBackgroundColor
+                        )
                     }
                 }
 
