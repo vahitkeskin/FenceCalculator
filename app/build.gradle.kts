@@ -87,4 +87,7 @@ dependencies {
 
     // QR Generation (ZXing)
     implementation(libs.zxing.core)
+
+    // Phone Number Utility
+    implementation(libs.libphonenumber.android)
 }

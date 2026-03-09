@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.vahitkeskin.fencecalculator.ui.theme.shadowlessElevation
 import com.vahitkeskin.fencecalculator.util.PdfGenerator
 import java.io.File
 
@@ -136,7 +137,8 @@ fun PdfPreviewDialog(
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0xFF25D366), // WhatsApp Green
                                 contentColor = Color.White
-                            )
+                            ),
+                            elevation = shadowlessElevation()
                         ) {
                             Icon(Icons.Default.Send, null)
                             Spacer(Modifier.width(8.dp))
@@ -151,7 +153,8 @@ fun PdfPreviewDialog(
                             .weight(1f)
                             .height(56.dp),
                         shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        elevation = shadowlessElevation()
                     ) {
                         Icon(Icons.Default.Share, null)
                         Spacer(Modifier.width(8.dp))

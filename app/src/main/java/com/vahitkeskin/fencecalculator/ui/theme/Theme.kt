@@ -18,6 +18,8 @@ import androidx.core.view.WindowCompat
 import com.vahitkeskin.fencecalculator.ui.viewmodel.AppTheme
 import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.unit.dp
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFF3B82F6), // Professional Blue
@@ -59,6 +61,7 @@ fun FenceCalculatorTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
@@ -88,3 +91,12 @@ fun FenceCalculatorTheme(
         }
     }
 }
+
+@Composable
+fun shadowlessElevation() = ButtonDefaults.buttonElevation(
+    defaultElevation = 0.dp,
+    pressedElevation = 0.dp,
+    hoveredElevation = 0.dp,
+    focusedElevation = 0.dp,
+    disabledElevation = 0.dp
+)

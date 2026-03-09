@@ -33,6 +33,7 @@ import java.util.UUID
 import androidx.compose.ui.platform.LocalContext
 import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
+import com.vahitkeskin.fencecalculator.ui.theme.shadowlessElevation
 import com.vahitkeskin.fencecalculator.util.DataStoreManager
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -558,7 +559,8 @@ fun AddEditCardScreen(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = primaryColor,
                             disabledContainerColor = primaryColor.copy(alpha = 0.3f)
-                        )
+                        ),
+                        elevation = shadowlessElevation()
                     ) {
                         Icon(
                             if (isEditing) Icons.Default.Save else Icons.Default.Add,
@@ -589,7 +591,8 @@ fun AddEditCardScreen(
                             shape = RoundedCornerShape(16.dp),
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = Color(0xFFD32F2F)
-                            )
+                            ),
+                            elevation = shadowlessElevation()
                         ) {
                             Icon(
                                 Icons.Default.Delete,

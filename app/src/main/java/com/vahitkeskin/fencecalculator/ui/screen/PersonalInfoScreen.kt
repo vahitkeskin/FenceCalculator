@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.PremiumGlassCard
+import com.vahitkeskin.fencecalculator.ui.theme.shadowlessElevation
 import com.vahitkeskin.fencecalculator.util.IbanValidator
 import com.vahitkeskin.fencecalculator.util.QrGenerator
 
@@ -254,7 +255,8 @@ fun PersonalInfoScreen(
                         },
                         modifier = Modifier.fillMaxWidth().height(64.dp),
                         shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
+                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+                        elevation = shadowlessElevation()
                     ) {
                         Icon(Icons.Default.PhotoCamera, null)
                         Spacer(Modifier.width(12.dp))
@@ -268,7 +270,8 @@ fun PersonalInfoScreen(
                         },
                         modifier = Modifier.fillMaxWidth().height(64.dp),
                         shape = RoundedCornerShape(16.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, primaryColor)
+                        border = androidx.compose.foundation.BorderStroke(1.dp, primaryColor),
+                        elevation = shadowlessElevation()
                     ) {
                         Icon(Icons.Default.PhotoLibrary, null)
                         Spacer(Modifier.width(12.dp))

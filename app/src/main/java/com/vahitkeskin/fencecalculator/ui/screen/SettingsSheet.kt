@@ -32,6 +32,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.ui.platform.LocalContext
 import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
+import com.vahitkeskin.fencecalculator.ui.theme.shadowlessElevation
 import com.vahitkeskin.fencecalculator.util.DataStoreManager
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -177,7 +178,8 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colorScheme.primary
-                )
+                ),
+                elevation = shadowlessElevation()
             ) {
                 Icon(Icons.Filled.RestartAlt, null, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
@@ -218,7 +220,9 @@ fun ThemeToggleButton(
         shape = RoundedCornerShape(12.dp),
         color = if (isSelected) MaterialTheme.colorScheme.primary else onSurface.copy(alpha = 0.05f),
         contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else onSurface.copy(alpha = 0.6f),
-        border = if (isSelected) null else androidx.compose.foundation.BorderStroke(1.dp, onSurface.copy(alpha = 0.1f))
+        border = if (isSelected) null else androidx.compose.foundation.BorderStroke(1.dp, onSurface.copy(alpha = 0.1f)),
+        shadowElevation = 0.dp,
+        tonalElevation = 0.dp
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),

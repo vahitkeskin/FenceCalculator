@@ -141,17 +141,11 @@ fun HomeScreen(
                                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor)
                             )
 
-                            OutlinedTextField(
-                                value = viewModel.customerPhone,
-                                onValueChange = { viewModel.onCustomerPhoneChange(it) },
-                                label = { Text("Müşteri Telefon No", color = onBackgroundColor.copy(alpha = 0.5f)) },
-                                leadingIcon = { Icon(Icons.Default.Phone, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
-                                placeholder = { Text("905xxxxxxxxx", color = onBackgroundColor.copy(alpha = 0.2f)) },
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone, imeAction = ImeAction.Next),
-                                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor)
+                            PhoneNumberField(
+                                phoneNumber = viewModel.customerPhone,
+                                onPhoneNumberChange = { viewModel.onCustomerPhoneChange(it) },
+                                primaryColor = primaryColor,
+                                onBackgroundColor = onBackgroundColor
                             )
                         }
                     }

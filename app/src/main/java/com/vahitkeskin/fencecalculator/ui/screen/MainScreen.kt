@@ -46,7 +46,7 @@ fun MainScreen(
         bottomBar = {
             NavigationBar(
                     containerColor = MaterialTheme.colorScheme.surface,
-                    tonalElevation = 8.dp
+                    tonalElevation = 0.dp
                 ) {
                     val navBackStackEntry by innerNavController.currentBackStackEntryAsState()
                     val currentRoute = navBackStackEntry?.destination?.route

@@ -23,6 +23,7 @@ import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import com.vahitkeskin.fencecalculator.util.DataStoreManager
 import androidx.navigation.compose.rememberNavController
+import com.vahitkeskin.fencecalculator.ui.theme.shadowlessElevation
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -145,7 +146,8 @@ fun CustomCardsScreen(
                         onClick = { navController.navigate("add_edit_card/new") },
                         modifier = Modifier.fillMaxWidth().height(56.dp).padding(vertical = 4.dp),
                         shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor.copy(alpha = 0.1f))
+                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor.copy(alpha = 0.1f)),
+                        elevation = shadowlessElevation()
                     ) {
                         Icon(Icons.Default.Add, null, tint = primaryColor)
                         Spacer(Modifier.width(8.dp))
