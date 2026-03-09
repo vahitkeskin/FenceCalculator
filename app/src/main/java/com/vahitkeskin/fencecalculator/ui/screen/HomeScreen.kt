@@ -38,6 +38,10 @@ import com.vahitkeskin.fencecalculator.ui.components.*
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
 import com.vahitkeskin.fencecalculator.util.PdfGenerator
 import com.vahitkeskin.fencecalculator.util.QrGenerator
+import androidx.navigation.compose.rememberNavController
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
+import com.vahitkeskin.fencecalculator.util.DataStoreManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
@@ -233,5 +237,18 @@ fun HomeScreen(
                 viewModel.iban
             ) { pdfFileForPreview = null }
         }
+    }
+}
+
+@AppPreviews
+@Composable
+fun HomeScreenPreview() {
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager) }
+    val navController = rememberNavController()
+    
+    FenceCalculatorTheme {
+        HomeScreen(viewModel = viewModel, navController = navController)
     }
 }

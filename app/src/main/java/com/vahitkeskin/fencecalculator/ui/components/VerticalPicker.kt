@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 
 @Composable
 fun <T> VerticalPicker(
@@ -124,6 +126,24 @@ fun <T> VerticalPicker(
                     }
                 }
             }
+        }
+    }
+}
+
+@AppPreviews
+@Composable
+fun VerticalPickerPreview() {
+    val items = listOf("Seçenek 1", "Seçenek 2", "Seçenek 3", "Seçenek 4", "Seçenek 5")
+    var selectedItem by remember { mutableStateOf(items[2]) }
+    
+    FenceCalculatorTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            VerticalPicker(
+                items = items,
+                selectedItem = selectedItem,
+                onItemSelected = { selectedItem = it },
+                visibleItemsCount = 3
+            )
         }
     }
 }

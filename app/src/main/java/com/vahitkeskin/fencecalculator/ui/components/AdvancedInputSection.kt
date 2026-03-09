@@ -28,6 +28,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.launch
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 
 @Composable
 fun AdvancedInputSection(
@@ -128,6 +130,19 @@ fun SmartSettingsInput(
                 Spacer(Modifier.width(4.dp))
                 Text("Varsayılan: $defaultValue", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.tertiary)
             }
+        }
+    }
+}
+
+@AppPreviews
+@Composable
+fun AdvancedInputSectionPreview() {
+    FenceCalculatorTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            AdvancedInputSection(
+                lengthValue = "150",
+                onLengthChange = {}
+            )
         }
     }
 }

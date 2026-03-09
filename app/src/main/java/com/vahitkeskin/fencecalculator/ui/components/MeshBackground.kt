@@ -11,6 +11,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import kotlin.math.sin
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 
 @Composable
 fun MeshBackground() {
@@ -96,3 +98,11 @@ private data class BlobData(
     val speedX: Float,
     val speedY: Float
 )
+
+@AppPreviews
+@Composable
+fun MeshBackgroundPreview() {
+    FenceCalculatorTheme {
+        MeshBackground()
+    }
+}

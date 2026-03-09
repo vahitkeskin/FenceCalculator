@@ -13,6 +13,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
+import androidx.compose.ui.platform.LocalContext
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
+import com.vahitkeskin.fencecalculator.util.DataStoreManager
+import androidx.navigation.compose.rememberNavController
+import androidx.compose.runtime.remember
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,5 +45,18 @@ fun SettingsScreen(viewModel: CalculatorViewModel, navController: NavController)
             // Parametre olarak onDismiss'i boş geçiyoruz çünkü artık bir tab.
             SettingsSheetContent(viewModel = viewModel, onDismiss = {})
         }
+    }
+}
+
+@AppPreviews
+@Composable
+fun SettingsScreenPreview() {
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager) }
+    val navController = rememberNavController()
+    
+    FenceCalculatorTheme {
+        SettingsScreen(viewModel = viewModel, navController = navController)
     }
 }

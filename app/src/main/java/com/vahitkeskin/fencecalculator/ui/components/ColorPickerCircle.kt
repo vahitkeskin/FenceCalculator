@@ -26,6 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 
 val presetColors = listOf(
     "#F44336", // Red
@@ -121,6 +123,19 @@ fun ColorPickerCircle(
                     }
                 }
             }
+        }
+    }
+}
+
+@AppPreviews
+@Composable
+fun ColorPickerCirclePreview() {
+    FenceCalculatorTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            ColorPickerCircle(
+                selectedColorHex = "#2196F3",
+                onColorSelected = {}
+            )
         }
     }
 }

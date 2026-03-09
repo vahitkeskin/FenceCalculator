@@ -13,6 +13,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.padding
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 
 @Composable
 fun PremiumGlassCard(
@@ -91,4 +95,18 @@ fun PremiumGlassCard(
 // Extension to approximate luminance
 private fun Color.luminance(): Float {
     return 0.299f * red + 0.587f * green + 0.114f * blue
+}
+
+@AppPreviews
+@Composable
+fun PremiumGlassCardPreview() {
+    FenceCalculatorTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            PremiumGlassCard {
+                Box(modifier = Modifier.padding(24.dp)) {
+                    Text("Premium Glass Card Content", color = MaterialTheme.colorScheme.onSurface)
+                }
+            }
+        }
+    }
 }

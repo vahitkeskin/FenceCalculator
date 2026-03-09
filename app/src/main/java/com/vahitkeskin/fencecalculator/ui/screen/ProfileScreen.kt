@@ -28,6 +28,10 @@ import com.vahitkeskin.fencecalculator.R
 import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.PremiumGlassCard
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
+import com.vahitkeskin.fencecalculator.util.DataStoreManager
+import androidx.navigation.compose.rememberNavController
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable

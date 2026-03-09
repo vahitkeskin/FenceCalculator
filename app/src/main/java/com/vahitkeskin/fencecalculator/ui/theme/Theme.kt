@@ -16,6 +16,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.vahitkeskin.fencecalculator.ui.viewmodel.AppTheme
+import androidx.compose.material3.LocalRippleConfiguration
+import androidx.compose.runtime.CompositionLocalProvider
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFF3B82F6), // Professional Blue
@@ -38,6 +40,7 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF0F172A),
     onPrimary = Color.White
 )
+
 
 @Composable
 fun FenceCalculatorTheme(
@@ -75,7 +78,13 @@ fun FenceCalculatorTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+        typography = Typography
+    ) {
+        @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+        CompositionLocalProvider(
+            LocalRippleConfiguration provides null
+        ) {
+            content()
+        }
+    }
 }
