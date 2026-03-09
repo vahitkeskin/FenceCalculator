@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -20,6 +22,21 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // local.properties dosyasından reklam ID'lerini oku
+        val properties = Properties()
+        val propertiesFile = project.rootProject.file("local.properties")
+        if (propertiesFile.exists()) {
+            properties.load(propertiesFile.inputStream())
+        }
+
+        val adAppId = properties.getProperty("admob.app.id") ?: ""
+        val adBannerId = properties.getProperty("admob.banner.id") ?: ""
+        val adInterstitialId = properties.getProperty("admob.interstitial.id") ?: ""
+
+        manifestPlaceholders["admobAppId"] = adAppId
+        buildConfigField("String", "ADMOB_BANNER_ID", "\"$adBannerId\"")
+        buildConfigField("String", "ADMOB_INTERSTITIAL_ID", "\"$adInterstitialId\"")
     }
 
     buildTypes {
@@ -41,6 +58,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -90,4 +108,5 @@ dependencies {
 
     // Phone Number Utility
     implementation(libs.libphonenumber.android)
+    implementation(libs.play.services.ads)
 }
