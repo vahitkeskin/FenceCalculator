@@ -218,12 +218,38 @@ fun HomeScreen(
 
                 // Hızlı Bilgi
                 item {
-                    Text(
-                        viewModel.strings.infoTextHome,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = onBackgroundColor.copy(alpha = 0.4f),
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    )
+                    PremiumGlassCard(
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Surface(
+                                modifier = Modifier.size(42.dp),
+                                color = primaryColor.copy(alpha = 0.1f),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = null,
+                                        tint = primaryColor,
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                }
+                            }
+                            
+                            Text(
+                                viewModel.strings.infoTextHome,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = onBackgroundColor.copy(alpha = 0.6f),
+                                lineHeight = 16.sp
+                            )
+                        }
+                    }
                 }
 
                 // Klavye ve Toplam Maliyet kartının üstünde kalması için büyük boşluk
