@@ -26,6 +26,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import com.vahitkeskin.fencecalculator.R
 import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.PremiumGlassCard
@@ -223,5 +226,14 @@ fun AboutInfoItem(
                 )
             }
         }
+    }
+}
+
+@AppPreviews
+@Composable
+fun AboutScreenPreview() {
+    val navController = rememberNavController()
+    FenceCalculatorTheme {
+        AboutScreen(navController = navController)
     }
 }

@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -121,5 +123,13 @@ fun AnimatedSplashScreen(onAnimationFinished: () -> Unit) {
                 )
             }
         }
+    }
+}
+
+@AppPreviews
+@Composable
+fun AnimatedSplashScreenPreview() {
+    FenceCalculatorTheme {
+        AnimatedSplashScreen(onAnimationFinished = {})
     }
 }

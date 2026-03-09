@@ -30,6 +30,10 @@ import com.vahitkeskin.fencecalculator.ui.components.presetColors
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
 import com.vahitkeskin.fencecalculator.ui.components.VerticalPicker
 import java.util.UUID
+import androidx.compose.ui.platform.LocalContext
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
+import com.vahitkeskin.fencecalculator.util.DataStoreManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -611,6 +615,22 @@ fun AddEditCardScreen(
                 item { Spacer(modifier = Modifier.height(24.dp)) }
             }
         }
+    }
+}
+
+@AppPreviews
+@Composable
+fun AddEditCardScreenPreview() {
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager) }
+    
+    FenceCalculatorTheme {
+        AddEditCardScreen(
+            viewModel = viewModel,
+            editCardId = null,
+            onNavigateBack = {}
+        )
     }
 }
 

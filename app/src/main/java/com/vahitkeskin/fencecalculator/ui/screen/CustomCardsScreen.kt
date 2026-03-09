@@ -18,6 +18,11 @@ import androidx.navigation.NavController
 import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.SwapLayoutResultRow
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
+import androidx.compose.ui.platform.LocalContext
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
+import com.vahitkeskin.fencecalculator.util.DataStoreManager
+import androidx.navigation.compose.rememberNavController
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -152,5 +157,18 @@ fun CustomCardsScreen(
                 item { Spacer(modifier = Modifier.height(90.dp)) }
             }
         }
+    }
+}
+
+@AppPreviews
+@Composable
+fun CustomCardsScreenPreview() {
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager) }
+    val navController = rememberNavController()
+    
+    FenceCalculatorTheme {
+        CustomCardsScreen(viewModel = viewModel, navController = navController)
     }
 }

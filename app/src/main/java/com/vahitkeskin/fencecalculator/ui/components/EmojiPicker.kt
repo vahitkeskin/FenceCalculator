@@ -23,6 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 
 data class EmojiCategory(
     val label: String,
@@ -157,6 +159,19 @@ fun EmojiPicker(
                     )
                 }
             }
+        }
+    }
+}
+
+@AppPreviews
+@Composable
+fun EmojiPickerPreview() {
+    FenceCalculatorTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            EmojiPicker(
+                selectedEmoji = "🏗️",
+                onEmojiSelected = {}
+            )
         }
     }
 }
