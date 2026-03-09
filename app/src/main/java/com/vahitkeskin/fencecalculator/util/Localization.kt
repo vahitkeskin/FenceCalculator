@@ -194,7 +194,15 @@ data class AppStrings(
     val onboardingFinish: String,
     val next: String,
     val skip: String,
-    val lockTooltip: String
+    val lockTooltip: String,
+    val landLengthUsageInfo: String,
+    val premiumRequiredForMore: String,
+    val usageLimitReached: String,
+    val apply: String,
+    val calculate: String,
+    val premiumPopupTitle: String,
+    val premiumPopupDesc: String,
+    val premiumPopupConfirm: String
 )
 
 
@@ -366,7 +374,15 @@ object Localization {
         onboardingFinish = "Hadi Başlayalım",
         next = "İleri",
         skip = "Atla",
-        lockTooltip = "Seçimleri kilitlemek veya kilidini açmak için dokunun"
+        calculate = "Hesapla",
+        lockTooltip = "Seçimleri kilitlemek veya kilidini açmak için dokunun",
+        landLengthUsageInfo = "Hesaplama yapmak için butona dokunun (%d/50 hak)",
+        premiumRequiredForMore = "50 kullanım hakkı doldu. Yıllık Premium sadece 350 TL!",
+        usageLimitReached = "Günlük kullanım sınırına ulaşıldı.",
+        apply = "Uygula",
+        premiumPopupTitle = "Premium'u Keşfedin",
+        premiumPopupDesc = "Tüm profesyonel özelliklerin kilidini açın.\n\n• Sınırsız hesaplama hakkı\n• Gelişmiş mimari araçlar\n• PDF raporları ve paylaşım\n\nYıllık Premium sadece 350 TL!",
+        premiumPopupConfirm = "Tamam"
     )
 
 
@@ -537,7 +553,15 @@ object Localization {
         onboardingFinish = "Iniziamo",
         next = "Avanti",
         skip = "Salta",
-        lockTooltip = "Tocca per bloccare o sbloccare le selezioni"
+        lockTooltip = "Tocca per bloccare o sbloccare le selezioni",
+        landLengthUsageInfo = "Tocca il pulsante per calcolare (%d/50 diritti)",
+        premiumRequiredForMore = "Scopri Premium per calcoli illimitati.",
+        usageLimitReached = "Limite di utilizzo giornaliero raggiunto.",
+        apply = "Applica",
+        calculate = "Calcola",
+        premiumPopupTitle = "Scopri Premium",
+        premiumPopupDesc = "Sblocca tutte le funzionalità professionali.\n\n• Calcoli illimitati\n• Strumenti architettonici avanzati\n• Rapporti PDF e condivisione\n\nPremium annuale a soli 350 TL!",
+        premiumPopupConfirm = "OK"
     )
 
 
@@ -708,7 +732,15 @@ object Localization {
         onboardingFinish = "Vamos Começar",
         next = "Próximo",
         skip = "Pular",
-        lockTooltip = "Toque para bloquear ou desbloquear seleções"
+        lockTooltip = "Toque para bloquear ou desbloquear seleções",
+        landLengthUsageInfo = "Toque no botão para calcular (%d/50 direitos)",
+        premiumRequiredForMore = "Descubra o Premium para cálculos ilimitados.",
+        usageLimitReached = "Limite de uso diário atingido.",
+        apply = "Aplicar",
+        calculate = "Calcular",
+        premiumPopupTitle = "Descobrir Premium",
+        premiumPopupDesc = "Desbloqueie todos os recursos profissionais.\n\n• Cálculos ilimitados\n• Ferramentas arquitectónicas avançadas\n• Relatórios PDF e partilha\n\nPremium anual apenas 350 TL!",
+        premiumPopupConfirm = "OK"
     )
 
 
@@ -879,7 +911,15 @@ object Localization {
         onboardingFinish = "Laten we beginnen",
         next = "Volgende",
         skip = "Overslaan",
-        lockTooltip = "Tik om selecties te vergrendelen of te ontgrendelen"
+        lockTooltip = "Tik om selecties te vergrendelen of te ontgrendelen",
+        landLengthUsageInfo = "Tik op de knop om te berekenen (%d/50 rechten)",
+        premiumRequiredForMore = "Ontdek Premium voor onbeperkte berekeningen.",
+        usageLimitReached = "Dagelijkse gebruikslimiet bereikt.",
+        apply = "Toepassen",
+        calculate = "Berekenen",
+        premiumPopupTitle = "Discover Premium",
+        premiumPopupDesc = "Unlock all professional features.\n\n• Unlimited calculations\n• Advanced architectural tools\n• PDF reports and sharing\n\nAnnual Premium only 350 TL!",
+        premiumPopupConfirm = "OK"
     )
 
     private val fr = AppStrings(
@@ -1049,7 +1089,15 @@ object Localization {
         onboardingFinish = "Commençons",
         next = "Suivant",
         skip = "Passer",
-        lockTooltip = "Appuyez pour verrouiller ou déverrouiller les sélections"
+        lockTooltip = "Appuyez pour verrouiller ou déverrouiller les sélections",
+        landLengthUsageInfo = "Appuyez sur le bouton pour calculer (%d/50 droits)",
+        premiumRequiredForMore = "Découvrez Premium pour des calculs illimités.",
+        usageLimitReached = "Limite d'utilisation quotidienne atteinte.",
+        apply = "Appliquer",
+        calculate = "Calculer",
+        premiumPopupTitle = "Discover Premium",
+        premiumPopupDesc = "Unlock all professional features.\n\n• Unlimited calculations\n• Advanced architectural tools\n• PDF reports and sharing\n\nAnnual Premium only 350 TL!",
+        premiumPopupConfirm = "OK"
     )
 
 
@@ -1220,7 +1268,15 @@ object Localization {
         onboardingFinish = "Empecemos",
         next = "Siguiente",
         skip = "Saltar",
-        lockTooltip = "Toca para bloquear o desbloquear selecciones"
+        lockTooltip = "Toca para bloquear o desbloquear selecciones",
+        landLengthUsageInfo = "Toca el botón para calcular (%d/50 derechos)",
+        premiumRequiredForMore = "Descubre Premium para cálculos ilimitados.",
+        usageLimitReached = "Límite de uso diario alcanzado.",
+        apply = "Aplicar",
+        calculate = "Calcular",
+        premiumPopupTitle = "Descubrir Premium",
+        premiumPopupDesc = "Desbloquea todas las funciones profesionales.\n\n• Cálculos ilimitados\n• Herramientas arquitectónicas avanzadas\n• Informes PDF y uso compartido\n\nPremium anual solo 350 TL!",
+        premiumPopupConfirm = "OK"
     )
 
 
@@ -1391,7 +1447,15 @@ object Localization {
         onboardingFinish = "Let's Get Started",
         next = "Next",
         skip = "Skip",
-        lockTooltip = "Tap to lock or unlock selections"
+        lockTooltip = "Tap to lock or unlock selections",
+        landLengthUsageInfo = "Tap the button to calculate (%d/50 rights)",
+        premiumRequiredForMore = "Discover Premium for unlimited calculations.",
+        usageLimitReached = "Daily usage limit reached.",
+        apply = "Apply",
+        calculate = "Calculate",
+        premiumPopupTitle = "Discover Premium",
+        premiumPopupDesc = "Unlock all professional features.\n\n• Unlimited calculations\n• Advanced architectural tools\n• PDF reports and sharing\n\nAnnual Premium only 350 TL!",
+        premiumPopupConfirm = "OK"
     )
     private val ru = AppStrings(
         appName = "Калькулятор Ограждений",
@@ -1560,7 +1624,15 @@ object Localization {
         onboardingFinish = "Давайте начнем",
         next = "Далее",
         skip = "Пропустить",
-        lockTooltip = "Нажмите, чтобы заблокировать или разблокировать выбор"
+        lockTooltip = "Нажмите, чтобы заблокировать или разблокировать выбор",
+        landLengthUsageInfo = "Нажмите кнопку для расчета (%d/50 прав)",
+        premiumRequiredForMore = "Откройте Premium для неограниченных расчетов.",
+        usageLimitReached = "Достигнут ежедневный лимит использования.",
+        apply = "Применить",
+        calculate = "Рассчитать",
+        premiumPopupTitle = "Откройте Premium",
+        premiumPopupDesc = "Разблокируйте все профессиональные функции.\n\n• Неограниченное количество расчетов\n• Расширенные архитектурные инструменты\n• PDF-отчеты и обмен данными\n\nГодовой Premium всего за 350 TL!",
+        premiumPopupConfirm = "ОК"
     )
 
 
@@ -1730,8 +1802,16 @@ object Localization {
         onboardingStep3Desc = "جهز حساباتك كملف PDF وشاركها مع عملائك مع رقم IBAN ورمز QR الخاص بك.",
         onboardingFinish = "للبدء",
         next = "التالي",
-        skip = "تخطى",
-        lockTooltip = "اضغط للقفل أو إلغاء القفل"
+        skip = "تخطي",
+        lockTooltip = "اضغط للقفل أو إلغاء القفل",
+        landLengthUsageInfo = "انقر على الزر للحساب (%d/50 حق)",
+        premiumRequiredForMore = "اكتشف Premium للحصول على حسابات غير محدودة.",
+        usageLimitReached = "تم الوصول إلى حد الاستخدام اليومي.",
+        apply = "تطبيق",
+        calculate = "حساب",
+        premiumPopupTitle = "اكتشف Premium",
+        premiumPopupDesc = "افتح جميع الميزات الاحترافية.\n\n• حسابات غير محدودة\n• أدوات معمارية متقدمة\n• تقارير PDF والمشاركة\n\nاشتراك Premium السنوي بـ 350 TL فقط!",
+        premiumPopupConfirm = "موافق"
     )
 
     private val de = AppStrings(
@@ -1901,7 +1981,15 @@ object Localization {
         onboardingFinish = "Lass uns anfangen",
         next = "Weiter",
         skip = "Überspringen",
-        lockTooltip = "Tippen Sie hier, um die Auswahl zu sperren oder zu entsperren"
+        lockTooltip = "Tippen Sie hier, um die Auswahl zu sperren oder zu entsperren",
+        landLengthUsageInfo = "Tippen Sie auf die Schaltfläche, um zu berechnen (%d/50 Rechte)",
+        premiumRequiredForMore = "Entdecken Sie Premium für unbegrenzte Berechnungen.",
+        usageLimitReached = "Tägliches Nutzungslimit erreicht.",
+        apply = "Anwenden",
+        calculate = "Berechnen",
+        premiumPopupTitle = "Premium entdecken",
+        premiumPopupDesc = "Schalten Sie alle professionellen Funktionen frei.\n\n• Unbegrenzte Berechnungen\n• Erweiterte Architektur-Tools\n• PDF-Berichte und Teilen\n\nJahres-Premium nur 350 TL!",
+        premiumPopupConfirm = "OK"
     )
 
     private val zh = AppStrings(
@@ -2071,7 +2159,15 @@ object Localization {
         onboardingFinish = "让我们开始吧",
         next = "下一步",
         skip = "跳过",
-        lockTooltip = "点击以锁定或解锁选择"
+        lockTooltip = "点击以锁定或解锁选择",
+        landLengthUsageInfo = "点击按钮计算 (%d/50 权限)",
+        premiumRequiredForMore = "发现高级版以获得无限计算。",
+        usageLimitReached = "每日使用限制已达到。",
+        apply = "应用",
+        calculate = "计算",
+        premiumPopupTitle = "发现 Premium",
+        premiumPopupDesc = "解锁所有专业功能。\n\n• 无限计算次数\n• 高级建筑工具\n• PDF 报告和分享\n\n年度 Premium 仅需 350 TL!",
+        premiumPopupConfirm = "确定"
     )
 
     private val languages = mapOf(

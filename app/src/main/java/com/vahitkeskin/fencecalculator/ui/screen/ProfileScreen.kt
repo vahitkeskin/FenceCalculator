@@ -147,6 +147,30 @@ fun ProfileScreen(
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
+                    /*
+                    // TODO: İstediğim zaman aktif edebileyim - 50 sınırlaması ve premium
+                    PremiumGlassCard(
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                        cornerRadius = 16.dp
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Star, null, tint = Color(0xFFFFD700))
+                                Spacer(Modifier.width(12.dp))
+                                Text("Premium Status", fontWeight = FontWeight.Bold)
+                            }
+                            Switch(
+                                checked = viewModel.isPremium,
+                                onCheckedChange = { viewModel.onPremiumToggle(it) }
+                            )
+                        }
+                    }
+                    */
+
                     ProfileMenuItem(
                         icon = Icons.Default.Badge,
                         title = viewModel.strings.personalInfo,
