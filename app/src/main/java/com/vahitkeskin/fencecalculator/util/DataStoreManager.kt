@@ -3,6 +3,7 @@ package com.vahitkeskin.fencecalculator.util
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -34,6 +35,17 @@ class DataStoreManager @Inject constructor(
         val CUSTOMER_NAME_KEY = stringPreferencesKey("customer_name")
         val CUSTOMER_PHONE_KEY = stringPreferencesKey("customer_phone")
         val IBAN_KEY = stringPreferencesKey("iban")
+        val APP_LANGUAGE_KEY = stringPreferencesKey("app_language")
+        val ONBOARDING_COMPLETED_KEY = booleanPreferencesKey("onboarding_completed")
+        val LOCK_TOOLTIP_SHOWN_KEY = booleanPreferencesKey("lock_tooltip_shown")
+    }
+
+    val onboardingCompleted: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[ONBOARDING_COMPLETED_KEY] ?: false
+    }
+
+    val lockTooltipShown: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[LOCK_TOOLTIP_SHOWN_KEY] ?: false
     }
 
     val companyName: Flow<String> = context.dataStore.data.map { preferences ->
@@ -58,6 +70,7 @@ class DataStoreManager @Inject constructor(
     val customerName: Flow<String> = context.dataStore.data.map { it[CUSTOMER_NAME_KEY] ?: "" }
     val customerPhone: Flow<String> = context.dataStore.data.map { it[CUSTOMER_PHONE_KEY] ?: "" }
     val iban: Flow<String> = context.dataStore.data.map { it[IBAN_KEY] ?: "" }
+    val appLanguage: Flow<String> = context.dataStore.data.map { it[APP_LANGUAGE_KEY] ?: "detect" }
 
     suspend fun saveCompanyName(name: String) {
         context.dataStore.edit { preferences ->
@@ -90,6 +103,7 @@ class DataStoreManager @Inject constructor(
     suspend fun saveCustomerName(v: String) = context.dataStore.edit { it[CUSTOMER_NAME_KEY] = v }
     suspend fun saveCustomerPhone(v: String) = context.dataStore.edit { it[CUSTOMER_PHONE_KEY] = v }
     suspend fun saveIban(v: String) = context.dataStore.edit { it[IBAN_KEY] = v }
+    suspend fun saveAppLanguage(v: String) = context.dataStore.edit { it[APP_LANGUAGE_KEY] = v }
 
     suspend fun savePoleLength(v: String) = context.dataStore.edit { it[POLE_LENGTH_KEY] = v }
     suspend fun savePipeLength(v: String) = context.dataStore.edit { it[PIPE_LENGTH_KEY] = v }
@@ -97,4 +111,6 @@ class DataStoreManager @Inject constructor(
     suspend fun saveBindingFactor(v: String) = context.dataStore.edit { it[BINDING_FACTOR_KEY] = v }
     suspend fun saveCementFactor(v: String) = context.dataStore.edit { it[CEMENT_FACTOR_KEY] = v }
     suspend fun saveConcreteFactor(v: String) = context.dataStore.edit { it[CONCRETE_FACTOR_KEY] = v }
+    suspend fun saveOnboardingCompleted(completed: Boolean) = context.dataStore.edit { it[ONBOARDING_COMPLETED_KEY] = completed }
+    suspend fun saveLockTooltipShown(shown: Boolean) = context.dataStore.edit { it[LOCK_TOOLTIP_SHOWN_KEY] = shown }
 }

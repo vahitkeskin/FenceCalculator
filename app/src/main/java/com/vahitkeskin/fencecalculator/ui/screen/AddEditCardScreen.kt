@@ -33,7 +33,10 @@ import java.util.UUID
 import androidx.compose.ui.platform.LocalContext
 import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
+import com.vahitkeskin.fencecalculator.ui.theme.shadowlessElevation
 import com.vahitkeskin.fencecalculator.util.DataStoreManager
+import com.vahitkeskin.fencecalculator.R
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,7 +65,14 @@ fun AddEditCardScreen(
     val allBaseCards = viewModel.results // Varsayılanlar
     val baseCardOptions = allBaseCards.map { it.id to it.title }
     
-    val unitOptions = remember { listOf("Adet", "Metre", "Kg", "Litre", "Birim", "TL") }
+    val unitOptions = remember { listOf(
+        viewModel.strings.unitPiece, 
+        viewModel.strings.unitMeter, 
+        viewModel.strings.unitKg, 
+        viewModel.strings.unitLiter, 
+        viewModel.strings.unitUnit, 
+        viewModel.strings.unitTl
+    ) }
     if (unit.isEmpty()) unit = unitOptions.first()
     
     // Rasyo seçenekleri artık manuel
@@ -89,14 +99,14 @@ fun AddEditCardScreen(
                     title = {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
-                                if (isEditing) "KARTI DÜZENLE" else "YENİ KART EKLE",
+                                if (isEditing) viewModel.strings.editCard else viewModel.strings.addNewCard,
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Black,
                                 color = onBackgroundColor,
                                 letterSpacing = 2.sp
                             )
                             Text(
-                                "MANUEL GİRİŞ",
+                                viewModel.strings.manualEntry,
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = onBackgroundColor.copy(alpha = 0.5f),
@@ -108,7 +118,7 @@ fun AddEditCardScreen(
                         IconButton(onClick = onNavigateBack) {
                             Icon(
                                 Icons.Default.ArrowBack,
-                                contentDescription = "Geri",
+                                contentDescription = viewModel.strings.back,
                                 tint = onBackgroundColor
                             )
                         }
@@ -134,7 +144,7 @@ fun AddEditCardScreen(
                         OutlinedTextField(
                             value = title,
                             onValueChange = { title = it },
-                            label = { Text("Kart Başlığı *", color = onBackgroundColor.copy(alpha = 0.5f)) },
+                            label = { Text(viewModel.strings.cardTitleRequired, color = onBackgroundColor.copy(alpha = 0.5f)) },
                             leadingIcon = { Icon(Icons.Default.Title, contentDescription = null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
                             modifier = Modifier.fillMaxWidth().padding(16.dp),
                             shape = RoundedCornerShape(12.dp),
@@ -154,7 +164,7 @@ fun AddEditCardScreen(
                         OutlinedTextField(
                             value = description,
                             onValueChange = { description = it },
-                            label = { Text("Açıklama / Not", color = onBackgroundColor.copy(alpha = 0.5f)) },
+                            label = { Text(viewModel.strings.descriptionNote, color = onBackgroundColor.copy(alpha = 0.5f)) },
                             leadingIcon = { Icon(Icons.Default.Description, contentDescription = null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
                             modifier = Modifier.fillMaxWidth().padding(16.dp),
                             shape = RoundedCornerShape(12.dp),
@@ -178,7 +188,7 @@ fun AddEditCardScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    "MİKTAR & BİRİM",
+                                    viewModel.strings.quantityAndUnit,
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = onBackgroundColor.copy(alpha = 0.5f),
@@ -186,44 +196,50 @@ fun AddEditCardScreen(
                                 )
                             }
                             
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(16.dp))
 
                             // Bağımlılık Ayarları (Her Zaman Görünür)
                                 // Bağımlılık Ayarları
                                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth().padding(start = 4.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            "REFERANS KART SEÇİN",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            fontWeight = FontWeight.Bold,
-                                            color = onBackgroundColor.copy(alpha = 0.5f)
-                                        )
+                                    // Referans Kart Seçici Başlığı
+                                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 0.dp)) {
+                                        Icon(Icons.Default.CopyAll, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(viewModel.strings.selectReferenceCard, style = MaterialTheme.typography.titleSmall, color = onBackgroundColor.copy(alpha = 0.9f), fontWeight = FontWeight.Bold)
                                     }
                                     
                                     // Kart Seçici (VerticalPicker)
-                                    VerticalPicker(
-                                        items = baseCardOptions,
-                                        selectedItem = baseCardOptions.find { it.first == dependentCardId } ?: baseCardOptions.firstOrNull() ?: ("" to ""),
-                                        onItemSelected = { 
-                                            if (dependentCardId != it.first) {
-                                                dependentCardId = it.first
-                                                if (!isEditing) dependentRatio = "" // Yeni kartta kart değiştikçe boşalt
-                                            }
-                                        },
-                                        label = { it.second },
-                                        visibleItemsCount = 3,
-                                        isLocked = isDependentCardLocked,
-                                        onLockToggle = { isDependentCardLocked = !isDependentCardLocked }
-                                    )
+                                    if (baseCardOptions.isNotEmpty()) {
+                                        VerticalPicker(
+                                            items = baseCardOptions,
+                                            selectedItem = baseCardOptions.find { it.first == dependentCardId } ?: baseCardOptions.first(),
+                                            onItemSelected = { 
+                                                if (dependentCardId != it.first) {
+                                                    dependentCardId = it.first
+                                                    if (!isEditing) dependentRatio = "" // Yeni kartta kart değiştikçe boşalt
+                                                }
+                                            },
+                                            label = { it.second },
+                                            visibleItemsCount = 3,
+                                            isLocked = isDependentCardLocked,
+                                            onLockToggle = { isDependentCardLocked = !isDependentCardLocked },
+                                            tooltipText = viewModel.strings.lockTooltip,
+                                            showTooltip = !viewModel.isLockTooltipShown,
+                                            onTooltipDismiss = { viewModel.setLockTooltipShown() }
+                                        )
+                                    } else {
+                                        Text(
+                                            viewModel.strings.noCardsYet,
+                                            modifier = Modifier.padding(8.dp),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = onBackgroundColor.copy(alpha = 0.5f)
+                                        )
+                                    }
 
                                     // İşlem Seçici
                                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                         Text(
-                                            "İŞLEM SEÇİN",
+                                            viewModel.strings.selectOperation,
                                             style = MaterialTheme.typography.labelSmall,
                                             fontWeight = FontWeight.Bold,
                                             color = onBackgroundColor.copy(alpha = 0.5f),
@@ -233,7 +249,7 @@ fun AddEditCardScreen(
                                             modifier = Modifier.fillMaxWidth(),
                                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                                         ) {
-                                            listOf("+" to "Topla", "-" to "Çıkar", "*" to "Çarp", "÷" to "Böl").forEach { (op, label) ->
+                                            listOf("+" to viewModel.strings.opAdd, "-" to viewModel.strings.opSub, "*" to viewModel.strings.opMul, "÷" to viewModel.strings.opDiv).forEach { (op, label) ->
                                                 val isSelected = dependentOperation == op
                                                 val animatedContainerColor by animateColorAsState(
                                                     targetValue = if (isSelected) primaryColor else onBackgroundColor.copy(alpha = 0.05f),
@@ -275,74 +291,97 @@ fun AddEditCardScreen(
                                         }
                                     }
 
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        OutlinedTextField(
-                                            value = dependentRatio,
-                                            onValueChange = { newVal ->
-                                                val s = newVal.replace(',', '.')
-                                                if (s.isEmpty() || (s.all { it.isDigit() || it == '.' } && s.count { it == '.' } <= 1)) {
-                                                    dependentRatio = s
-                                                }
-                                            },
-                                            label = { Text("Miktar / Değer", color = onBackgroundColor.copy(alpha = 0.5f)) },
-                                            leadingIcon = { 
-                                                if (dependentOperation == "÷") {
-                                                    Text(
-                                                        "÷",
-                                                        fontSize = 20.sp,
-                                                        fontWeight = FontWeight.Black,
-                                                        color = primaryColor,
-                                                        modifier = Modifier.padding(start = 4.dp)
-                                                    )
-                                                } else {
-                                                    val icon = when(dependentOperation) {
-                                                        "+" -> Icons.Default.Add
-                                                        "-" -> Icons.Default.Remove
-                                                        else -> Icons.Default.Close
-                                                    }
-                                                    Icon(icon, contentDescription = null, tint = primaryColor)
-                                                }
-                                            },
-                                            modifier = Modifier.weight(1f),
-                                            shape = RoundedCornerShape(12.dp),
-                                            singleLine = true,
-                                            keyboardOptions = KeyboardOptions(
-                                                keyboardType = KeyboardType.Number,
-                                                imeAction = ImeAction.Next
-                                            ),
-                                            colors = outlinedTextFieldColors(onBackgroundColor, primaryColor)
-                                        )
-                                        
-                                        Column(modifier = Modifier.weight(0.6f)) {
+                                    Column(modifier = Modifier.fillMaxWidth()) {
+                                        // 1. Başlıklar Satırı
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                        ) {
+                                            // TextField Başlığı (Görünmez)
                                             Row(
-                                                modifier = Modifier.fillMaxWidth().padding(start = 4.dp, bottom = 4.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                modifier = Modifier.weight(1f),
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                Text(
-                                                    "BİRİM",
-                                                    style = MaterialTheme.typography.labelSmall,
-                                                    fontWeight = FontWeight.Bold,
-                                                    color = onBackgroundColor.copy(alpha = 0.5f)
+                                                Icon(Icons.Default.Numbers, contentDescription = null, tint = Color.Transparent, modifier = Modifier.size(20.dp))
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text(" ", style = MaterialTheme.typography.titleSmall)
+                                            }
+                                            
+                                            // Birim Seçici Başlığı
+                                            Row(
+                                                modifier = Modifier.weight(0.6f),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.Center
+                                            ) {
+                                                Icon(Icons.Default.Straighten, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text(viewModel.strings.unitLabel, style = MaterialTheme.typography.titleSmall, color = onBackgroundColor.copy(alpha = 0.9f), fontWeight = FontWeight.Bold)
+                                            }
+                                        }
+                                        
+                                        // 2. Giriş Alanları Satırı (Seçilen ile hizalamak için dikeyde ortalanmış)
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            // Miktar / Değer Girişi
+                                            OutlinedTextField(
+                                                value = dependentRatio,
+                                                onValueChange = { newVal ->
+                                                    val s = newVal.replace(',', '.')
+                                                    if (s.isEmpty() || (s.all { it.isDigit() || it == '.' } && s.count { it == '.' } <= 1)) {
+                                                        dependentRatio = s
+                                                    }
+                                                },
+                                                label = { Text(viewModel.strings.quantityValue, color = onBackgroundColor.copy(alpha = 0.5f)) },
+                                                leadingIcon = { 
+                                                    if (dependentOperation == "÷") {
+                                                        Text(
+                                                            "÷",
+                                                            fontSize = 20.sp,
+                                                            fontWeight = FontWeight.Black,
+                                                            color = primaryColor,
+                                                            modifier = Modifier.padding(start = 4.dp)
+                                                        )
+                                                    } else {
+                                                        val icon = when(dependentOperation) {
+                                                            "+" -> Icons.Default.Add
+                                                            "-" -> Icons.Default.Remove
+                                                            else -> Icons.Default.Close
+                                                        }
+                                                        Icon(icon, contentDescription = null, tint = primaryColor)
+                                                    }
+                                                },
+                                                modifier = Modifier.weight(1f),
+                                                shape = RoundedCornerShape(12.dp),
+                                                singleLine = true,
+                                                keyboardOptions = KeyboardOptions(
+                                                    keyboardType = KeyboardType.Number,
+                                                    imeAction = ImeAction.Next
+                                                ),
+                                                colors = outlinedTextFieldColors(onBackgroundColor, primaryColor)
+                                            )
+                                            
+                                            Column(
+                                                modifier = Modifier.weight(0.6f),
+                                                horizontalAlignment = Alignment.CenterHorizontally
+                                            ) {
+                                                VerticalPicker(
+                                                    items = unitOptions,
+                                                    selectedItem = unitOptions.find { it == unit } ?: unitOptions.first(),
+                                                    onItemSelected = { unit = it },
+                                                    visibleItemsCount = 3,
+                                                    isLocked = isDependentUnitLocked,
+                                                    onLockToggle = { isDependentUnitLocked = !isDependentUnitLocked }
                                                 )
                                             }
-                                            VerticalPicker(
-                                                items = unitOptions,
-                                                selectedItem = unitOptions.find { it == unit } ?: unitOptions.first(),
-                                                onItemSelected = { unit = it },
-                                                visibleItemsCount = 3,
-                                                isLocked = isDependentUnitLocked,
-                                                onLockToggle = { isDependentUnitLocked = !isDependentUnitLocked }
-                                            )
                                         }
                                     }
                                     
                                     // Hesaplanan miktar önizlemesi
                                     val baseQty = allBaseCards.find { it.id == dependentCardId }?.quantity ?: 0.0
+                                    val baseUnit = allBaseCards.find { it.id == dependentCardId }?.unit ?: ""
                                     val ratio = dependentRatio.toDoubleOrNull() ?: 0.0
                                     val calcQty = kotlin.math.ceil(
                                         when (dependentOperation) {
@@ -364,7 +403,7 @@ fun AddEditCardScreen(
                                                 Icon(Icons.Default.Calculate, contentDescription = null, tint = primaryColor)
                                                 Spacer(modifier = Modifier.width(12.dp))
                                                 Text(
-                                                    "Sonuç: ${baseQty.toInt()} $dependentOperation $ratio = ${calcQty.toInt()} $unit",
+                                                    String.format(viewModel.strings.calcPreviewResult, baseQty.toInt(), baseUnit, dependentOperation, ratio, calcQty.toInt(), unit),
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     color = onBackgroundColor,
                                                     fontWeight = FontWeight.Bold
@@ -388,7 +427,7 @@ fun AddEditCardScreen(
                                             quantity = s
                                         }
                                     },
-                                    label = { Text("Miktar", color = onBackgroundColor.copy(alpha = 0.5f)) },
+                                    label = { Text(viewModel.strings.quantity, color = onBackgroundColor.copy(alpha = 0.5f)) },
                                     leadingIcon = { Icon(Icons.Default.Numbers, contentDescription = null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
                                     modifier = Modifier.weight(1f),
                                     shape = RoundedCornerShape(12.dp),
@@ -415,7 +454,7 @@ fun AddEditCardScreen(
                                     unitPrice = s
                                 }
                             },
-                            label = { Text("Birim Fiyat (₺)", color = onBackgroundColor.copy(alpha = 0.5f)) },
+                            label = { Text(viewModel.strings.unitPriceTl, color = onBackgroundColor.copy(alpha = 0.5f)) },
                             leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
                             modifier = Modifier.fillMaxWidth().padding(16.dp),
                             shape = RoundedCornerShape(12.dp),
@@ -465,7 +504,7 @@ fun AddEditCardScreen(
                         PremiumGlassCard {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
-                                    "ÖNİZLEME",
+                                    viewModel.strings.previewTitle,
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = onBackgroundColor.copy(alpha = 0.5f),
@@ -519,7 +558,7 @@ fun AddEditCardScreen(
                                 if (previewTotal > 0) {
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        "Toplam: ${String.format("%,.2f", previewTotal)} ₺",
+                                        String.format(viewModel.strings.totalPreviewText, String.format("%,.2f", previewTotal)),
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.ExtraBold,
                                         color = previewColor
@@ -558,7 +597,8 @@ fun AddEditCardScreen(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = primaryColor,
                             disabledContainerColor = primaryColor.copy(alpha = 0.3f)
-                        )
+                        ),
+                        elevation = shadowlessElevation()
                     ) {
                         Icon(
                             if (isEditing) Icons.Default.Save else Icons.Default.Add,
@@ -567,7 +607,7 @@ fun AddEditCardScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            if (isEditing) "GÜNCELLE" else "KAYDET",
+                            if (isEditing) viewModel.strings.update else viewModel.strings.save,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.sp
@@ -589,7 +629,8 @@ fun AddEditCardScreen(
                             shape = RoundedCornerShape(16.dp),
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = Color(0xFFD32F2F)
-                            )
+                            ),
+                            elevation = shadowlessElevation()
                         ) {
                             Icon(
                                 Icons.Default.Delete,
@@ -598,7 +639,7 @@ fun AddEditCardScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                "KARTI SİL",
+                                viewModel.strings.deleteCard,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 1.sp
@@ -623,7 +664,7 @@ fun AddEditCardScreen(
 fun AddEditCardScreenPreview() {
     val context = LocalContext.current
     val dataStoreManager = remember { DataStoreManager(context) }
-    val viewModel = remember { CalculatorViewModel(dataStoreManager) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager, context) }
     
     FenceCalculatorTheme {
         AddEditCardScreen(

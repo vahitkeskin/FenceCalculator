@@ -19,12 +19,23 @@ import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import com.vahitkeskin.fencecalculator.util.DataStoreManager
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
+import com.vahitkeskin.fencecalculator.R
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CalculationsScreen(viewModel: CalculatorViewModel) {
     val onBackgroundColor = MaterialTheme.colorScheme.onBackground
     val primaryColor = MaterialTheme.colorScheme.primary
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(Unit) {
+        viewModel.scrollToTop.collect { route ->
+            if (route == "calculations_tab") {
+                listState.animateScrollToItem(0)
+            }
+        }
+    }
     
     // Filtrelenmiş ve sıralanmış varsayılan kartlar (custom_ ile başlamayanlar)
     val defaultItems = viewModel.orderedVisibleItems.filter { !it.id.startsWith("custom_") }
@@ -36,12 +47,13 @@ fun CalculationsScreen(viewModel: CalculatorViewModel) {
         Column(modifier = Modifier.fillMaxSize()) {
             CenterAlignedTopAppBar(
                 title = { 
-                    Text("HAZIR HESAPLAR", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
+                    Text(viewModel.strings.readyCalculations, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
             )
 
             LazyColumn(
+                state = listState,
                 modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 overscrollEffect = null
@@ -66,6 +78,7 @@ fun CalculationsScreen(viewModel: CalculatorViewModel) {
 
                     items(items, key = { it.id }) { item ->
                         SwapLayoutResultRow(
+                            viewModel = viewModel,
                             item = item,
                             currentPriceInput = viewModel.getPriceString(item.id),
                             onPriceChange = { viewModel.onPriceChange(item.id, it) },
@@ -86,7 +99,7 @@ fun CalculationsScreen(viewModel: CalculatorViewModel) {
 fun CalculationsScreenPreview() {
     val context = LocalContext.current
     val dataStoreManager = remember { DataStoreManager(context) }
-    val viewModel = remember { CalculatorViewModel(dataStoreManager) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager, context) }
     
     FenceCalculatorTheme {
         CalculationsScreen(viewModel = viewModel)

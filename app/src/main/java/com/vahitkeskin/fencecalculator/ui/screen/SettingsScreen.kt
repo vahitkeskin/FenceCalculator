@@ -19,6 +19,8 @@ import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import com.vahitkeskin.fencecalculator.util.DataStoreManager
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
+import com.vahitkeskin.fencecalculator.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,11 +33,11 @@ fun SettingsScreen(viewModel: CalculatorViewModel, navController: NavController)
         Column(modifier = Modifier.fillMaxSize()) {
             CenterAlignedTopAppBar(
                 title = { 
-                    Text("AYARLAR", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
+                    Text(viewModel.strings.settings, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Geri")
+                        Icon(Icons.Default.ArrowBack, contentDescription = viewModel.strings.back)
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
@@ -53,7 +55,7 @@ fun SettingsScreen(viewModel: CalculatorViewModel, navController: NavController)
 fun SettingsScreenPreview() {
     val context = LocalContext.current
     val dataStoreManager = remember { DataStoreManager(context) }
-    val viewModel = remember { CalculatorViewModel(dataStoreManager) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager, context) }
     val navController = rememberNavController()
     
     FenceCalculatorTheme {

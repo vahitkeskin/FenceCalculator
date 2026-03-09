@@ -33,14 +33,16 @@ import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 
 @Composable
 fun AdvancedInputSection(
-    lengthValue: String, onLengthChange: (String) -> Unit
+    labelText: String,
+    lengthValue: String,
+    onLengthChange: (String) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     PremiumGlassCard(
         modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            CompactInput("Arazi Uzunluğu (m)", lengthValue, onLengthChange, Icons.Filled.Straighten, Modifier.fillMaxWidth(), focusManager, isLast = true)
+            CompactInput(labelText, lengthValue, onLengthChange, Icons.Filled.Straighten, Modifier.fillMaxWidth(), focusManager, isLast = true)
         }
     }
 }
@@ -98,6 +100,7 @@ fun SmartSettingsInput(
     label: String,
     value: String,
     defaultValue: String,
+    defaultLabel: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     focusManager: androidx.compose.ui.focus.FocusManager
@@ -128,7 +131,7 @@ fun SmartSettingsInput(
             ) {
                 Icon(Icons.Rounded.Refresh, null, Modifier.size(12.dp), MaterialTheme.colorScheme.tertiary)
                 Spacer(Modifier.width(4.dp))
-                Text("Varsayılan: $defaultValue", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.tertiary)
+                Text(defaultLabel, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.tertiary)
             }
         }
     }
@@ -140,6 +143,7 @@ fun AdvancedInputSectionPreview() {
     FenceCalculatorTheme {
         Box(modifier = Modifier.padding(16.dp)) {
             AdvancedInputSection(
+                labelText = "Arazi Uzunluğu (m)",
                 lengthValue = "150",
                 onLengthChange = {}
             )

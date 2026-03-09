@@ -19,10 +19,13 @@ import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.SwapLayoutResultRow
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.vahitkeskin.fencecalculator.R
 import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import com.vahitkeskin.fencecalculator.util.DataStoreManager
 import androidx.navigation.compose.rememberNavController
+import com.vahitkeskin.fencecalculator.ui.theme.shadowlessElevation
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -31,6 +34,15 @@ fun CustomCardsScreen(
     navController: NavController
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(Unit) {
+        viewModel.scrollToTop.collect { route ->
+            if (route == "custom_cards_tab") {
+                listState.animateScrollToItem(0)
+            }
+        }
+    }
     val customItems = viewModel.orderedVisibleItems.filter { it.id.startsWith("custom_") }
     var isEditMode by remember { mutableStateOf(false) }
 
@@ -40,7 +52,7 @@ fun CustomCardsScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             CenterAlignedTopAppBar(
                 title = { 
-                    Text("ÖZEL KARTLAR", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
+                    Text(viewModel.strings.customCards, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
                 },
                 actions = {
                     if (customItems.isNotEmpty()) {
@@ -57,6 +69,7 @@ fun CustomCardsScreen(
             )
 
             LazyColumn(
+                state = listState,
                 modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 overscrollEffect = null
@@ -88,7 +101,7 @@ fun CustomCardsScreen(
                             Spacer(modifier = Modifier.height(24.dp))
                             
                             Text(
-                                text = "Henüz Kart Yok",
+                                text = viewModel.strings.noCardsYet,
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
@@ -97,7 +110,7 @@ fun CustomCardsScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             
                             Text(
-                                text = "Kendi özel hesaplama kartlarınızı oluşturarak uygulamayı kişiselleştirin.",
+                                text = viewModel.strings.noCardsDesc,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -125,6 +138,7 @@ fun CustomCardsScreen(
                             if (!isEditMode) navController.navigate("add_edit_card/$realId")
                         }) {
                             SwapLayoutResultRow(
+                                viewModel = viewModel,
                                 item = item,
                                 currentPriceInput = viewModel.getPriceString(item.id),
                                 onPriceChange = { viewModel.onPriceChange(item.id, it) },
@@ -145,11 +159,12 @@ fun CustomCardsScreen(
                         onClick = { navController.navigate("add_edit_card/new") },
                         modifier = Modifier.fillMaxWidth().height(56.dp).padding(vertical = 4.dp),
                         shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor.copy(alpha = 0.1f))
+                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor.copy(alpha = 0.1f)),
+                        elevation = shadowlessElevation()
                     ) {
                         Icon(Icons.Default.Add, null, tint = primaryColor)
                         Spacer(Modifier.width(8.dp))
-                        Text("YENİ KART OLUŞTUR", fontWeight = FontWeight.Bold, color = primaryColor)
+                        Text(viewModel.strings.createNewCard, fontWeight = FontWeight.Bold, color = primaryColor)
                     }
                 }
                 
@@ -165,7 +180,7 @@ fun CustomCardsScreen(
 fun CustomCardsScreenPreview() {
     val context = LocalContext.current
     val dataStoreManager = remember { DataStoreManager(context) }
-    val viewModel = remember { CalculatorViewModel(dataStoreManager) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager, context) }
     val navController = rememberNavController()
     
     FenceCalculatorTheme {
