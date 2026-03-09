@@ -3,6 +3,7 @@ package com.vahitkeskin.fencecalculator.ui.viewmodel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
@@ -72,16 +73,30 @@ class CalculatorViewModel @Inject constructor(
         viewModelScope.launch { dataStoreManager.saveIban(v) }
     }
 
+    var isIbanExpanded by mutableStateOf(false); private set
+    fun onIbanExpandedToggle(v: Boolean) {
+        isIbanExpanded = v
+        viewModelScope.launch { dataStoreManager.saveIbanExpanded(v) }
+    }
+
     var isOnboardingCompleted by mutableStateOf(true); private set
     fun setOnboardingCompleted() {
         isOnboardingCompleted = true
         viewModelScope.launch { dataStoreManager.saveOnboardingCompleted(true) }
     }
 
-    var isLockTooltipShown by mutableStateOf(true); private set
+    var isLockTooltipShown by mutableStateOf(false); private set
     fun setLockTooltipShown() {
         isLockTooltipShown = true
         viewModelScope.launch { dataStoreManager.saveLockTooltipShown(true) }
+    }
+
+    var usageCount by mutableIntStateOf(0); private set
+    var isPremium by mutableStateOf(false); private set
+
+    fun onPremiumToggle(v: Boolean) {
+        isPremium = v
+        viewModelScope.launch { dataStoreManager.saveIsPremium(v) }
     }
 
     // --- THEME STATE ---
@@ -113,7 +128,7 @@ class CalculatorViewModel @Inject constructor(
 
     // --- CONSTANTS ---
     object Defaults {
-        const val LENGTH = "0"
+        const val LENGTH = ""
         const val SPACING = "3.5"
         const val HEIGHT = "1.5"
         const val STRUT_INTERVAL = "15"
@@ -128,6 +143,7 @@ class CalculatorViewModel @Inject constructor(
 
     // --- STATE ---
     var totalLengthInput by mutableStateOf(Defaults.LENGTH); private set
+    var totalLengthDraft by mutableStateOf(Defaults.LENGTH); private set
     var fenceHeightInput by mutableStateOf(Defaults.HEIGHT); private set
     var poleSpacingInput by mutableStateOf(Defaults.SPACING); private set
     var strutIntervalInput by mutableStateOf(Defaults.STRUT_INTERVAL); private set
@@ -488,10 +504,49 @@ class CalculatorViewModel @Inject constructor(
                 isLockTooltipShown = it
             }
         }
+        viewModelScope.launch {
+            dataStoreManager.usageCount.collectLatest {
+                usageCount = it
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.isPremium.collectLatest {
+                isPremium = it
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.ibanExpanded.collectLatest {
+                isIbanExpanded = it
+            }
+        }
     }
 
     // --- EVENTS ---
-    fun onTotalLengthChange(v: String) = updateIfValid(v) { totalLengthInput = it }
+    fun onTotalLengthChange(v: String) {
+        // Clear non-numeric chars except dot/comma
+        val cleaned = v.replace(",", ".").filter { it.isDigit() || it == '.' }
+        totalLengthDraft = cleaned
+    }
+    fun clearTotalLength() {
+        totalLengthDraft = ""
+    }
+
+    fun applyTotalLength() {
+        if (totalLengthDraft == totalLengthInput) return
+        
+        // TODO: İstediğim zaman aktif edebileyim - 50 sınırlaması ve premium
+        // if (!isPremium && usageCount >= 50) return
+
+        /*
+        // TODO: İstediğim zaman aktif edebileyim - 50 sınırlaması ve premium
+        if (!isPremium) {
+            usageCount = usageCount + 1
+            viewModelScope.launch { dataStoreManager.saveUsageCount(usageCount) }
+        }
+        */
+        totalLengthInput = totalLengthDraft
+        calculateValues()
+    }
     fun onFenceHeightChange(v: String) = updateIfValid(v) { fenceHeightInput = it }
     fun onPoleSpacingChange(v: String) = updateIfValid(v) { poleSpacingInput = it }
     fun onStrutIntervalChange(v: String) = updateIfValid(v) { strutIntervalInput = it }

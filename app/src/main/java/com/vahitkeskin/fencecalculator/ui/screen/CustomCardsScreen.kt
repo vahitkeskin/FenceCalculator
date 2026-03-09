@@ -31,7 +31,8 @@ import com.vahitkeskin.fencecalculator.ui.theme.shadowlessElevation
 @Composable
 fun CustomCardsScreen(
     viewModel: CalculatorViewModel,
-    navController: NavController
+    navController: NavController,
+    onPremiumClick: () -> Unit
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val listState = rememberLazyListState()
@@ -142,7 +143,8 @@ fun CustomCardsScreen(
                                 item = item,
                                 currentPriceInput = viewModel.getPriceString(item.id),
                                 onPriceChange = { viewModel.onPriceChange(item.id, it) },
-                                onPinToggle = { viewModel.togglePin(item.id) }
+                                onPinToggle = { viewModel.togglePin(item.id) },
+                                onPremiumClick = onPremiumClick
                             )
                         }
 
@@ -184,6 +186,10 @@ fun CustomCardsScreenPreview() {
     val navController = rememberNavController()
     
     FenceCalculatorTheme {
-        CustomCardsScreen(viewModel = viewModel, navController = navController)
+        CustomCardsScreen(
+            viewModel = viewModel, 
+            navController = navController,
+            onPremiumClick = {}
+        )
     }
 }

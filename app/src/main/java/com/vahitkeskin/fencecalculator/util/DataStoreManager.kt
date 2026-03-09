@@ -38,6 +38,9 @@ class DataStoreManager @Inject constructor(
         val APP_LANGUAGE_KEY = stringPreferencesKey("app_language")
         val ONBOARDING_COMPLETED_KEY = booleanPreferencesKey("onboarding_completed")
         val LOCK_TOOLTIP_SHOWN_KEY = booleanPreferencesKey("lock_tooltip_shown")
+        val LAND_LENGTH_USAGE_COUNT_KEY = stringPreferencesKey("land_length_usage_count")
+        val IS_PREMIUM_KEY = booleanPreferencesKey("is_premium")
+        val IBAN_EXPANDED_KEY = booleanPreferencesKey("iban_expanded")
     }
 
     val onboardingCompleted: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -46,6 +49,18 @@ class DataStoreManager @Inject constructor(
 
     val lockTooltipShown: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[LOCK_TOOLTIP_SHOWN_KEY] ?: false
+    }
+
+    val usageCount: Flow<Int> = context.dataStore.data.map { preferences ->
+        preferences[LAND_LENGTH_USAGE_COUNT_KEY]?.toIntOrNull() ?: 0
+    }
+
+    val isPremium: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[IS_PREMIUM_KEY] ?: false
+    }
+
+    val ibanExpanded: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[IBAN_EXPANDED_KEY] ?: false
     }
 
     val companyName: Flow<String> = context.dataStore.data.map { preferences ->
@@ -113,4 +128,7 @@ class DataStoreManager @Inject constructor(
     suspend fun saveConcreteFactor(v: String) = context.dataStore.edit { it[CONCRETE_FACTOR_KEY] = v }
     suspend fun saveOnboardingCompleted(completed: Boolean) = context.dataStore.edit { it[ONBOARDING_COMPLETED_KEY] = completed }
     suspend fun saveLockTooltipShown(shown: Boolean) = context.dataStore.edit { it[LOCK_TOOLTIP_SHOWN_KEY] = shown }
+    suspend fun saveUsageCount(count: Int) = context.dataStore.edit { it[LAND_LENGTH_USAGE_COUNT_KEY] = count.toString() }
+    suspend fun saveIsPremium(v: Boolean) = context.dataStore.edit { it[IS_PREMIUM_KEY] = v }
+    suspend fun saveIbanExpanded(v: Boolean) = context.dataStore.edit { it[IBAN_EXPANDED_KEY] = v }
 }

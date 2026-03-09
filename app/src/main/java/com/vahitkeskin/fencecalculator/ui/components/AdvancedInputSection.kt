@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.focus.onFocusEvent
@@ -35,14 +37,54 @@ import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 fun AdvancedInputSection(
     labelText: String,
     lengthValue: String,
-    onLengthChange: (String) -> Unit
+    onLengthChange: (String) -> Unit,
+    usageCount: Int = 0,
+    isPremium: Boolean = false,
+    usageLimitInfo: String = "",
+    premiumRequiredInfo: String = "",
+    isChanged: Boolean = false,
+    applyButtonLabel: String = "Apply",
+    onApply: () -> Unit = {},
+    onClear: () -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
     PremiumGlassCard(
-        modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            CompactInput(labelText, lengthValue, onLengthChange, Icons.Filled.Straighten, Modifier.fillMaxWidth(), focusManager, isLast = true)
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            CompactInput(
+                label = labelText,
+                value = lengthValue,
+                onValueChange = onLengthChange,
+                icon = Icons.Filled.Straighten,
+                modifier = Modifier.fillMaxWidth(),
+                focusManager = focusManager,
+                isLast = true,
+                usageLimitInfo = usageLimitInfo,
+                premiumRequiredInfo = premiumRequiredInfo,
+                onClear = onClear
+            )
+
+            Button(
+                onClick = onApply,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                enabled = isChanged && lengthValue.isNotEmpty(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                    disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                )
+            ) {
+                Text(applyButtonLabel, fontWeight = FontWeight.Bold)
+            }
         }
     }
 }
@@ -56,14 +98,30 @@ fun CompactInput(
     icon: ImageVector,
     modifier: Modifier = Modifier,
     focusManager: androidx.compose.ui.focus.FocusManager,
-    isLast: Boolean = false
+    isLast: Boolean = false,
+    usageCount: Int = 0,
+    isPremium: Boolean = false,
+    usageLimitInfo: String = "",
+    premiumRequiredInfo: String = "",
+    onClear: () -> Unit = {}
 ) {
+    // TODO: İstediğim zaman aktif edebileyim - 50 sınırlaması ve premium
+    // val isLimitReached = !isPremium && usageCount >= 50
+    val isLimitReached = false
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
     val coroutineScope = rememberCoroutineScope()
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
 
     Column(modifier) {
-        Text(label, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = onSurfaceColor.copy(alpha = 0.5f))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                label,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = onSurfaceColor.copy(alpha = 0.5f),
+                modifier = Modifier.weight(1f)
+            )
+        }
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
@@ -77,10 +135,51 @@ fun CompactInput(
                         }
                     }
                 },
-            textStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold, color = onSurfaceColor),
+            textStyle = MaterialTheme.typography.bodyLarge.copy(
+                fontWeight = FontWeight.Bold,
+                color = onSurfaceColor
+            ),
             singleLine = true,
-            leadingIcon = { Icon(icon, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = if(isLast) ImeAction.Done else ImeAction.Next),
+            leadingIcon = {
+                Icon(
+                    icon,
+                    null,
+                    Modifier.size(18.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            trailingIcon = {
+                if (value.isNotEmpty()) {
+                    IconButton(
+                        onClick = onClear,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .background(
+                                color = if (androidx.compose.foundation.isSystemInDarkTheme())
+                                    Color.White.copy(alpha = 0.15f)
+                                else
+                                    Color.Black.copy(alpha = 0.08f),
+                                shape = androidx.compose.foundation.shape.CircleShape
+                            )
+                            .padding(5.dp),
+                        colors = IconButtonDefaults.iconButtonColors(
+                            contentColor = if (androidx.compose.foundation.isSystemInDarkTheme())
+                                Color.White.copy(alpha = 0.6f)
+                            else
+                                Color.Black.copy(alpha = 0.5f)
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Close,
+                            contentDescription = null,
+                        )
+                    }
+                }
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = if (isLast) ImeAction.Done else ImeAction.Next
+            ),
             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
@@ -89,9 +188,35 @@ fun CompactInput(
                 focusedTextColor = onSurfaceColor,
                 unfocusedTextColor = onSurfaceColor,
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = Color(0xFFCBD5E1)
-            )
+                unfocusedBorderColor = Color(0xFFCBD5E1),
+                disabledBorderColor = Color(0xFFE2E8F0),
+                disabledTextColor = onSurfaceColor.copy(alpha = 0.3f),
+                disabledLeadingIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+            ),
+            enabled = true // Always enabled, but blurred results if limit reached
         )
+        Spacer(modifier = Modifier.height(4.dp))
+        Column(modifier = Modifier.fillMaxWidth()) {
+            if (usageLimitInfo.isNotEmpty()) {
+                Text(
+                    text = usageLimitInfo,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (isLimitReached) MaterialTheme.colorScheme.error else onSurfaceColor.copy(
+                        alpha = 0.5f
+                    ),
+                    modifier = Modifier.padding(top = 2.dp)
+                )
+            }
+            if (isLimitReached && !isPremium) {
+                Text(
+                    text = premiumRequiredInfo,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 2.dp)
+                )
+            }
+        }
     }
 }
 
@@ -114,18 +239,21 @@ fun SmartSettingsInput(
             label = { Text(label, style = MaterialTheme.typography.bodySmall) },
             textStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
             singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = if(isChanged) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha=0.3f),
-                focusedLabelColor = if(isChanged) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
+                focusedBorderColor = if (isChanged) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                focusedLabelColor = if (isChanged) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
             )
         )
         AnimatedVisibility(
-            visible = isChanged, 
-            enter = fadeIn(), 
+            visible = isChanged,
+            enter = fadeIn(),
             exit = fadeOut(),
             modifier = Modifier.align(Alignment.End)
         ) {
@@ -134,9 +262,18 @@ fun SmartSettingsInput(
                 contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp),
                 modifier = Modifier.height(32.dp)
             ) {
-                Icon(Icons.Rounded.Refresh, null, Modifier.size(12.dp), MaterialTheme.colorScheme.tertiary)
+                Icon(
+                    Icons.Rounded.Refresh,
+                    null,
+                    Modifier.size(12.dp),
+                    MaterialTheme.colorScheme.tertiary
+                )
                 Spacer(Modifier.width(4.dp))
-                Text(defaultLabel, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.tertiary)
+                Text(
+                    defaultLabel,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.tertiary
+                )
             }
         }
     }
