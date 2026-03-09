@@ -1,5 +1,6 @@
 package com.vahitkeskin.fencecalculator.ui.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.*
 import androidx.compose.material.icons.Icons
@@ -28,6 +29,10 @@ import com.vahitkeskin.fencecalculator.ui.viewmodel.AppTheme
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.ui.platform.LocalContext
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
+import com.vahitkeskin.fencecalculator.util.DataStoreManager
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -223,6 +228,20 @@ fun ThemeToggleButton(
             Icon(icon, null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
             Text(text, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@AppPreviews
+@Composable
+fun SettingsSheetContentPreview() {
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager) }
+    
+    FenceCalculatorTheme {
+        Box(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
+            SettingsSheetContent(viewModel = viewModel, onDismiss = {})
         }
     }
 }

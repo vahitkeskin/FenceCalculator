@@ -28,12 +28,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
+import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
+import com.vahitkeskin.fencecalculator.util.DataStoreManager
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.navigation.NavController
 import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.PremiumGlassCard
-import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
 import com.vahitkeskin.fencecalculator.util.IbanValidator
 import com.vahitkeskin.fencecalculator.util.QrGenerator
 
@@ -273,5 +277,18 @@ fun PersonalInfoScreen(
                 }
             }
         }
+    }
+}
+
+@AppPreviews
+@Composable
+fun PersonalInfoScreenPreview() {
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager) }
+    val navController = rememberNavController()
+    
+    FenceCalculatorTheme {
+        PersonalInfoScreen(viewModel = viewModel, navController = navController)
     }
 }

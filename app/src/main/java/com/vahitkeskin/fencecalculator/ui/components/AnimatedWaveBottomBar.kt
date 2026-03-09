@@ -13,6 +13,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import java.text.DecimalFormat
 
 @Composable
@@ -67,5 +69,13 @@ fun AnimatedWaveBottomBar(
                 )
             }
         }
+    }
+}
+
+@AppPreviews
+@Composable
+fun AnimatedWaveBottomBarPreview() {
+    FenceCalculatorTheme {
+        AnimatedWaveBottomBar(totalCost = 15450.0)
     }
 }

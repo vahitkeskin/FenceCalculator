@@ -20,6 +20,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.vahitkeskin.fencecalculator.ui.components.AnimatedWaveBottomBar
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
+import com.vahitkeskin.fencecalculator.util.DataStoreManager
+import androidx.compose.ui.platform.LocalContext
 
 sealed class Screen(val route: String, val title: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
     object Home : Screen("home_tab", "Anasayfa", Icons.Default.Home)
@@ -111,5 +115,18 @@ fun MainScreen(
                 modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
+    }
+}
+
+@AppPreviews
+@Composable
+fun MainScreenPreview() {
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager) }
+    val navController = rememberNavController()
+    
+    FenceCalculatorTheme {
+        MainScreen(viewModel = viewModel, globalNavController = navController)
     }
 }

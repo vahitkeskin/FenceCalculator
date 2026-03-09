@@ -30,6 +30,8 @@ import androidx.compose.ui.unit.sp
 import com.vahitkeskin.fencecalculator.data.model.CalculationItem
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -154,6 +156,32 @@ fun SwapLayoutResultRow(
                     Text("${currencyFormat.format(item.totalCost)} ₺", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold), color = item.color)
                 }
             }
+        }
+    }
+}
+
+@AppPreviews
+@Composable
+fun SwapLayoutResultRowPreview() {
+    FenceCalculatorTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            SwapLayoutResultRow(
+                item = CalculationItem(
+                    id = "preview",
+                    title = "Tel Örgü (1.5m)",
+                    description = "Arazinin çevresi için gerekli tel örgü",
+                    quantity = 150.0,
+                    unit = "m",
+                    unitPrice = 100.0,
+                    totalCost = 15000.0,
+                    color = Color(0xFF3B82F6),
+                    icon = Icons.Default.CheckCircle,
+                    emoji = "🕸️",
+                    dependencyInfo = "Rulo Uzunluğu: 20m"
+                ),
+                currentPriceInput = "100",
+                onPriceChange = {}
+            )
         }
     }
 }

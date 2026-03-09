@@ -14,6 +14,11 @@ import androidx.compose.ui.unit.sp
 import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.SwapLayoutResultRow
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
+import androidx.compose.ui.platform.LocalContext
+import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
+import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
+import com.vahitkeskin.fencecalculator.util.DataStoreManager
+import androidx.compose.runtime.remember
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -73,5 +78,17 @@ fun CalculationsScreen(viewModel: CalculatorViewModel) {
                 item { Spacer(modifier = Modifier.height(90.dp)) }
             }
         }
+    }
+}
+
+@AppPreviews
+@Composable
+fun CalculationsScreenPreview() {
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val viewModel = remember { CalculatorViewModel(dataStoreManager) }
+    
+    FenceCalculatorTheme {
+        CalculationsScreen(viewModel = viewModel)
     }
 }
