@@ -34,6 +34,15 @@ fun CustomCardsScreen(
     navController: NavController
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(Unit) {
+        viewModel.scrollToTop.collect { route ->
+            if (route == "custom_cards_tab") {
+                listState.animateScrollToItem(0)
+            }
+        }
+    }
     val customItems = viewModel.orderedVisibleItems.filter { it.id.startsWith("custom_") }
     var isEditMode by remember { mutableStateOf(false) }
 
@@ -60,6 +69,7 @@ fun CustomCardsScreen(
             )
 
             LazyColumn(
+                state = listState,
                 modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 overscrollEffect = null

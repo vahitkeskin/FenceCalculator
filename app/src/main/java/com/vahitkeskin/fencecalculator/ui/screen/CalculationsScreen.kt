@@ -27,6 +27,15 @@ import com.vahitkeskin.fencecalculator.R
 fun CalculationsScreen(viewModel: CalculatorViewModel) {
     val onBackgroundColor = MaterialTheme.colorScheme.onBackground
     val primaryColor = MaterialTheme.colorScheme.primary
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(Unit) {
+        viewModel.scrollToTop.collect { route ->
+            if (route == "calculations_tab") {
+                listState.animateScrollToItem(0)
+            }
+        }
+    }
     
     // Filtrelenmiş ve sıralanmış varsayılan kartlar (custom_ ile başlamayanlar)
     val defaultItems = viewModel.orderedVisibleItems.filter { !it.id.startsWith("custom_") }
@@ -44,6 +53,7 @@ fun CalculationsScreen(viewModel: CalculatorViewModel) {
             )
 
             LazyColumn(
+                state = listState,
                 modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 overscrollEffect = null

@@ -182,7 +182,19 @@ data class AppStrings(
     val catMetal: String,
     val catWire: String,
     val catConstruction: String,
-    val catGeneral: String
+    val catGeneral: String,
+    val onboardingWelcomeTitle: String,
+    val onboardingWelcomeDesc: String,
+    val onboardingStep1Title: String,
+    val onboardingStep1Desc: String,
+    val onboardingStep2Title: String,
+    val onboardingStep2Desc: String,
+    val onboardingStep3Title: String,
+    val onboardingStep3Desc: String,
+    val onboardingFinish: String,
+    val next: String,
+    val skip: String,
+    val lockTooltip: String
 )
 
 
@@ -342,7 +354,19 @@ object Localization {
         catMetal = "METAL",
         catWire = "TEL",
         catConstruction = "İNŞAAT",
-        catGeneral = "GENEL"
+        catGeneral = "GENEL",
+        onboardingWelcomeTitle = "Hos Geldiniz!",
+        onboardingWelcomeDesc = "Tel Çit Hesaplama uygulaması ile projelerinizi profesyonelce yönetin. Başlamadan önce kısa bir tur atalım.",
+        onboardingStep1Title = "Hazır Hesaplar",
+        onboardingStep1Desc = "Direk, kafes tel, dikenli tel gibi temel malzemeleri tek tıkla hesaplayın.",
+        onboardingStep2Title = "Özel Kartlar",
+        onboardingStep2Desc = "Kendi özel malzemelerinizi ekleyin ve diğer hesaplara bağımlı formüller oluşturun.",
+        onboardingStep3Title = "Teklif Paylaşımı",
+        onboardingStep3Desc = "Hesaplamalarınızı PDF olarak hazırlayın, IBAN ve QR kodunuzla birlikte müşterinizle paylaşın.",
+        onboardingFinish = "Hadi Başlayalım",
+        next = "İleri",
+        skip = "Atla",
+        lockTooltip = "Seçimleri kilitlemek veya kilidini açmak için dokunun"
     )
 
 
@@ -501,7 +525,19 @@ object Localization {
         catMetal = "METALLO",
         catWire = "FILO",
         catConstruction = "COSTRUZIONE",
-        catGeneral = "GENERALE"
+        catGeneral = "GENERALE",
+        onboardingWelcomeTitle = "Benvenuti!",
+        onboardingWelcomeDesc = "Gestisci i tuoi progetti di recinzioni e reti in modo professionale. Facciamo un breve tour prima di iniziare.",
+        onboardingStep1Title = "Calcoli Pronti",
+        onboardingStep1Desc = "Calcola materiali di base come pali, rete e filo spinato con un solo clic.",
+        onboardingStep2Title = "Schede Personali",
+        onboardingStep2Desc = "Aggiungi i tuoi materiali personalizzati e crea formule dipendenti da altri calcoli.",
+        onboardingStep3Title = "Condividi Proposte",
+        onboardingStep3Desc = "Prepara i tuoi calcoli in formato PDF e condividili con i tuoi clienti insieme al tuo IBAN e codice QR.",
+        onboardingFinish = "Iniziamo",
+        next = "Avanti",
+        skip = "Salta",
+        lockTooltip = "Tocca per bloccare o sbloccare le selezioni"
     )
 
 
@@ -660,7 +696,19 @@ object Localization {
         catMetal = "METAL",
         catWire = "ARAME",
         catConstruction = "CONSTRUÇÃO",
-        catGeneral = "GERAL"
+        catGeneral = "GERAL",
+        onboardingWelcomeTitle = "Bem-vindo!",
+        onboardingWelcomeDesc = "Gerencie seus projetos de cercas e telas de forma profissional. Vamos fazer um tour rápido antes de começar.",
+        onboardingStep1Title = "Cálculos Prontos",
+        onboardingStep1Desc = "Calcule materiais básicos como postes, telas e arame farpado com um único clique.",
+        onboardingStep2Title = "Cartões Pessoais",
+        onboardingStep2Desc = "Adicione seus próprios materiais personalizados e crie fórmulas dependentes de outros cálculos.",
+        onboardingStep3Title = "Compartilhar Propostas",
+        onboardingStep3Desc = "Prepare seus cálculos em PDF e compartilhe com seus clientes junto com seu IBAN e código QR.",
+        onboardingFinish = "Vamos Começar",
+        next = "Próximo",
+        skip = "Pular",
+        lockTooltip = "Toque para bloquear ou desbloquear seleções"
     )
 
 
@@ -819,7 +867,19 @@ object Localization {
         catMetal = "METAAL",
         catWire = "DRAAD",
         catConstruction = "BOUW",
-        catGeneral = "ALGEMEEN"
+        catGeneral = "ALGEMEEN",
+        onboardingWelcomeTitle = "Welkom!",
+        onboardingWelcomeDesc = "Beheer uw hekwerk- en gaasprojecten professioneel. Laten we een korte rondleiding maken voordat u begint.",
+        onboardingStep1Title = "Klare Berekeningen",
+        onboardingStep1Desc = "Bereken basismaterialen zoals palen, gaas en prikkeldraad met een enkele klik.",
+        onboardingStep2Title = "Aangepaste Kaarten",
+        onboardingStep2Desc = "Voeg uw eigen aangepaste materialen toe en maak formules die afhankelijk zijn van andere berekeningen.",
+        onboardingStep3Title = "Deel Voorstellen",
+        onboardingStep3Desc = "Bereid uw berekeningen voor als PDF en deel ze met uw klanten samen met uw IBAN en QR-code.",
+        onboardingFinish = "Laten we beginnen",
+        next = "Volgende",
+        skip = "Overslaan",
+        lockTooltip = "Tik om selecties te vergrendelen of te ontgrendelen"
     )
 
     private val fr = AppStrings(
@@ -977,7 +1037,19 @@ object Localization {
         catMetal = "MÉTAL",
         catWire = "FIL",
         catConstruction = "CONSTRUCTION",
-        catGeneral = "GÉNÉRAL"
+        catGeneral = "GÉNÉRAL",
+        onboardingWelcomeTitle = "Bienvenue !",
+        onboardingWelcomeDesc = "Gérez vos projets de clôtures et de grillages de manière professionnelle. Faisons un tour rapide avant de commencer.",
+        onboardingStep1Title = "Calculs Prêts",
+        onboardingStep1Desc = "Calculez les matériaux de base comme les poteaux, le grillage et le fil barbelé en un seul clic.",
+        onboardingStep2Title = "Cartes Personnalisées",
+        onboardingStep2Desc = "Ajoutez vos propres matériaux personnalisés et créez des formules dépendant d'autres calculs.",
+        onboardingStep3Title = "Partager des Propositions",
+        onboardingStep3Desc = "Préparez vos calculs au format PDF et partagez-les avec vos clients avec votre IBAN et votre code QR.",
+        onboardingFinish = "Commençons",
+        next = "Suivant",
+        skip = "Passer",
+        lockTooltip = "Appuyez pour verrouiller ou déverrouiller les sélections"
     )
 
 
@@ -1136,7 +1208,19 @@ object Localization {
         catMetal = "METAL",
         catWire = "ALAMBRE",
         catConstruction = "CONSTRUCCIÓN",
-        catGeneral = "GENERAL"
+        catGeneral = "GENERAL",
+        onboardingWelcomeTitle = "¡Bienvenido!",
+        onboardingWelcomeDesc = "Gestione sus proyectos de cercas y mallas de forma profesional. Hagamos un breve recorrido antes de empezar.",
+        onboardingStep1Title = "Cálculos Listos",
+        onboardingStep1Desc = "Calcule materiales básicos como postes, mallas y alambre de espino con un solo clic.",
+        onboardingStep2Title = "Tarjetas Personalizadas",
+        onboardingStep2Desc = "Añada sus propios materiales personalizados y cree fórmulas que dependan de otros cálculos.",
+        onboardingStep3Title = "Compartir Propuestas",
+        onboardingStep3Desc = "Prepare sus cálculos en PDF y compártalos con sus clientes junto con su IBAN y código QR.",
+        onboardingFinish = "Empecemos",
+        next = "Siguiente",
+        skip = "Saltar",
+        lockTooltip = "Toca para bloquear o desbloquear selecciones"
     )
 
 
@@ -1295,7 +1379,19 @@ object Localization {
         catMetal = "METAL",
         catWire = "WIRE",
         catConstruction = "CONSTRUCTION",
-        catGeneral = "GENERAL"
+        catGeneral = "GENERAL",
+        onboardingWelcomeTitle = "Welcome!",
+        onboardingWelcomeDesc = "Manage your fence and wire mesh projects professionally. Let's take a quick tour before you start.",
+        onboardingStep1Title = "Ready Calculations",
+        onboardingStep1Desc = "Calculate basic materials like posts, mesh, and barbed wire with a single click.",
+        onboardingStep2Title = "Custom Cards",
+        onboardingStep2Desc = "Add your own custom materials and create formulas dependent on other calculations.",
+        onboardingStep3Title = "Share Proposals",
+        onboardingStep3Desc = "Prepare your calculations as PDF and share them with your customers along with your IBAN and QR code.",
+        onboardingFinish = "Let's Get Started",
+        next = "Next",
+        skip = "Skip",
+        lockTooltip = "Tap to lock or unlock selections"
     )
     private val ru = AppStrings(
         appName = "Калькулятор Ограждений",
@@ -1452,7 +1548,19 @@ object Localization {
         catMetal = "МЕТАЛЛ",
         catWire = "ПРОВОЛОКА",
         catConstruction = "СТРОИТЕЛЬСТВО",
-        catGeneral = "ОБЩЕЕ"
+        catGeneral = "ОБЩЕЕ",
+        onboardingWelcomeTitle = "Добро пожаловать!",
+        onboardingWelcomeDesc = "Профессионально управляйте своими проектами по установке заборов и сеток. Пройдем краткий тур перед началом.",
+        onboardingStep1Title = "Готовые Расчеты",
+        onboardingStep1Desc = "Рассчитывайте основные материалы, такие как столбы, сетка и колючая проволока, одним кликом.",
+        onboardingStep2Title = "Свои Карты",
+        onboardingStep2Desc = "Добавляйте свои собственные материалы и создавайте формулы, зависящие от других расчетов.",
+        onboardingStep3Title = "Делитесь Предложениями",
+        onboardingStep3Desc = "Подготовьте свои расчеты в формате PDF и поделитесь ими с клиентами вместе с вашим IBAN и QR-кодом.",
+        onboardingFinish = "Давайте начнем",
+        next = "Далее",
+        skip = "Пропустить",
+        lockTooltip = "Нажмите, чтобы заблокировать или разблокировать выбор"
     )
 
 
@@ -1611,7 +1719,19 @@ object Localization {
         catMetal = "معدن",
         catWire = "سلك",
         catConstruction = "إنشاءات",
-        catGeneral = "عام"
+        catGeneral = "عام",
+        onboardingWelcomeTitle = "أهلاً بك!",
+        onboardingWelcomeDesc = "أدر مشاريع السياج والأسلاك الشبكية باحترافية. لنأخذ جولة سريعة قبل البدء.",
+        onboardingStep1Title = "حسابات جاهزة",
+        onboardingStep1Desc = "احسب المواد الأساسية مثل الأعمدة والشبك والأسلاك الشائكة بضغطة واحدة.",
+        onboardingStep2Title = "بطاقات مخصصة",
+        onboardingStep2Desc = "أضف موادك الخاصة وأنشئ معادلات تعتمد على حسابات أخرى.",
+        onboardingStep3Title = "مشاركة العروض",
+        onboardingStep3Desc = "جهز حساباتك كملف PDF وشاركها مع عملائك مع رقم IBAN ورمز QR الخاص بك.",
+        onboardingFinish = "للبدء",
+        next = "التالي",
+        skip = "تخطى",
+        lockTooltip = "اضغط للقفل أو إلغاء القفل"
     )
 
     private val de = AppStrings(
@@ -1769,7 +1889,19 @@ object Localization {
         catMetal = "METALL",
         catWire = "DRAHT",
         catConstruction = "KONSTRUKTION",
-        catGeneral = "ALLGEMEIN"
+        catGeneral = "ALLGEMEIN",
+        onboardingWelcomeTitle = "Willkommen!",
+        onboardingWelcomeDesc = "Verwalten Sie Ihre Zaun- und Maschendrahtprojekte professionell. Lassen Sie uns vor dem Start einen kurzen Rundgang machen.",
+        onboardingStep1Title = "Fertige Berechnungen",
+        onboardingStep1Desc = "Berechnen Sie Basismaterialien wie Pfosten, Maschendraht und Stacheldraht mit einem Klick.",
+        onboardingStep2Title = "Eigene Karten",
+        onboardingStep2Desc = "Fügen Sie Ihre eigenen benutzerdefinierten Materialien hinzu und erstellen Sie Formeln, die von anderen Berechnungen abhängen.",
+        onboardingStep3Title = "Angebote Teilen",
+        onboardingStep3Desc = "Bereiten Sie Ihre Berechnungen als PDF vor und teilen Sie sie mit Ihren Kunden zusammen mit Ihrer IBAN und Ihrem QR-Code.",
+        onboardingFinish = "Lass uns anfangen",
+        next = "Weiter",
+        skip = "Überspringen",
+        lockTooltip = "Tippen Sie hier, um die Auswahl zu sperren oder zu entsperren"
     )
 
     private val zh = AppStrings(
@@ -1927,7 +2059,19 @@ object Localization {
         catMetal = "金属",
         catWire = "丝",
         catConstruction = "建筑",
-        catGeneral = "通用"
+        catGeneral = "通用",
+        onboardingWelcomeTitle = "欢迎使用！",
+        onboardingWelcomeDesc = "专业管理您的围栏和铁丝网项目。在开始之前，让我们快速巡视一下。",
+        onboardingStep1Title = "准备计算",
+        onboardingStep1Desc = "只需点击一下，即可计算立柱、网片和刺绳等基础材料。",
+        onboardingStep2Title = "自定义卡片",
+        onboardingStep2Desc = "添加您自己的自定义材料，并创建依赖于其他计算的公式。",
+        onboardingStep3Title = "分享方案",
+        onboardingStep3Desc = "将您的计算结果准备为 PDF 格式，并连同您的 IBAN 和二维码一起分享给您的客户。",
+        onboardingFinish = "让我们开始吧",
+        next = "下一步",
+        skip = "跳过",
+        lockTooltip = "点击以锁定或解锁选择"
     )
 
     private val languages = mapOf(

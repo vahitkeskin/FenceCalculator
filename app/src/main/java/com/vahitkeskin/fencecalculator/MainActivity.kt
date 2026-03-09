@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.vahitkeskin.fencecalculator.ui.components.AnimatedSplashScreen
+import com.vahitkeskin.fencecalculator.ui.screen.OnboardingScreen
 import com.vahitkeskin.fencecalculator.ui.screen.AddEditCardScreen
 import com.vahitkeskin.fencecalculator.ui.screen.HomeScreen
 import com.vahitkeskin.fencecalculator.ui.screen.SettingsScreen
@@ -48,6 +49,11 @@ class MainActivity : ComponentActivity() {
                         AnimatedSplashScreen(onAnimationFinished = {
                             showSplash = false
                         })
+                    } else if (!viewModel.isOnboardingCompleted) {
+                        OnboardingScreen(
+                            viewModel = viewModel,
+                            onFinish = { viewModel.setOnboardingCompleted() }
+                        )
                     } else {
                         NavHost(
                             navController = navController,

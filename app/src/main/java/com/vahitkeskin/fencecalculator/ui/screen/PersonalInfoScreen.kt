@@ -130,6 +130,10 @@ fun PersonalInfoScreen(
                                 .padding(16.dp),
                             shape = RoundedCornerShape(12.dp),
                             singleLine = true,
+                            keyboardOptions = KeyboardOptions(
+                                capitalization = KeyboardCapitalization.Words,
+                                imeAction = ImeAction.Next
+                            ),
                             colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor)
                         )
                     }

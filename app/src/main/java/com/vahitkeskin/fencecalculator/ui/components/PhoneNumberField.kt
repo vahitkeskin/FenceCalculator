@@ -168,7 +168,11 @@ fun CountryPickerDialogContent(
             leadingIcon = { Icon(Icons.Default.Search, null) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
-            singleLine = true
+            singleLine = true,
+            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                capitalization = androidx.compose.ui.text.input.KeyboardCapitalization.Words,
+                imeAction = androidx.compose.ui.text.input.ImeAction.Search
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))

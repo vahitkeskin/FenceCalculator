@@ -72,6 +72,8 @@ fun MainScreen(
                                         launchSingleTop = true
                                         restoreState = true
                                     }
+                                } else {
+                                    viewModel.requestScrollToTop(screen.route)
                                 }
                             },
                             colors = NavigationBarItemDefaults.colors(

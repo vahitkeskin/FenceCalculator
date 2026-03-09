@@ -40,10 +40,20 @@ fun ProfileScreen(
     viewModel: CalculatorViewModel
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(Unit) {
+        viewModel.scrollToTop.collect { route ->
+            if (route == "profile_tab") {
+                listState.animateScrollToItem(0)
+            }
+        }
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         MeshBackground()
 
         LazyColumn(
+            state = listState,
             modifier = Modifier.fillMaxSize(),
             overscrollEffect = null
         ) {

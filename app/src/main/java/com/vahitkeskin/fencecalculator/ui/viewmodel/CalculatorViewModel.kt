@@ -17,14 +17,16 @@ import javax.inject.Inject
 import kotlin.math.ceil
 
 import androidx.lifecycle.viewModelScope
-import com.vahitkeskin.fencecalculator.util.DataStoreManager
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import com.vahitkeskin.fencecalculator.util.AppLanguage
-import com.vahitkeskin.fencecalculator.util.Localization
+import com.vahitkeskin.fencecalculator.util.DataStoreManager
 import com.vahitkeskin.fencecalculator.util.AppStrings
+import com.vahitkeskin.fencecalculator.util.Localization
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.serialization.json.Json
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.serialization.encodeToString
+import kotlinx.coroutines.launch
 
 enum class AppTheme { LIGHT, DARK, SYSTEM }
 
@@ -33,6 +35,15 @@ class CalculatorViewModel @Inject constructor(
     private val dataStoreManager: DataStoreManager,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
+
+    private val _scrollToTop = MutableSharedFlow<String>(extraBufferCapacity = 1)
+    val scrollToTop = _scrollToTop.asSharedFlow()
+
+    fun requestScrollToTop(route: String) {
+        viewModelScope.launch {
+            _scrollToTop.emit(route)
+        }
+    }
 
     // --- PERSISTENT STATE ---
     var companyName by mutableStateOf(""); private set
@@ -59,6 +70,18 @@ class CalculatorViewModel @Inject constructor(
     fun onIbanChange(v: String) {
         iban = v
         viewModelScope.launch { dataStoreManager.saveIban(v) }
+    }
+
+    var isOnboardingCompleted by mutableStateOf(true); private set
+    fun setOnboardingCompleted() {
+        isOnboardingCompleted = true
+        viewModelScope.launch { dataStoreManager.saveOnboardingCompleted(true) }
+    }
+
+    var isLockTooltipShown by mutableStateOf(true); private set
+    fun setLockTooltipShown() {
+        isLockTooltipShown = true
+        viewModelScope.launch { dataStoreManager.saveLockTooltipShown(true) }
     }
 
     // --- THEME STATE ---
@@ -453,6 +476,16 @@ class CalculatorViewModel @Inject constructor(
                     AppLanguage.fromCode(code)
                 }
                 calculateValues()
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.onboardingCompleted.collectLatest {
+                isOnboardingCompleted = it
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.lockTooltipShown.collectLatest {
+                isLockTooltipShown = it
             }
         }
     }

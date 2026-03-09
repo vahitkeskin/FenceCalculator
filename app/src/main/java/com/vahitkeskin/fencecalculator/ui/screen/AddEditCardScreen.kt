@@ -78,8 +78,8 @@ fun AddEditCardScreen(
     // Rasyo seçenekleri artık manuel
     // Kullanıcı isteği: miktar/değer alanı ilk başta temiz olsun.
     
-    var isDependentCardLocked by remember { mutableStateOf(true) }
-    var isDependentUnitLocked by remember { mutableStateOf(true) }
+    var isDependentCardLocked by remember { mutableStateOf(false) }
+    var isDependentUnitLocked by remember { mutableStateOf(false) }
 
     val isEditing = existingCard != null
     val onBackgroundColor = MaterialTheme.colorScheme.onBackground
@@ -222,7 +222,10 @@ fun AddEditCardScreen(
                                             label = { it.second },
                                             visibleItemsCount = 3,
                                             isLocked = isDependentCardLocked,
-                                            onLockToggle = { isDependentCardLocked = !isDependentCardLocked }
+                                            onLockToggle = { isDependentCardLocked = !isDependentCardLocked },
+                                            tooltipText = viewModel.strings.lockTooltip,
+                                            showTooltip = !viewModel.isLockTooltipShown,
+                                            onTooltipDismiss = { viewModel.setLockTooltipShown() }
                                         )
                                     } else {
                                         Text(

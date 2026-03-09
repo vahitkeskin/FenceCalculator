@@ -58,9 +58,18 @@ fun HomeScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
+    val listState = androidx.compose.foundation.lazy.rememberLazyListState()
     var isGeneratingPdf by remember { mutableStateOf(false) }
     var pdfFileForPreview by remember { mutableStateOf<java.io.File?>(null) }
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        viewModel.scrollToTop.collect { route ->
+            if (route == "home_tab") {
+                listState.animateScrollToItem(0)
+            }
+        }
+    }
     
     val onBackgroundColor = MaterialTheme.colorScheme.onBackground
     val primaryColor = MaterialTheme.colorScheme.primary
@@ -111,6 +120,7 @@ fun HomeScreen(
             },
         ) { paddingValues ->
             LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
