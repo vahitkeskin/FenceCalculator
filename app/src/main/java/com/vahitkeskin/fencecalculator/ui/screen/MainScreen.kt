@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.vahitkeskin.fencecalculator.R
 import com.vahitkeskin.fencecalculator.ui.components.PremiumDialog
+import com.vahitkeskin.fencecalculator.ui.components.BannerAdView
 
 sealed class Screen(
     val route: String,
@@ -59,7 +60,14 @@ fun MainScreen(
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
-            NavigationBar(
+            Column {
+                AnimatedWaveBottomBar(
+                    totalCost = viewModel.grandTotalCost,
+                    isBlurred = false,
+                    onClick = { showPremiumPopup = true }
+                )
+                BannerAdView()
+                NavigationBar(
                     containerColor = MaterialTheme.colorScheme.surface,
                     tonalElevation = 0.dp
                 ) {
@@ -93,6 +101,7 @@ fun MainScreen(
                             )
                         )
                     }
+                }
             }
         }
     ) { innerPadding ->
@@ -110,9 +119,7 @@ fun MainScreen(
             NavHost(
                 navController = innerNavController,
                 startDestination = Screen.Home.route,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 72.dp)
+                modifier = Modifier.fillMaxSize()
             ) {
                 composable(Screen.Home.route) {
                     HomeScreen(
@@ -138,15 +145,6 @@ fun MainScreen(
                     ProfileScreen(viewModel = viewModel, navController = globalNavController)
                 }
             }
-            
-            AnimatedWaveBottomBar(
-                totalCost = viewModel.grandTotalCost,
-                // TODO: İstediğim zaman aktif edebileyim - 50 sınırlaması ve premium
-                // isBlurred = !viewModel.isPremium && viewModel.usageCount >= 50,
-                isBlurred = false,
-                onClick = { showPremiumPopup = true },
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
         }
     }
 }
