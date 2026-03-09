@@ -2,6 +2,7 @@ package com.vahitkeskin.fencecalculator.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -15,6 +16,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 
@@ -22,7 +25,8 @@ import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 fun PremiumGlassCard(
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 5.dp,
-    content: @Composable () -> Unit
+    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
+    content: @Composable ColumnScope.() -> Unit
 ) {
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
@@ -88,7 +92,9 @@ fun PremiumGlassCard(
                 shape = shape
             )
     ) {
-        content()
+        Column(verticalArrangement = verticalArrangement) {
+            content()
+        }
     }
 }
 

@@ -132,38 +132,39 @@ fun HomeScreen(
 
                 // Müşteri Bilgileri
                 item {
-                    PremiumGlassCard {
-                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text(
-                                viewModel.strings.customerInfo,
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = onBackgroundColor.copy(alpha = 0.5f),
-                                letterSpacing = 1.sp
-                            )
-                            
-                            OutlinedTextField(
-                                value = viewModel.customerName,
-                                onValueChange = { viewModel.onCustomerNameChange(it) },
-                                label = { Text(viewModel.strings.customerNameSurname, color = onBackgroundColor.copy(alpha = 0.5f)) },
-                                leadingIcon = { Icon(Icons.Default.Person, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next),
-                                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor)
-                            )
+                    PremiumGlassCard(
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            viewModel.strings.customerInfo,
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = onBackgroundColor.copy(alpha = 0.5f),
+                            letterSpacing = 1.sp,
+                            modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                        )
+                        
+                        OutlinedTextField(
+                            value = viewModel.customerName,
+                            onValueChange = { viewModel.onCustomerNameChange(it) },
+                            label = { Text(viewModel.strings.customerNameSurname, color = onBackgroundColor.copy(alpha = 0.5f)) },
+                            leadingIcon = { Icon(Icons.Default.Person, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next),
+                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor)
+                        )
 
-                            PhoneNumberField(
-                                phoneNumber = viewModel.customerPhone,
-                                onPhoneNumberChange = { viewModel.onCustomerPhoneChange(it) },
-                                label = viewModel.strings.customerPhoneNo,
-                                selectCountryLabel = viewModel.strings.selectCountry,
-                                searchCountryLabel = viewModel.strings.searchCountryOrCode,
-                                primaryColor = primaryColor,
-                                onBackgroundColor = onBackgroundColor
-                            )
-                        }
+                        PhoneNumberField(
+                            phoneNumber = viewModel.customerPhone,
+                            onPhoneNumberChange = { viewModel.onCustomerPhoneChange(it) },
+                            label = viewModel.strings.customerPhoneNo,
+                            selectCountryLabel = viewModel.strings.selectCountry,
+                            searchCountryLabel = viewModel.strings.searchCountryOrCode,
+                            primaryColor = primaryColor,
+                            onBackgroundColor = onBackgroundColor
+                        )
                     }
                 }
 
@@ -217,12 +218,38 @@ fun HomeScreen(
 
                 // Hızlı Bilgi
                 item {
-                    Text(
-                        viewModel.strings.infoTextHome,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = onBackgroundColor.copy(alpha = 0.4f),
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    )
+                    PremiumGlassCard(
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Surface(
+                                modifier = Modifier.size(42.dp),
+                                color = primaryColor.copy(alpha = 0.1f),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = null,
+                                        tint = primaryColor,
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                }
+                            }
+                            
+                            Text(
+                                viewModel.strings.infoTextHome,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = onBackgroundColor.copy(alpha = 0.6f),
+                                lineHeight = 16.sp
+                            )
+                        }
+                    }
                 }
 
                 // Klavye ve Toplam Maliyet kartının üstünde kalması için büyük boşluk
