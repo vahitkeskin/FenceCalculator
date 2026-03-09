@@ -78,8 +78,8 @@ fun AddEditCardScreen(
     // Rasyo seçenekleri artık manuel
     // Kullanıcı isteği: miktar/değer alanı ilk başta temiz olsun.
     
-    var isDependentCardLocked by remember { mutableStateOf(false) }
-    var isDependentUnitLocked by remember { mutableStateOf(false) }
+    var isDependentCardLocked by remember { mutableStateOf(true) }
+    var isDependentUnitLocked by remember { mutableStateOf(true) }
 
     val isEditing = existingCard != null
     val onBackgroundColor = MaterialTheme.colorScheme.onBackground
@@ -196,39 +196,42 @@ fun AddEditCardScreen(
                                 )
                             }
                             
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(16.dp))
 
                             // Bağımlılık Ayarları (Her Zaman Görünür)
                                 // Bağımlılık Ayarları
                                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth().padding(start = 4.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            viewModel.strings.selectReferenceCard,
-                                            style = MaterialTheme.typography.labelSmall,
-                                            fontWeight = FontWeight.Bold,
-                                            color = onBackgroundColor.copy(alpha = 0.5f)
-                                        )
+                                    // Referans Kart Seçici Başlığı
+                                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 0.dp)) {
+                                        Icon(Icons.Default.CopyAll, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(viewModel.strings.selectReferenceCard, style = MaterialTheme.typography.titleSmall, color = onBackgroundColor.copy(alpha = 0.9f), fontWeight = FontWeight.Bold)
                                     }
                                     
                                     // Kart Seçici (VerticalPicker)
-                                    VerticalPicker(
-                                        items = baseCardOptions,
-                                        selectedItem = baseCardOptions.find { it.first == dependentCardId } ?: baseCardOptions.firstOrNull() ?: ("" to ""),
-                                        onItemSelected = { 
-                                            if (dependentCardId != it.first) {
-                                                dependentCardId = it.first
-                                                if (!isEditing) dependentRatio = "" // Yeni kartta kart değiştikçe boşalt
-                                            }
-                                        },
-                                        label = { it.second },
-                                        visibleItemsCount = 3,
-                                        isLocked = isDependentCardLocked,
-                                        onLockToggle = { isDependentCardLocked = !isDependentCardLocked }
-                                    )
+                                    if (baseCardOptions.isNotEmpty()) {
+                                        VerticalPicker(
+                                            items = baseCardOptions,
+                                            selectedItem = baseCardOptions.find { it.first == dependentCardId } ?: baseCardOptions.first(),
+                                            onItemSelected = { 
+                                                if (dependentCardId != it.first) {
+                                                    dependentCardId = it.first
+                                                    if (!isEditing) dependentRatio = "" // Yeni kartta kart değiştikçe boşalt
+                                                }
+                                            },
+                                            label = { it.second },
+                                            visibleItemsCount = 3,
+                                            isLocked = isDependentCardLocked,
+                                            onLockToggle = { isDependentCardLocked = !isDependentCardLocked }
+                                        )
+                                    } else {
+                                        Text(
+                                            viewModel.strings.noCardsYet,
+                                            modifier = Modifier.padding(8.dp),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = onBackgroundColor.copy(alpha = 0.5f)
+                                        )
+                                    }
 
                                     // İşlem Seçici
                                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -285,74 +288,97 @@ fun AddEditCardScreen(
                                         }
                                     }
 
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        OutlinedTextField(
-                                            value = dependentRatio,
-                                            onValueChange = { newVal ->
-                                                val s = newVal.replace(',', '.')
-                                                if (s.isEmpty() || (s.all { it.isDigit() || it == '.' } && s.count { it == '.' } <= 1)) {
-                                                    dependentRatio = s
-                                                }
-                                            },
-                                            label = { Text(viewModel.strings.quantityValue, color = onBackgroundColor.copy(alpha = 0.5f)) },
-                                            leadingIcon = { 
-                                                if (dependentOperation == "÷") {
-                                                    Text(
-                                                        "÷",
-                                                        fontSize = 20.sp,
-                                                        fontWeight = FontWeight.Black,
-                                                        color = primaryColor,
-                                                        modifier = Modifier.padding(start = 4.dp)
-                                                    )
-                                                } else {
-                                                    val icon = when(dependentOperation) {
-                                                        "+" -> Icons.Default.Add
-                                                        "-" -> Icons.Default.Remove
-                                                        else -> Icons.Default.Close
-                                                    }
-                                                    Icon(icon, contentDescription = null, tint = primaryColor)
-                                                }
-                                            },
-                                            modifier = Modifier.weight(1f),
-                                            shape = RoundedCornerShape(12.dp),
-                                            singleLine = true,
-                                            keyboardOptions = KeyboardOptions(
-                                                keyboardType = KeyboardType.Number,
-                                                imeAction = ImeAction.Next
-                                            ),
-                                            colors = outlinedTextFieldColors(onBackgroundColor, primaryColor)
-                                        )
-                                        
-                                        Column(modifier = Modifier.weight(0.6f)) {
+                                    Column(modifier = Modifier.fillMaxWidth()) {
+                                        // 1. Başlıklar Satırı
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                        ) {
+                                            // TextField Başlığı (Görünmez)
                                             Row(
-                                                modifier = Modifier.fillMaxWidth().padding(start = 4.dp, bottom = 4.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                modifier = Modifier.weight(1f),
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                Text(
-                                                    viewModel.strings.unitLabel, // Added unit_label later
-                                                    style = MaterialTheme.typography.labelSmall,
-                                                    fontWeight = FontWeight.Bold,
-                                                    color = onBackgroundColor.copy(alpha = 0.5f)
+                                                Icon(Icons.Default.Numbers, contentDescription = null, tint = Color.Transparent, modifier = Modifier.size(20.dp))
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text(" ", style = MaterialTheme.typography.titleSmall)
+                                            }
+                                            
+                                            // Birim Seçici Başlığı
+                                            Row(
+                                                modifier = Modifier.weight(0.6f),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.Center
+                                            ) {
+                                                Icon(Icons.Default.Straighten, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text(viewModel.strings.unitLabel, style = MaterialTheme.typography.titleSmall, color = onBackgroundColor.copy(alpha = 0.9f), fontWeight = FontWeight.Bold)
+                                            }
+                                        }
+                                        
+                                        // 2. Giriş Alanları Satırı (Seçilen ile hizalamak için dikeyde ortalanmış)
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            // Miktar / Değer Girişi
+                                            OutlinedTextField(
+                                                value = dependentRatio,
+                                                onValueChange = { newVal ->
+                                                    val s = newVal.replace(',', '.')
+                                                    if (s.isEmpty() || (s.all { it.isDigit() || it == '.' } && s.count { it == '.' } <= 1)) {
+                                                        dependentRatio = s
+                                                    }
+                                                },
+                                                label = { Text(viewModel.strings.quantityValue, color = onBackgroundColor.copy(alpha = 0.5f)) },
+                                                leadingIcon = { 
+                                                    if (dependentOperation == "÷") {
+                                                        Text(
+                                                            "÷",
+                                                            fontSize = 20.sp,
+                                                            fontWeight = FontWeight.Black,
+                                                            color = primaryColor,
+                                                            modifier = Modifier.padding(start = 4.dp)
+                                                        )
+                                                    } else {
+                                                        val icon = when(dependentOperation) {
+                                                            "+" -> Icons.Default.Add
+                                                            "-" -> Icons.Default.Remove
+                                                            else -> Icons.Default.Close
+                                                        }
+                                                        Icon(icon, contentDescription = null, tint = primaryColor)
+                                                    }
+                                                },
+                                                modifier = Modifier.weight(1f),
+                                                shape = RoundedCornerShape(12.dp),
+                                                singleLine = true,
+                                                keyboardOptions = KeyboardOptions(
+                                                    keyboardType = KeyboardType.Number,
+                                                    imeAction = ImeAction.Next
+                                                ),
+                                                colors = outlinedTextFieldColors(onBackgroundColor, primaryColor)
+                                            )
+                                            
+                                            Column(
+                                                modifier = Modifier.weight(0.6f),
+                                                horizontalAlignment = Alignment.CenterHorizontally
+                                            ) {
+                                                VerticalPicker(
+                                                    items = unitOptions,
+                                                    selectedItem = unitOptions.find { it == unit } ?: unitOptions.first(),
+                                                    onItemSelected = { unit = it },
+                                                    visibleItemsCount = 3,
+                                                    isLocked = isDependentUnitLocked,
+                                                    onLockToggle = { isDependentUnitLocked = !isDependentUnitLocked }
                                                 )
                                             }
-                                            VerticalPicker(
-                                                items = unitOptions,
-                                                selectedItem = unitOptions.find { it == unit } ?: unitOptions.first(),
-                                                onItemSelected = { unit = it },
-                                                visibleItemsCount = 3,
-                                                isLocked = isDependentUnitLocked,
-                                                onLockToggle = { isDependentUnitLocked = !isDependentUnitLocked }
-                                            )
                                         }
                                     }
                                     
                                     // Hesaplanan miktar önizlemesi
                                     val baseQty = allBaseCards.find { it.id == dependentCardId }?.quantity ?: 0.0
+                                    val baseUnit = allBaseCards.find { it.id == dependentCardId }?.unit ?: ""
                                     val ratio = dependentRatio.toDoubleOrNull() ?: 0.0
                                     val calcQty = kotlin.math.ceil(
                                         when (dependentOperation) {
@@ -374,7 +400,7 @@ fun AddEditCardScreen(
                                                 Icon(Icons.Default.Calculate, contentDescription = null, tint = primaryColor)
                                                 Spacer(modifier = Modifier.width(12.dp))
                                                 Text(
-                                                    String.format(viewModel.strings.calcPreviewResult, baseQty.toInt(), dependentOperation, ratio, calcQty.toInt(), unit),
+                                                    String.format(viewModel.strings.calcPreviewResult, baseQty.toInt(), baseUnit, dependentOperation, ratio, calcQty.toInt(), unit),
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     color = onBackgroundColor,
                                                     fontWeight = FontWeight.Bold
