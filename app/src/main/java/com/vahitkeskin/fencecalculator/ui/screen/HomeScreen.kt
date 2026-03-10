@@ -134,7 +134,7 @@ fun HomeScreen(
                                 delay(1000)
                                 val file = PdfGenerator.generatePdf(
                                     context = context,
-                                    results = viewModel.results,
+                                    results = viewModel.orderedVisibleItems,
                                     totalCost = viewModel.grandTotalCost,
                                     length = viewModel.totalLengthInput,
                                     customerTitle = finalPdfTitle,
@@ -310,16 +310,10 @@ fun HomeScreen(
                 item {
                     AdvancedInputSection(
                         labelText = viewModel.strings.pdfTotalLengthLabel.removeSuffix(":"),
-                        lengthValue = viewModel.totalLengthDraft,
+                        lengthValue = viewModel.totalLengthInput,
                         onLengthChange = viewModel::onTotalLengthChange,
                         usageCount = viewModel.usageCount,
                         isPremium = viewModel.isPremium,
-                        // TODO: İstediğim zaman aktif edebileyim - 50 sınırlaması ve premium
-                        // usageLimitInfo = String.format(viewModel.strings.landLengthUsageInfo, viewModel.usageCount),
-                        // premiumRequiredInfo = viewModel.strings.premiumRequiredForMore,
-                        isChanged = viewModel.totalLengthDraft != viewModel.totalLengthInput,
-                        applyButtonLabel = viewModel.strings.calculate,
-                        onApply = { viewModel.applyTotalLength() },
                         onClear = { viewModel.clearTotalLength() }
                     )
                 }
