@@ -3,6 +3,7 @@ package com.vahitkeskin.fencecalculator.ui.components
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
@@ -10,9 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.CheckBox
-import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
-import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -127,10 +125,14 @@ fun SwapLayoutResultRow(
                             modifier = Modifier.size(24.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.PushPin,
+                                imageVector = Icons.Default.CheckCircle,
                                 contentDescription = viewModel.strings.pin,
-                                modifier = Modifier.size(16.dp),
-                                tint = if (item.isPinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                                modifier = Modifier.size(20.dp),
+                                tint = if (item.isPinned) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    if (isSystemInDarkTheme()) Color(0xFFCCCCCC) else Color(0xFF666666)
+                                }
                             )
                         }
                     }
