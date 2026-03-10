@@ -10,8 +10,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.LockOpen
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
@@ -206,9 +206,9 @@ fun <T> VerticalPicker(
                             Spacer(modifier = Modifier.width(8.dp))
                             Box {
                                 androidx.compose.material3.Icon(
-                                    imageVector = if (isLocked) Icons.Default.Lock else Icons.Default.LockOpen,
+                                    imageVector = if (isLocked) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
                                     contentDescription = "Lock Toggle",
-                                    tint = MaterialTheme.colorScheme.primary,
+                                    tint = if (isLocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                                     modifier = Modifier.size(16.dp)
                                 )
                             }
