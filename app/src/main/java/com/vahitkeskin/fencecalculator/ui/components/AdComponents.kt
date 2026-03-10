@@ -34,8 +34,7 @@ fun BannerAdView(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(adSize.height.dp),
-        contentAlignment = Alignment.Center
+            .height(adSize.height.dp)
     ) {
         AndroidView(
             modifier = Modifier.fillMaxSize(),

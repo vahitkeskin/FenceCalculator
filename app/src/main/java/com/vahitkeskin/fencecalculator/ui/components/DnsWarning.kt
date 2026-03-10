@@ -177,7 +177,7 @@ fun DnsBannerWarning(
         contentAlignment = Alignment.Center
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
