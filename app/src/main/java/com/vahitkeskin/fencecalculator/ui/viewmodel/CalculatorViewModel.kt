@@ -64,13 +64,11 @@ class CalculatorViewModel @Inject constructor(
     var customerName by mutableStateOf(""); private set
     fun onCustomerNameChange(v: String) {
         customerName = v
-        viewModelScope.launch { dataStoreManager.saveCustomerName(v) }
     }
 
     var customerPhone by mutableStateOf(""); private set
     fun onCustomerPhoneChange(v: String) {
         customerPhone = v
-        viewModelScope.launch { dataStoreManager.saveCustomerPhone(v) }
     }
 
     var iban by mutableStateOf(""); private set
@@ -167,7 +165,6 @@ class CalculatorViewModel @Inject constructor(
 
     // --- STATE ---
     var totalLengthInput by mutableStateOf(Defaults.LENGTH); private set
-    var totalLengthDraft by mutableStateOf(Defaults.LENGTH); private set
     var fenceHeightInput by mutableStateOf(Defaults.HEIGHT); private set
     var poleSpacingInput by mutableStateOf(Defaults.SPACING); private set
     var strutIntervalInput by mutableStateOf(Defaults.STRUT_INTERVAL); private set
@@ -183,37 +180,31 @@ class CalculatorViewModel @Inject constructor(
     var poleLengthInput by mutableStateOf("2.4"); private set
     fun onPoleLengthChange(v: String) = updateIfValid(v) {
         poleLengthInput = it
-        viewModelScope.launch { dataStoreManager.savePoleLength(it) }
     }
 
     var pipeLengthInput by mutableStateOf("6.0"); private set
     fun onPipeLengthChange(v: String) = updateIfValid(v) {
         pipeLengthInput = it
-        viewModelScope.launch { dataStoreManager.savePipeLength(it) }
     }
 
     var tensionFactorInput by mutableStateOf("6.66"); private set
     fun onTensionFactorChange(v: String) = updateIfValid(v) {
         tensionFactorInput = it
-        viewModelScope.launch { dataStoreManager.saveTensionFactor(it) }
     }
 
     var bindingFactorInput by mutableStateOf("3.0"); private set
     fun onBindingFactorChange(v: String) = updateIfValid(v) {
         bindingFactorInput = it
-        viewModelScope.launch { dataStoreManager.saveBindingFactor(it) }
     }
 
     var cementFactorInput by mutableStateOf("6.0"); private set
     fun onCementFactorChange(v: String) = updateIfValid(v) {
         cementFactorInput = it
-        viewModelScope.launch { dataStoreManager.saveCementFactor(it) }
     }
 
     var concreteFactorInput by mutableStateOf("30.0"); private set
     fun onConcreteFactorChange(v: String) = updateIfValid(v) {
         concreteFactorInput = it
-        viewModelScope.launch { dataStoreManager.saveConcreteFactor(it) }
     }
 
     private var priceMap = mutableMapOf<String, String>()
@@ -413,7 +404,7 @@ class CalculatorViewModel @Inject constructor(
                 icon = Icons.Default.Extension,
                 color = color,
                 emoji = card.emoji,
-                dependencyInfo = dependencyInfo
+                dependencyInfo = null
             )
         }
         rebuildOrderedVisibleItems()
@@ -427,6 +418,11 @@ class CalculatorViewModel @Inject constructor(
     }
 
     private fun observeDataStore() {
+        // Initializing with clean slate for inputs as requested
+        customerName = ""
+        customerPhone = ""
+        totalLengthInput = Defaults.LENGTH
+        
         viewModelScope.launch {
             dataStoreManager.companyName.collectLatest { name ->
                 companyName = name
@@ -441,6 +437,7 @@ class CalculatorViewModel @Inject constructor(
                 }
             }
         }
+        /* Removed persistent collection for fresh start on launch
         viewModelScope.launch {
             dataStoreManager.poleLength.collectLatest {
                 poleLengthInput = it; calculateValues()
@@ -471,10 +468,13 @@ class CalculatorViewModel @Inject constructor(
                 concreteFactorInput = it; calculateValues()
             }
         }
+        */
         viewModelScope.launch {
             dataStoreManager.customCards.collectLatest { json ->
                 customCards = try {
-                    Json.decodeFromString(json)
+                    val loaded: List<CustomCardItem> = Json.decodeFromString(json)
+                    // Resetting unit prices for fresh start as requested
+                    loaded.map { it.copy(unitPrice = 0.0) }
                 } catch (e: Exception) {
                     emptyList()
                 }
@@ -499,12 +499,14 @@ class CalculatorViewModel @Inject constructor(
                 rebuildOrderedVisibleItems()
             }
         }
+        /* Removed persistent collection for fresh start on launch
         viewModelScope.launch { dataStoreManager.customerName.collectLatest { customerName = it } }
         viewModelScope.launch {
             dataStoreManager.customerPhone.collectLatest {
                 customerPhone = it
             }
         }
+        */
         viewModelScope.launch {
             dataStoreManager.iban.collectLatest {
                 iban = it
@@ -551,32 +553,14 @@ class CalculatorViewModel @Inject constructor(
     fun onTotalLengthChange(v: String) {
         // Clear non-numeric chars except dot/comma
         val cleaned = v.replace(",", ".").filter { it.isDigit() || it == '.' }
-        totalLengthDraft = cleaned
+        totalLengthInput = cleaned
+        calculateValues()
     }
     fun clearTotalLength() {
-        totalLengthDraft = ""
-    }
-
-    fun applyTotalLength() {
-        if (totalLengthDraft == totalLengthInput) return
-        
-        // TODO: İstediğim zaman aktif edebileyim - 50 sınırlaması ve premium
-        // if (!isPremium && usageCount >= 50) return
-
-        /*
-        // TODO: İstediğim zaman aktif edebileyim - 50 sınırlaması ve premium
-        if (!isPremium) {
-            usageCount = usageCount + 1
-            viewModelScope.launch { dataStoreManager.saveUsageCount(usageCount) }
-        }
-        */
-        totalLengthInput = totalLengthDraft
+        totalLengthInput = ""
         calculateValues()
-        // Her 3 tıklamada bir reklam göstermek için
-        (context as? Activity)?.let { activity: Activity ->
-            AdManager.onCalculateClicked(activity)
-        }
     }
+
     fun onFenceHeightChange(v: String) = updateIfValid(v) { fenceHeightInput = it }
     fun onPoleSpacingChange(v: String) = updateIfValid(v) { poleSpacingInput = it }
     fun onStrutIntervalChange(v: String) = updateIfValid(v) { strutIntervalInput = it }
@@ -591,30 +575,28 @@ class CalculatorViewModel @Inject constructor(
     fun onMeshEyeChange(v: String) = updateIfValid(v) { meshEyeInput = it }
 
     fun onPriceChange(id: String, v: String) {
-        val s = v.replace(',', '.')
-        if (isValid(s)) {
-            priceMap[id] = s
-            if (id.startsWith("custom_")) {
-                val realId = id.removePrefix("custom_")
-                val card = getCustomCardById(realId)
-                if (card != null) {
-                    val newPrice = s.toDoubleOrNull() ?: 0.0
-                    val updatedCard = card.copy(unitPrice = newPrice)
-                    val current = customCards.toMutableList()
-                    val index = current.indexOfFirst { it.id == realId }
-                    if (index >= 0) {
-                        current[index] = updatedCard
-                        customCards = current
-                        // Güncelle ve hesabı çalıştır
-                        updateCustomCardResults()
-                        viewModelScope.launch {
-                            dataStoreManager.saveCustomCards(Json.encodeToString(current))
-                        }
+        val cleaned = v.replace(',', '.').filter { it.isDigit() || it == '.' }
+        priceMap[id] = cleaned
+        if (id.startsWith("custom_")) {
+            val realId = id.removePrefix("custom_")
+            val card = getCustomCardById(realId)
+            if (card != null) {
+                val newPrice = cleaned.toDoubleOrNull() ?: 0.0
+                val updatedCard = card.copy(unitPrice = newPrice)
+                val current = customCards.toMutableList()
+                val index = current.indexOfFirst { it.id == realId }
+                if (index >= 0) {
+                    current[index] = updatedCard
+                    customCards = current
+                    // Güncelle ve hesabı çalıştır
+                    updateCustomCardResults()
+                    viewModelScope.launch {
+                        dataStoreManager.saveCustomCards(Json.encodeToString(current))
                     }
                 }
-            } else {
-                calculateValues()
             }
+        } else {
+            calculateValues()
         }
     }
 
@@ -736,6 +718,7 @@ class CalculatorViewModel @Inject constructor(
                 Icons.Filled.Straighten,
                 Color(0xFF3F51B5),
                 strings.catMetal,
+                "", // Empty formula
                 ::getP
             ),
             createItem(
@@ -747,6 +730,7 @@ class CalculatorViewModel @Inject constructor(
                 Icons.Filled.FormatLineSpacing,
                 Color(0xFF5C6BC0),
                 strings.catMetal,
+                "", // Empty formula
                 ::getP
             ),
             createItem(
@@ -758,6 +742,7 @@ class CalculatorViewModel @Inject constructor(
                 Icons.Filled.ChangeHistory,
                 Color(0xFF9C27B0),
                 strings.catMetal,
+                "", // Empty formula
                 ::getP
             ),
  
@@ -770,6 +755,7 @@ class CalculatorViewModel @Inject constructor(
                 Icons.Filled.GridOn,
                 Color(0xFF009688),
                 strings.catWire,
+                "", // Empty formula
                 ::getP
             ),
             createItem(
@@ -781,6 +767,7 @@ class CalculatorViewModel @Inject constructor(
                 Icons.Filled.Scale,
                 Color(0xFF00796B),
                 strings.catWire,
+                "", // Empty formula
                 ::getP
             ),
             createItem(
@@ -792,6 +779,7 @@ class CalculatorViewModel @Inject constructor(
                 Icons.Filled.Warning,
                 Color(0xFFD32F2F),
                 strings.catWire,
+                "", // Empty formula
                 ::getP
             ),
             createItem(
@@ -803,6 +791,7 @@ class CalculatorViewModel @Inject constructor(
                 Icons.Filled.LinearScale,
                 Color(0xFFFF9800),
                 strings.catWire,
+                "", // Empty formula
                 ::getP
             ),
             createItem(
@@ -811,32 +800,35 @@ class CalculatorViewModel @Inject constructor(
                 String.format(strings.baglamaDesc, bFactor.toInt().toString()),
                 baglamaTeli,
                 strings.unitKg,
-                Icons.Filled.AllInclusive,
+                Icons.Filled.Link,
                 Color(0xFF795548),
                 strings.catWire,
+                "", // Empty formula
                 ::getP
             ),
  
             createItem(
                 "cimento",
                 strings.cimentoTitle,
-                String.format(strings.cimentoDesc, cemFactor.toInt().toString()),
+                strings.cimentoDesc,
                 cimentoSayisi,
                 strings.unitPiece,
-                Icons.Filled.Layers,
+                Icons.Filled.Egg,
                 Color(0xFF607D8B),
                 strings.catConstruction,
+                "", // Empty formula
                 ::getP
             ),
             createItem(
                 "beton",
                 strings.betonTitle,
-                String.format(strings.betonDesc, concFactor.toInt().toString()),
+                strings.betonDesc,
                 hazirBetonM3,
                 strings.unitM3,
-                Icons.Filled.PrecisionManufacturing,
+                Icons.Filled.Layers,
                 Color(0xFF455A64),
                 strings.catConstruction,
+                "", // Empty formula
                 ::getP
             )
         )
@@ -855,12 +847,21 @@ class CalculatorViewModel @Inject constructor(
         i: ImageVector,
         c: Color,
         cat: String,
+        formula: String,
         p: (String) -> Double
     ) =
         CalculationItem(
             id = id,
             title = t,
-            description = d, q, u, p(id), q * p(id), i, c, category = cat
+            description = d,
+            quantity = q,
+            unit = u,
+            unitPrice = p(id),
+            totalCost = q * p(id),
+            icon = i,
+            color = c,
+            category = cat,
+            dependencyInfo = formula
         )
 
     fun scanQrCode(bitmap: android.graphics.Bitmap) {

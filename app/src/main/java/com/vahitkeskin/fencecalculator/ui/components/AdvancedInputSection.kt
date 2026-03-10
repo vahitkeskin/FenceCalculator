@@ -42,9 +42,6 @@ fun AdvancedInputSection(
     isPremium: Boolean = false,
     usageLimitInfo: String = "",
     premiumRequiredInfo: String = "",
-    isChanged: Boolean = false,
-    applyButtonLabel: String = "Apply",
-    onApply: () -> Unit = {},
     onClear: () -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
@@ -69,22 +66,6 @@ fun AdvancedInputSection(
                 premiumRequiredInfo = premiumRequiredInfo,
                 onClear = onClear
             )
-
-            Button(
-                onClick = onApply,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(12.dp),
-                enabled = isChanged && lengthValue.isNotEmpty(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                    disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                )
-            ) {
-                Text(applyButtonLabel, fontWeight = FontWeight.Bold)
-            }
         }
     }
 }

@@ -127,19 +127,40 @@ object PdfGenerator {
                 val unitPrice = if (item.quantity != 0.0) item.totalCost / item.quantity else 0.0
 
                 paint.textAlign = Paint.Align.LEFT
-                val displayName =
-                    if (item.title.length > 28) item.title.take(28) + "..." else item.title
+                paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                val displayName = if (item.title.length > 28) item.title.take(28) + "..." else item.title
                 canvas.drawText(displayName, xMaterial, yPos, paint)
 
                 paint.textAlign = Paint.Align.RIGHT
                 canvas.drawText("${dfQty.format(item.quantity)} ${item.unit}", xQtyEnd, yPos, paint)
                 canvas.drawText(String.format(viewModel.strings.currencyFormat, dfPrice.format(unitPrice)), xUnitEnd, yPos, paint)
                 
-                paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 canvas.drawText(String.format(viewModel.strings.currencyFormat, dfPrice.format(item.totalCost)), xTotalEnd, yPos, paint)
-                paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+                
+                // --- Alt Bilgi (Açıklama veya Bağımlılık) ---
+                val subText = when {
+                    !item.dependencyInfo.isNullOrBlank() -> item.dependencyInfo
+                    !item.description.isNullOrBlank() -> item.description
+                    else -> null
+                }
 
-                yPos += 30f
+                if (subText != null) {
+                    yPos += 15f
+                    paint.textAlign = Paint.Align.LEFT
+                    paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+                    paint.textSize = 9f
+                    paint.color = Color.GRAY
+                    //TODO PDF "Malzeme" altında bulunan formuül
+                    val displaySubText = if (subText.length > 50) subText.take(47) + "..." else subText
+                    //canvas.drawText(displaySubText, xMaterial, yPos, paint)
+                    
+                    // Reset paint for next item
+                    paint.color = Color.BLACK
+                    paint.textSize = 12f
+                    yPos += 20f
+                } else {
+                    yPos += 30f
+                }
             }
         }
 
