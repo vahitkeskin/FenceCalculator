@@ -177,5 +177,8 @@ val TrStrings = AppStrings(
     calculate = "Hesapla",
     premiumPopupTitle = "Premium'u Keşfedin",
     premiumPopupDesc = "Tüm profesyonel özelliklerin kilidini açın.\n\n• Sınırsız hesaplama hakkı\n• Gelişmiş mimari araçlar\n• PDF raporları ve paylaşım\n\nYıllık Premium sadece 350 TL!",
-    premiumPopupConfirm = "Tamam"
+    premiumPopupConfirm = "Tamam",
+    privateDnsDetectedTitle = "Özel DNS Tespit Edildi",
+    privateDnsDetectedMessage = "Uygulamamızın tek geliri reklamlardır. Lütfen reklamları engellememek için Özel DNS ayarlarınızı kapatın.",
+    goToDnsSettings = "DNS Ayarlarına Git"
 )

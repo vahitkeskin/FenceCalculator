@@ -177,5 +177,8 @@ val NlStrings = AppStrings(
     calculate = "Berekenen",
     premiumPopupTitle = "Discover Premium",
     premiumPopupDesc = "Unlock all professional features.\n\n• Unlimited calculations\n• Advanced architectural tools\n• PDF reports and sharing\n\nAnnual Premium only 350 TL!",
-    premiumPopupConfirm = "OK"
+    premiumPopupConfirm = "OK",
+    privateDnsDetectedTitle = "Privé-DNS gedetecteerd",
+    privateDnsDetectedMessage = "De enige inkomsten van onze app zijn advertenties. Schakel uw privé-DNS-instellingen uit om ons te steunen.",
+    goToDnsSettings = "Ga naar DNS-instellingen"
 )
