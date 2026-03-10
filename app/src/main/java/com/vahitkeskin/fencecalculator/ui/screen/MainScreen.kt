@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Calculate
@@ -25,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -79,11 +82,6 @@ fun MainScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             Column {
-                AnimatedWaveBottomBar(
-                    totalCost = viewModel.grandTotalCost,
-                    isBlurred = false,
-                    onClick = { showPremiumPopup = true }
-                )
                 if (viewModel.isPrivateDnsEnabled && !viewModel.isPremium) {
                     DnsBannerWarning(strings = viewModel.strings)
                 } else {
@@ -127,22 +125,29 @@ fun MainScreen(
             }
         }
     ) { innerPadding ->
-        val imeBottom = with(LocalDensity.current) { WindowInsets.ime.getBottom(this).toDp() }
-        val bottomPadding = max(innerPadding.calculateBottomPadding(), imeBottom)
+        val density = LocalDensity.current
+        val imeBottom = with(density) { WindowInsets.ime.getBottom(this).toDp() }
+        val isKeyboardOpen = imeBottom > 0.dp
+        
+        // This is the height of the bottom bar (NavBar + Ad/DNS)
+        val navBarHeight = innerPadding.calculateBottomPadding()
 
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = bottomPadding
-                )
+            modifier = Modifier.fillMaxSize()
         ) {
             NavHost(
                 navController = innerNavController,
                 startDestination = Screen.Home.route,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        // Content should always be above the bottom bar, 
+                        // even when keyboard is open we want content to be scrollable above keyboard
+                        bottom = max(navBarHeight, imeBottom)
+                    )
             ) {
+                // ... composables remain the same
                 composable(Screen.Home.route) {
                     HomeScreen(
                         viewModel = viewModel, 
@@ -166,6 +171,27 @@ fun MainScreen(
                 composable(Screen.Profile.route) {
                     ProfileScreen(viewModel = viewModel, navController = globalNavController)
                 }
+            }
+
+            // Total Cost card as an overlay
+            // We use a Box with constraints or density to ensure it sits exactly where we want
+            // The trick is to use a single padding that accounts for both navBar and keyboard
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    // We calculate a base padding that is navBarHeight when keyboard is closed
+                    // and tapers to 0 as keyboard opens, but imePadding() handles the push.
+                    // To avoid the glitch, we subtract the current keyboard height from the navBar height,
+                    // clamping it at 0.
+                    .padding(bottom = max(0.dp, navBarHeight - imeBottom))
+                    .imePadding()
+            ) {
+                AnimatedWaveBottomBar(
+                    totalCost = viewModel.grandTotalCost,
+                    isBlurred = false,
+                    onClick = { showPremiumPopup = true }
+                )
             }
         }
     }
