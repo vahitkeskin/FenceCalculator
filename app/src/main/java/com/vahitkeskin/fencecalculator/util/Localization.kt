@@ -203,7 +203,10 @@ data class AppStrings(
     val calculate: String,
     val premiumPopupTitle: String,
     val premiumPopupDesc: String,
-    val premiumPopupConfirm: String
+    val premiumPopupConfirm: String,
+    val privateDnsDetectedTitle: String,
+    val privateDnsDetectedMessage: String,
+    val goToDnsSettings: String
 )
 
 

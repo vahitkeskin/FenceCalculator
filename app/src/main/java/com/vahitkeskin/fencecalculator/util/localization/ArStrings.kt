@@ -177,5 +177,8 @@ val ArStrings = AppStrings(
     calculate = "حساب",
     premiumPopupTitle = "اكتشف Premium",
     premiumPopupDesc = "افتح جميع الميزات الاحترافية.\n\n• حسابات غير محدودة\n• أدوات معمارية متقدمة\n• تقارير PDF والمشاركة\n\nاشتراك Premium السنوي بـ 350 TL فقط!",
-    premiumPopupConfirm = "موافق"
+    premiumPopupConfirm = "موافق",
+    privateDnsDetectedTitle = "تم اكتشاف نظام DNS خاص",
+    privateDnsDetectedMessage = "دخل تطبيقنا الوحيد هو الإعلانات. يرجى إيقاف تشغيل إعدادات DNS الخاصة لدعمنا.",
+    goToDnsSettings = "انتقل إلى إعدادات DNS"
 )
