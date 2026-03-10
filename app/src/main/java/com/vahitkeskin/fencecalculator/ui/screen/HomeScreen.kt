@@ -38,6 +38,7 @@ import com.vahitkeskin.fencecalculator.ui.components.*
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
 import com.vahitkeskin.fencecalculator.util.PdfGenerator
 import com.vahitkeskin.fencecalculator.util.QrGenerator
+import com.vahitkeskin.fencecalculator.util.AdManager
 import androidx.navigation.compose.rememberNavController
 import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
@@ -308,10 +309,17 @@ fun HomeScreen(
 
                 // Ana Parametreler
                 item {
+                    val activity = context as? android.app.Activity
                     AdvancedInputSection(
                         labelText = viewModel.strings.pdfTotalLengthLabel.removeSuffix(":"),
-                        lengthValue = viewModel.totalLengthInput,
+                        lengthValue = viewModel.totalLengthDraft,
                         onLengthChange = viewModel::onTotalLengthChange,
+                        onApply = {
+                            viewModel.applyTotalLength()
+                            activity?.let { AdManager.onCalculateClicked(it) }
+                        },
+                        calculateButtonText = viewModel.strings.calculate,
+                        calculateButtonEnabled = viewModel.totalLengthDraft != viewModel.totalLengthInput,
                         usageCount = viewModel.usageCount,
                         isPremium = viewModel.isPremium,
                         onClear = { viewModel.clearTotalLength() }

@@ -38,11 +38,14 @@ fun AdvancedInputSection(
     labelText: String,
     lengthValue: String,
     onLengthChange: (String) -> Unit,
+    onApply: () -> Unit,
     usageCount: Int = 0,
     isPremium: Boolean = false,
     usageLimitInfo: String = "",
     premiumRequiredInfo: String = "",
-    onClear: () -> Unit = {}
+    onClear: () -> Unit = {},
+    calculateButtonText: String = "Calculate",
+    calculateButtonEnabled: Boolean = true
 ) {
     val focusManager = LocalFocusManager.current
     PremiumGlassCard(
@@ -66,6 +69,28 @@ fun AdvancedInputSection(
                 premiumRequiredInfo = premiumRequiredInfo,
                 onClear = onClear
             )
+
+            Button(
+                onClick = {
+                    onApply()
+                },
+                enabled = calculateButtonEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
+                Icon(Icons.Filled.Functions, null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    calculateButtonText,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }
@@ -265,7 +290,8 @@ fun AdvancedInputSectionPreview() {
             AdvancedInputSection(
                 labelText = "Arazi Uzunluğu (m)",
                 lengthValue = "150",
-                onLengthChange = {}
+                onLengthChange = {},
+                onApply = {}
             )
         }
     }
