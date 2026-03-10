@@ -94,15 +94,6 @@ fun CompactInput(
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
 
     Column(modifier) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                label,
-                style = MaterialTheme.typography.labelSmall,
-                fontWeight = FontWeight.Bold,
-                color = onSurfaceColor.copy(alpha = 0.5f),
-                modifier = Modifier.weight(1f)
-            )
-        }
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
@@ -116,6 +107,12 @@ fun CompactInput(
                         }
                     }
                 },
+            label = {
+                Text(
+                    label,
+                    color = onSurfaceColor.copy(alpha = 0.5f)
+                )
+            },
             textStyle = MaterialTheme.typography.bodyLarge.copy(
                 fontWeight = FontWeight.Bold,
                 color = onSurfaceColor
