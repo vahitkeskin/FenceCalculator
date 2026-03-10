@@ -12,7 +12,7 @@ import com.vahitkeskin.fencecalculator.BuildConfig
 object AdManager {
     // ID local.properties dosyasından çekiliyor
     private val INTERSTITIAL_AD_ID = BuildConfig.ADMOB_INTERSTITIAL_ID
-    
+
     private var interstitialAd: InterstitialAd? = null
     private var calculationClickCount = 0
 
@@ -39,17 +39,26 @@ object AdManager {
 
     fun onCalculateClicked(activity: Activity) {
         calculationClickCount++
+        Log.d(
+            "AdManager",
+            "Hesapla tıklandı. Toplam hesaplama sayısı: ${calculationClickCount % 4}"
+        )
+
         if (calculationClickCount % 3 == 0) {
+            val adNumber = calculationClickCount / 3
+            Log.d("AdManager", "$adNumber. reklam gösterilecek")
             showInterstitialAd(activity)
         }
     }
 
     private fun showInterstitialAd(activity: Activity) {
         interstitialAd?.let { ad ->
+            Log.d("AdManager", "Interstitial reklam gösteriliyor...")
             ad.show(activity)
             // Load the next ad for future use
             loadInterstitialAd(activity)
         } ?: run {
+            Log.d("AdManager", "Reklam henüz yüklü değil, tekrar yükleniyor...")
             // If ad is not loaded, try loading it again
             loadInterstitialAd(activity)
         }

@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 fun AnimatedSplashScreen(onAnimationFinished: () -> Unit) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val onBackgroundColor = MaterialTheme.colorScheme.onBackground
-    
+
     val lineProgress = remember { Animatable(0f) }
     val textAlpha = remember { Animatable(0f) }
     val scale = remember { Animatable(0.8f) }
@@ -41,7 +41,7 @@ fun AnimatedSplashScreen(onAnimationFinished: () -> Unit) {
             textAlpha.animateTo(1f, tween(800))
         }
         scale.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
-        
+
         delay(1000)
         onAnimationFinished()
     }
@@ -61,7 +61,7 @@ fun AnimatedSplashScreen(onAnimationFinished: () -> Unit) {
                 val strokeWidth = 8f
                 val w = size.width
                 val h = size.height
-                
+
                 // Vertical Poles
                 val poleCount = 4
                 for (i in 0 until poleCount) {
