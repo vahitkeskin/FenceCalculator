@@ -165,6 +165,7 @@ class CalculatorViewModel @Inject constructor(
 
     // --- STATE ---
     var totalLengthInput by mutableStateOf(Defaults.LENGTH); private set
+    var totalLengthDraft by mutableStateOf(Defaults.LENGTH); private set
     var fenceHeightInput by mutableStateOf(Defaults.HEIGHT); private set
     var poleSpacingInput by mutableStateOf(Defaults.SPACING); private set
     var strutIntervalInput by mutableStateOf(Defaults.STRUT_INTERVAL); private set
@@ -422,6 +423,7 @@ class CalculatorViewModel @Inject constructor(
         customerName = ""
         customerPhone = ""
         totalLengthInput = Defaults.LENGTH
+        totalLengthDraft = Defaults.LENGTH
         
         viewModelScope.launch {
             dataStoreManager.companyName.collectLatest { name ->
@@ -553,11 +555,17 @@ class CalculatorViewModel @Inject constructor(
     fun onTotalLengthChange(v: String) {
         // Clear non-numeric chars except dot/comma
         val cleaned = v.replace(",", ".").filter { it.isDigit() || it == '.' }
-        totalLengthInput = cleaned
+        totalLengthDraft = cleaned
+    }
+
+    fun applyTotalLength() {
+        totalLengthInput = totalLengthDraft
         calculateValues()
     }
+
     fun clearTotalLength() {
         totalLengthInput = ""
+        totalLengthDraft = ""
         calculateValues()
     }
 
