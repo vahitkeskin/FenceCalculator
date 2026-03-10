@@ -27,6 +27,7 @@ import androidx.navigation.NavController
 import com.vahitkeskin.fencecalculator.R
 import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.PremiumGlassCard
+import com.vahitkeskin.fencecalculator.ui.components.DnsWarningCard
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
 import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme

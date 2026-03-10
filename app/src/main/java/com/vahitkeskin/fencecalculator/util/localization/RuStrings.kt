@@ -177,5 +177,8 @@ val RuStrings = AppStrings(
     calculate = "Рассчитать",
     premiumPopupTitle = "Узнайте о Premium",
     premiumPopupDesc = "Разблокируйте все профессиональные функции.\n\n• Неограниченные расчеты\n• Расширенные архитектурные инструменты\n• PDF-отчеты и обмен данными\n\nГодовой Premium всего за 350 TL!",
-    premiumPopupConfirm = "ОК"
+    premiumPopupConfirm = "ОК",
+    privateDnsDetectedTitle = "Обнаружен частный DNS",
+    privateDnsDetectedMessage = "Единственный доход нашего приложения — реклама. Пожалуйста, отключите настройки частного DNS, чтобы поддержать нас.",
+    goToDnsSettings = "Перейти к настройкам DNS"
 )

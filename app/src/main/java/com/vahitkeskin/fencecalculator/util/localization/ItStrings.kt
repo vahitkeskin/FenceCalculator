@@ -177,5 +177,8 @@ val ItStrings = AppStrings(
     calculate = "Calcola",
     premiumPopupTitle = "Scopri Premium",
     premiumPopupDesc = "Sblocca tutte le funzionalità professionali.\n\n• Calcoli illimitati\n• Strumenti architettonici avanzati\n• Rapporti PDF e condivisione\n\nPremium annuale a soli 350 TL!",
-    premiumPopupConfirm = "OK"
+    premiumPopupConfirm = "OK",
+    privateDnsDetectedTitle = "DNS privato rilevato",
+    privateDnsDetectedMessage = "L'unica entrate della nostra app è la pubblicità. Disattiva le impostazioni DNS private per supportarci.",
+    goToDnsSettings = "Vai alle impostazioni DNS"
 )

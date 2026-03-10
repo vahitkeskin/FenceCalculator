@@ -28,8 +28,12 @@ import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.encodeToString
 import kotlinx.coroutines.launch
-import com.vahitkeskin.fencecalculator.util.AdManager
 import android.app.Activity
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.LinkProperties
+import com.vahitkeskin.fencecalculator.util.DnsDetector
+import com.vahitkeskin.fencecalculator.util.AdManager
 
 enum class AppTheme { LIGHT, DARK, SYSTEM }
 
@@ -99,6 +103,28 @@ class CalculatorViewModel @Inject constructor(
     fun onPremiumToggle(v: Boolean) {
         isPremium = v
         viewModelScope.launch { dataStoreManager.saveIsPremium(v) }
+    }
+
+    // --- DNS DETECTION ---
+    var isPrivateDnsEnabled by mutableStateOf(false); private set
+
+    fun checkPrivateDns() {
+        isPrivateDnsEnabled = DnsDetector.isPrivateDnsEnabled(context)
+    }
+
+    private fun startDnsMonitoring() {
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        cm.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                checkPrivateDns()
+            }
+            override fun onLinkPropertiesChanged(network: Network, linkProperties: LinkProperties) {
+                checkPrivateDns()
+            }
+            override fun onLost(network: Network) {
+                checkPrivateDns()
+            }
+        })
     }
 
     // --- THEME STATE ---
@@ -396,6 +422,8 @@ class CalculatorViewModel @Inject constructor(
     init {
         calculateValues()
         observeDataStore()
+        checkPrivateDns()
+        startDnsMonitoring()
     }
 
     private fun observeDataStore() {
@@ -545,8 +573,8 @@ class CalculatorViewModel @Inject constructor(
         totalLengthInput = totalLengthDraft
         calculateValues()
         // Her 3 tıklamada bir reklam göstermek için
-        (context as? Activity)?.let {
-            AdManager.onCalculateClicked(it)
+        (context as? Activity)?.let { activity: Activity ->
+            AdManager.onCalculateClicked(activity)
         }
     }
     fun onFenceHeightChange(v: String) = updateIfValid(v) { fenceHeightInput = it }

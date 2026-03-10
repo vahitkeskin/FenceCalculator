@@ -177,5 +177,8 @@ val ZhStrings = AppStrings(
     calculate = "计算",
     premiumPopupTitle = "发现高级版",
     premiumPopupDesc = "解锁所有专业功能。\n\n• 无限次计算\n• 高级建筑工具\n• PDF 报告和分享\n\n年度高级版仅需 350 TL！",
-    premiumPopupConfirm = "确定"
+    premiumPopupConfirm = "确定",
+    privateDnsDetectedTitle = "检测到私人 DNS",
+    privateDnsDetectedMessage = "我们应用的唯一收入是广告。请关闭您的私人 DNS 设置以支持我们。",
+    goToDnsSettings = "转到 DNS 设置"
 )
