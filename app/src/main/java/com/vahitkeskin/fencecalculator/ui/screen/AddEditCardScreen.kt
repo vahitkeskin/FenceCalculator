@@ -37,6 +37,8 @@ import com.vahitkeskin.fencecalculator.ui.theme.shadowlessElevation
 import com.vahitkeskin.fencecalculator.util.DataStoreManager
 import com.vahitkeskin.fencecalculator.R
 import androidx.compose.ui.res.stringResource
+import com.vahitkeskin.fencecalculator.util.NavigationUtils.safeClick
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -115,7 +117,7 @@ fun AddEditCardScreen(
                         }
                     },
                     navigationIcon = {
-                        IconButton(onClick = onNavigateBack) {
+                        IconButton(onClick = { safeClick { onNavigateBack() } }) {
                             Icon(
                                 Icons.Default.ArrowBack,
                                 contentDescription = viewModel.strings.back,
@@ -573,21 +575,23 @@ fun AddEditCardScreen(
                     // --- Kaydet Butonu ---
                     Button(
                         onClick = {
-                            val card = CustomCardItem(
-                                id = existingCard?.id ?: UUID.randomUUID().toString(),
-                                title = title.trim(),
-                                description = description.trim(),
-                                quantity = quantity.toDoubleOrNull() ?: 0.0,
-                                unit = unit.trim(),
-                                unitPrice = unitPrice.toDoubleOrNull() ?: 0.0,
-                                colorHex = selectedColorHex,
-                                emoji = selectedEmoji,
-                                dependentCardId = dependentCardId.ifEmpty { null },
-                                dependentRatio = dependentRatio.toDoubleOrNull(),
-                                dependentOperation = dependentOperation
-                            )
-                            viewModel.addOrUpdateCustomCard(card)
-                            onNavigateBack()
+                            safeClick {
+                                val card = CustomCardItem(
+                                    id = existingCard?.id ?: UUID.randomUUID().toString(),
+                                    title = title.trim(),
+                                    description = description.trim(),
+                                    quantity = quantity.toDoubleOrNull() ?: 0.0,
+                                    unit = unit.trim(),
+                                    unitPrice = unitPrice.toDoubleOrNull() ?: 0.0,
+                                    colorHex = selectedColorHex,
+                                    emoji = selectedEmoji,
+                                    dependentCardId = dependentCardId.ifEmpty { null },
+                                    dependentRatio = dependentRatio.toDoubleOrNull(),
+                                    dependentOperation = dependentOperation
+                                )
+                                viewModel.addOrUpdateCustomCard(card)
+                                onNavigateBack()
+                            }
                         },
                         enabled = isFormValid,
                         modifier = Modifier
@@ -620,8 +624,10 @@ fun AddEditCardScreen(
                         // --- Sil Butonu (sadece düzenleme modunda) ---
                         OutlinedButton(
                             onClick = {
-                                viewModel.deleteCustomCard(existingCard.id)
-                                onNavigateBack()
+                                safeClick {
+                                    viewModel.deleteCustomCard(existingCard.id)
+                                    onNavigateBack()
+                                }
                             },
                             modifier = Modifier
                                 .fillMaxWidth()

@@ -43,6 +43,8 @@ import com.vahitkeskin.fencecalculator.util.IbanValidator
 import com.vahitkeskin.fencecalculator.util.QrGenerator
 import androidx.compose.ui.res.stringResource
 import com.vahitkeskin.fencecalculator.R
+import com.vahitkeskin.fencecalculator.util.NavigationUtils.safePopBackStack
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -93,7 +95,7 @@ fun PersonalInfoScreen(
                     Text(viewModel.strings.personalInfo, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navController.safePopBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = viewModel.strings.back)
                     }
                 },
