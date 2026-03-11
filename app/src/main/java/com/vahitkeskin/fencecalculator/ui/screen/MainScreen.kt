@@ -1,5 +1,6 @@
 package com.vahitkeskin.fencecalculator.ui.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -24,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -68,6 +70,12 @@ fun MainScreen(
     val innerNavController = rememberNavController()
     val items = listOf(Screen.Home, Screen.Calculations, Screen.Custom, Screen.Profile)
     var showPremiumPopup by remember { mutableStateOf(false) }
+    
+    // Custom history to track visited tabs (unique screens)
+    val tabHistory = remember { mutableStateListOf<String>(Screen.Home.route) }
+
+    val navBackStackEntry by innerNavController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
     if (showPremiumPopup) {
         PremiumDialog(
@@ -102,6 +110,10 @@ fun MainScreen(
                             selected = currentRoute == screen.route,
                             onClick = {
                                 if (currentRoute != screen.route) {
+                                    // Update history: move/add to end of list
+                                    tabHistory.remove(screen.route)
+                                    tabHistory.add(screen.route)
+                                    
                                     innerNavController.navigate(screen.route) {
                                         popUpTo(innerNavController.graph.startDestinationId) {
                                             saveState = true
@@ -135,6 +147,40 @@ fun MainScreen(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
+            // Global BackHandler for tab navigation
+            BackHandler(enabled = true) {
+                if (currentRoute == Screen.Home.route) {
+                    // Always exit immediately if we are on Home
+                    (context as? android.app.Activity)?.finish()
+                } else if (tabHistory.size > 1) {
+                    // Navigate back through unique history
+                    // Remove current route to reveal the previous one
+                    currentRoute?.let { tabHistory.remove(it) }
+                    val prev = tabHistory.last()
+                    
+                    if (prev == Screen.Home.route) {
+                        innerNavController.popBackStack()
+                    } else {
+                        innerNavController.navigate(prev) {
+                            popUpTo(innerNavController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                } else {
+                    // History is empty or only contains current non-home tab, move to Home
+                    innerNavController.navigate(Screen.Home.route) {
+                        popUpTo(innerNavController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            }
+
             NavHost(
                 navController = innerNavController,
                 startDestination = Screen.Home.route,

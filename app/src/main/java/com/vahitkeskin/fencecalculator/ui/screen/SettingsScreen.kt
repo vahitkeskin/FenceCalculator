@@ -21,6 +21,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import com.vahitkeskin.fencecalculator.R
+import com.vahitkeskin.fencecalculator.util.NavigationUtils.safePopBackStack
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,7 +38,7 @@ fun SettingsScreen(viewModel: CalculatorViewModel, navController: NavController)
                     Text(viewModel.strings.settings, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navController.safePopBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = viewModel.strings.back)
                     }
                 },

@@ -35,6 +35,8 @@ import androidx.navigation.compose.rememberNavController
 import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.PremiumGlassCard
 import com.vahitkeskin.fencecalculator.R
+import com.vahitkeskin.fencecalculator.util.NavigationUtils.safePopBackStack
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -55,7 +57,7 @@ fun AboutScreen(navController: NavController, viewModel: CalculatorViewModel) {
             TopAppBar(
                 title = { Text(viewModel.strings.about, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navController.safePopBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = viewModel.strings.back)
                     }
                 },
