@@ -107,9 +107,8 @@ com.vahitkeskin.fencecalculator
 
 ## 📦 Kurulum & Build
 
-### APK İndir & Play Store
-👉 **[Google Play Store'dan İndir](https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator)**
-👉 **[FenceCalculator.apk](FenceCalculator.apk)**
+### Play Store
+👉 <a href="https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator" target="_blank">**Google Play Store'dan İndir**</a>
 
 ### Geliştirici Modu (Build from Source)
 1.  Depoyu klonlayın.
