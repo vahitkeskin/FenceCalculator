@@ -139,6 +139,7 @@ fun HomeScreen(
                                     totalCost = viewModel.grandTotalCost,
                                     length = viewModel.totalLengthInput,
                                     customerTitle = finalPdfTitle,
+                                    customerName = viewModel.customerName,
                                     companyName = viewModel.companyName,
                                     viewModel = viewModel
                                 )
