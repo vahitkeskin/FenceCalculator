@@ -32,6 +32,7 @@ object PdfGenerator {
         totalCost: Double,
         length: String,
         customerTitle: String,
+        customerName: String = "",
         companyName: String = "",
         viewModel: com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
     ): File? {
@@ -72,11 +73,15 @@ object PdfGenerator {
         canvas.drawText(currentDate, 30f, 125f, paint)
         paint.alpha = 255
 
-        // 3. Bilgi Kartı (Uzunluk Bilgisi)
+        // 3. Bilgi Kartı (Uzunluk Bilgisi ve Müşteri Adı Soyadı)
+        val hasCustomerName = customerName.isNotBlank()
+        val cardBottom = if (hasCustomerName) 225f else 200f
+        
         paint.color = Color.WHITE
         paint.clearShadowLayer()
-        canvas.drawRoundRect(30f, 140f, 565f, 200f, 10f, 10f, paint)
+        canvas.drawRoundRect(30f, 140f, 565f, cardBottom, 10f, 10f, paint)
 
+        // Uzunluk Bilgisi
         paint.color = Color.BLACK
         paint.textSize = 12f
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
@@ -84,10 +89,23 @@ object PdfGenerator {
 
         paint.color = android.graphics.Color.parseColor("#3F51B5")
         paint.textSize = 16f
-        canvas.drawText("$length ${viewModel.strings.unitMeter}", 200f, 175f, paint)
+        canvas.drawText("$length ${viewModel.strings.unitMeter}", 220f, 175f, paint)
+
+        // Müşteri Adı Soyadı (Varsa)
+        if (hasCustomerName) {
+            paint.color = Color.BLACK
+            paint.textSize = 12f
+            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            canvas.drawText(viewModel.strings.customerNameSurname + ":", 50f, 205f, paint)
+
+            paint.color = android.graphics.Color.parseColor("#3F51B5")
+            paint.textSize = 14f
+            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+            canvas.drawText(customerName, 220f, 205f, paint)
+        }
 
         // 4. TABLO BAŞLIKLARI
-        var yPos = 250f
+        var yPos = if (hasCustomerName) 275f else 250f
         val dfQty = DecimalFormat("#,##0")     // Miktar için (Virgülsüz)
         val dfPrice = DecimalFormat("#,##0.00") // Para birimleri için (Kuruşlu)
 
