@@ -2,6 +2,16 @@
   <img src="https://raw.githubusercontent.com/vahitkeskin/FenceCalculator/refs/heads/main/app/src/main/res/drawable/app_icon_professional.png" width="128" height="128" alt="App Icon">
 </p>
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/vahitkeskin/FenceCalculator/refs/heads/main/screenshots/fullbackground.png" width="100%" alt="Full Background">
+</p>
+
+<p align="center">
+  <a href="https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator" target="_blank">
+    <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="60" alt="Get it on Google Play">
+  </a>
+</p>
+
 # 🤺 Tel Çit Hesaplayıcı (Fence Calculator) 🏁
 
 <p align="center">
@@ -18,6 +28,14 @@ Profesyonel tel çit projeleri için geliştirilmiş, ileri düzey maliyet anali
 ## 📸 Görsel Deneyim & Tasarım
 > [!IMPORTANT]
 > Uygulama, **Glassmorphism** estetiğiyle birleşen dinamik **MeshBackground** (Canvas tabanlı animasyonlar) kullanarak standart bir hesap makinesinden çok, premium bir dijital araç hissi verir.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/vahitkeskin/FenceCalculator/refs/heads/main/screenshots/1.png" width="18%" />
+  <img src="https://raw.githubusercontent.com/vahitkeskin/FenceCalculator/refs/heads/main/screenshots/2.png" width="18%" />
+  <img src="https://raw.githubusercontent.com/vahitkeskin/FenceCalculator/refs/heads/main/screenshots/3.png" width="18%" />
+  <img src="https://raw.githubusercontent.com/vahitkeskin/FenceCalculator/refs/heads/main/screenshots/4.png" width="18%" />
+  <img src="https://raw.githubusercontent.com/vahitkeskin/FenceCalculator/refs/heads/main/screenshots/5.png" width="18%" />
+</p>
 
 *   **Dinamik Tema**: Karanlık/Aydınlık mod desteği ve uyumlu renk paletleri.
 *   **Mikro Animasyonlar**: Lottie ve Compose animasyon API'ları ile akıcı geçişler.
@@ -89,8 +107,8 @@ com.vahitkeskin.fencecalculator
 
 ## 📦 Kurulum & Build
 
-### APK İndir
-👉 **[FenceCalculator.apk](FenceCalculator.apk)**
+### Play Store
+👉 <a href="https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator" target="_blank">**Google Play Store'dan İndir**</a>
 
 ### Geliştirici Modu (Build from Source)
 1.  Depoyu klonlayın.
