@@ -261,7 +261,7 @@ fun ProfileScreen(
                 }
             }
 
-            item { Spacer(modifier = Modifier.height(80.dp)) } // Bottom bar padding
+            item { Spacer(modifier = Modifier.height(128.dp)) } // Bottom bar padding
         }
     }
 }
