@@ -320,8 +320,9 @@ fun HomeScreen(
                     )
                 }
 
-                // --- FAVORİ HESAPLAMALAR ---
-                if (viewModel.pinnedItems.isNotEmpty()) {
+                // --- FAVORİ HESAPLAMALAR (STANDART) ---
+                val standardPinned = viewModel.pinnedItems.filter { !it.id.startsWith("custom_") }
+                if (standardPinned.isNotEmpty()) {
                     item {
                         Divider(color = onBackgroundColor.copy(alpha = 0.1f), modifier = Modifier.padding(vertical = 8.dp))
                     }
@@ -337,15 +338,41 @@ fun HomeScreen(
                         )
                     }
                     
-                    items(viewModel.pinnedItems.size) { index ->
-                        val item = viewModel.pinnedItems[index]
-                        val isCustom = item.id.startsWith("custom_")
-                        val realId = if (isCustom) item.id.removePrefix("custom_") else item.id
-                        
+                    items(standardPinned) { item ->
+                        SwapLayoutResultRow(
+                            viewModel = viewModel,
+                            item = item,
+                            currentPriceInput = viewModel.getPriceString(item.id),
+                            onPriceChange = { viewModel.onPriceChange(item.id, it) },
+                            onPinToggle = { viewModel.togglePin(item.id) },
+                            onPremiumClick = onPremiumClick
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+
+                // --- ÖZEL KARTLAR ---
+                val customPinned = viewModel.pinnedItems.filter { it.id.startsWith("custom_") }
+                if (customPinned.isNotEmpty()) {
+                    item {
+                        Divider(color = onBackgroundColor.copy(alpha = 0.1f), modifier = Modifier.padding(vertical = 8.dp))
+                    }
+                    
+                    item {
+                        Text(
+                            viewModel.strings.customCards,
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = onBackgroundColor.copy(alpha = 0.5f),
+                            letterSpacing = 2.sp,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                    }
+                    
+                    items(customPinned) { item ->
+                        val realId = item.id.removePrefix("custom_")
                         Box(modifier = Modifier.clickable {
-                            if (isCustom) {
-                                navController.navigate("add_edit_card/$realId")
-                            }
+                            navController.navigate("add_edit_card/$realId")
                         }) {
                             SwapLayoutResultRow(
                                 viewModel = viewModel,
