@@ -61,6 +61,7 @@ fun HomeScreen(
     onPremiumClick: () -> Unit
 ) {
     val context = LocalContext.current
+    val activity = context as? android.app.Activity
     val listState = androidx.compose.foundation.lazy.rememberLazyListState()
     var isGeneratingPdf by remember { mutableStateOf(false) }
     var pdfFileForPreview by remember { mutableStateOf<java.io.File?>(null) }
@@ -145,6 +146,7 @@ fun HomeScreen(
                                 )
                                 isGeneratingPdf = false
                                 pdfFileForPreview = file
+                                activity?.let { AdManager.onShareClicked(it) }
                             }
                         }) {
                             Icon(Icons.Default.Share, contentDescription = viewModel.strings.sharePdf, tint = primaryColor)
@@ -310,19 +312,10 @@ fun HomeScreen(
 
                 // Ana Parametreler
                 item {
-                    val activity = context as? android.app.Activity
                     AdvancedInputSection(
                         labelText = viewModel.strings.pdfTotalLengthLabel.removeSuffix(":"),
                         lengthValue = viewModel.totalLengthDraft,
                         onLengthChange = viewModel::onTotalLengthChange,
-                        onApply = {
-                            viewModel.applyTotalLength()
-                            activity?.let { AdManager.onCalculateClicked(it) }
-                        },
-                        calculateButtonText = viewModel.strings.calculate,
-                        calculateButtonEnabled = viewModel.totalLengthDraft != viewModel.totalLengthInput,
-                        usageCount = viewModel.usageCount,
-                        isPremium = viewModel.isPremium,
                         onClear = { viewModel.clearTotalLength() }
                     )
                 }
