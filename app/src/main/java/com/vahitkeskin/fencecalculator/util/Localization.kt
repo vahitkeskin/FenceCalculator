@@ -206,7 +206,23 @@ data class AppStrings(
     val premiumPopupConfirm: String,
     val privateDnsDetectedTitle: String,
     val privateDnsDetectedMessage: String,
-    val goToDnsSettings: String
+    val goToDnsSettings: String,
+    val adLoading: String,
+    val shareReportTitle: String,
+    val shareLandLength: String,
+    val shareMaterialList: String,
+    val shareAmountLabel: String,
+    val shareGrandTotal: String,
+    val shareCalculatedWith: String,
+    val shareReportSubject: String,
+    val shareReportChooser: String,
+    val cardEmoji: String,
+    val emojiCategoryConstruction: String,
+    val emojiCategoryNature: String,
+    val cardColor: String,
+    val selected: String,
+    val emojiCategoryNails: String,
+    val splashTitle: String
 )
 
 

@@ -93,7 +93,7 @@ fun MainScreen(
                 if (viewModel.isPrivateDnsEnabled && !viewModel.isPremium) {
                     DnsBannerWarning(strings = viewModel.strings)
                 } else {
-                    BannerAdView()
+                    BannerAdView(strings = viewModel.strings)
                 }
                 NavigationBar(
                     containerColor = MaterialTheme.colorScheme.surface,
@@ -235,6 +235,7 @@ fun MainScreen(
             ) {
                 AnimatedWaveBottomBar(
                     totalCost = viewModel.grandTotalCost,
+                    strings = viewModel.strings,
                     isBlurred = false,
                     onClick = { showPremiumPopup = true }
                 )
