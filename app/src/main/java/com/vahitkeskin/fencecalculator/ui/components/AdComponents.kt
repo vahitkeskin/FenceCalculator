@@ -26,11 +26,12 @@ import com.google.android.gms.ads.LoadAdError
 import com.vahitkeskin.fencecalculator.BuildConfig
 
 @Composable
-fun BannerAdView(modifier: Modifier = Modifier) {
+fun BannerAdView(modifier: Modifier = Modifier, strings: com.vahitkeskin.fencecalculator.util.AppStrings? = null) {
     // ID local.properties dosyasından çekiliyor
     val bannerAdId = BuildConfig.ADMOB_BANNER_ID
     val configuration = LocalConfiguration.current
     val context = LocalContext.current
+    val adStrings = strings ?: com.vahitkeskin.fencecalculator.util.Localization.getStrings(java.util.Locale.getDefault().language)
     var isAdLoaded by remember { androidx.compose.runtime.mutableStateOf(false) }
     
     // Adaptive Banner Boyutu
@@ -59,7 +60,7 @@ fun BannerAdView(modifier: Modifier = Modifier) {
                 )
                 androidx.compose.foundation.layout.Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Reklam Yükleniyor...",
+                    text = adStrings.adLoading,
                     style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
                     color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                 )

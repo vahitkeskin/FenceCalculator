@@ -54,13 +54,15 @@ val presetColors = listOf(
 fun ColorPickerCircle(
     selectedColorHex: String,
     onColorSelected: (String) -> Unit,
+    strings: com.vahitkeskin.fencecalculator.util.AppStrings? = null,
     modifier: Modifier = Modifier
 ) {
+    val currentStrings = strings ?: com.vahitkeskin.fencecalculator.util.Localization.getStrings(java.util.Locale.getDefault().language)
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
 
     Column(modifier = modifier) {
         Text(
-            text = "KART RENGİ",
+            text = currentStrings.cardColor,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Bold,
             color = onSurfaceColor.copy(alpha = 0.5f),
@@ -116,7 +118,7 @@ fun ColorPickerCircle(
                     if (isSelected) {
                         Icon(
                             Icons.Default.Check,
-                            contentDescription = "Seçili",
+                            contentDescription = currentStrings.selected,
                             tint = Color.White,
                             modifier = Modifier.size(18.dp)
                         )

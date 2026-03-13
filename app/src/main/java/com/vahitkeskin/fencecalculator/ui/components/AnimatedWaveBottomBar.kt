@@ -26,11 +26,13 @@ import java.text.DecimalFormat
 @Composable
 fun AnimatedWaveBottomBar(
     totalCost: Double,
+    strings: com.vahitkeskin.fencecalculator.util.AppStrings? = null,
     isBlurred: Boolean = false,
     onClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val currencyFormat = DecimalFormat("#,##0.00")
+    val currentStrings = strings ?: com.vahitkeskin.fencecalculator.util.Localization.getStrings(java.util.Locale.getDefault().language)
+    val currencyFormat = java.text.DecimalFormat("#,##0.00")
     val backgroundColor = MaterialTheme.colorScheme.surface
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
     val primaryColor = MaterialTheme.colorScheme.primary
@@ -79,14 +81,14 @@ fun AnimatedWaveBottomBar(
                 ) {
                     Column {
                         Text(
-                            "TOPLAM MALİYET",
+                            currentStrings.totalCostLabel,
                             style = MaterialTheme.typography.labelSmall,
                             color = onSurfaceColor.copy(0.7f),
                             letterSpacing = 1.sp
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            "Hesaplanan Tutar",
+                            currentStrings.calculatedAmount,
                             style = MaterialTheme.typography.titleMedium,
                             color = onSurfaceColor,
                             fontWeight = FontWeight.SemiBold
@@ -101,7 +103,7 @@ fun AnimatedWaveBottomBar(
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
-                                "${currencyFormat.format(totalCost)} ₺",
+                                "${currencyFormat.format(totalCost)} ${currentStrings.currencySymbol}",
                                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier
