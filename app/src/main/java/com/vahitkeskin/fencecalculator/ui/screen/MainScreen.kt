@@ -90,11 +90,13 @@ fun MainScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             Column {
+                /*
                 if (viewModel.isPrivateDnsEnabled && !viewModel.isPremium) {
                     DnsBannerWarning(strings = viewModel.strings)
                 } else {
                     BannerAdView(strings = viewModel.strings)
                 }
+                */
                 NavigationBar(
                     containerColor = MaterialTheme.colorScheme.surface,
                     tonalElevation = 0.dp
