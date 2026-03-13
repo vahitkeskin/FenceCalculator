@@ -32,48 +32,55 @@ data class EmojiCategory(
     val emojis: List<String>
 )
 
-val emojiCategories = listOf(
-    EmojiCategory("İnşaat", "🏗️", listOf(
-        "🧱", "🪵", "🪨", "🏗️", "🚧", "🪜", "🏠", "🏢",
-        "🏭", "🏚️", "🪟", "🚪", "🧲", "⛓️", "🪤", "🪣"
-    )),
-    EmojiCategory("Aletler", "🔧", listOf(
-        "🔧", "🔨", "🪛", "🪚", "🛠️", "⚙️", "🔩", "📐",
-        "📏", "✂️", "🔑", "🗜️", "⛏️", "🪓", "🔗", "🧰"
-    )),
-    EmojiCategory("Malzeme", "📦", listOf(
-        "📦", "🪤", "🧲", "💡", "🔌", "🔋", "💎", "🪙",
-        "🧪", "🧫", "🧬", "🪢", "🧵", "🪡", "📎", "🖇️"
-    )),
-    EmojiCategory("Doğa", "🌿", listOf(
-        "🌿", "🌲", "🌳", "🌴", "🍀", "🌾", "🌻", "🌺",
-        "💧", "🌊", "❄️", "☀️", "🌈", "⭐", "🍂", "🪴"
-    )),
-    EmojiCategory("Enerji", "⚡", listOf(
-        "⚡", "🔥", "💥", "✨", "🌡️", "☢️", "♻️", "🔆",
-        "🔅", "💫", "🌪️", "☁️", "🌤️", "⛅", "🌙", "🔮"
-    )),
-    EmojiCategory("Finans", "💰", listOf(
-        "💰", "💵", "💳", "📋", "📊", "📈", "📉", "🧾",
-        "💼", "🏦", "🪪", "📑", "📄", "📝", "🗂️", "🏷️"
-    ))
-)
-
-val presetEmojis = emojiCategories.flatMap { it.emojis }.distinct()
-
 @Composable
 fun EmojiPicker(
     selectedEmoji: String,
     onEmojiSelected: (String) -> Unit,
+    strings: com.vahitkeskin.fencecalculator.util.AppStrings? = null,
     modifier: Modifier = Modifier
 ) {
+    val currentStrings = strings ?: com.vahitkeskin.fencecalculator.util.Localization.getStrings(java.util.Locale.getDefault().language)
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
     val primaryColor = MaterialTheme.colorScheme.primary
     var selectedCategory by remember { mutableIntStateOf(0) }
 
+    // Localized categories
+    val localizedCategories = remember(currentStrings) {
+        listOf(
+            EmojiCategory(currentStrings.emojiCategoryConstruction, "🏗️", listOf(
+                "🧱", "🪵", "🪨", "🏗️", "🚧", "🪜", "🏠", "🏢",
+                "🏭", "🏚️", "🪟", "🚪", "🧲", "⛓️", "🪤", "🪣"
+            )),
+            EmojiCategory(currentStrings.catGeneral, "🔧", listOf(
+                "🔧", "🔨", "🪛", "🪚", "🛠️", "⚙️", "🔩", "📐",
+                "📏", "✂️", "🔑", "🗜️", "⛏️", "🪓", "🔗", "🧰"
+            )),
+            EmojiCategory(currentStrings.catWire, "📦", listOf(
+                "📦", "🪤", "🧲", "💡", "🔌", "🔋", "💎", "🪙",
+                "🧪", "🧫", "🧬", "🪢", "🧵", "🪡", "📎", "🖇️"
+            )),
+            EmojiCategory(currentStrings.emojiCategoryNature, "🌿", listOf(
+                "🌿", "🌲", "🌳", "🌴", "🍀", "🌾", "🌻", "🌺",
+                "💧", "🌊", "❄️", "☀️", "🌈", "⭐", "🍂", "🪴"
+            )),
+            EmojiCategory(currentStrings.catConstruction, "⚡", listOf(
+                "⚡", "🔥", "💥", "✨", "🌡️", "☢️", "♻️", "🔆",
+                "🔅", "💫", "🌪️", "☁️", "🌤️", "⛅", "🌙", "🔮"
+            )),
+            EmojiCategory(currentStrings.personalInfo, "💰", listOf(
+                "💰", "💵", "💳", "📋", "📊", "📈", "📉", "🧾",
+                "💼", "🏦", "🪪", "📑", "📄", "📝", "🗂️", "🏷️"
+            )),
+            EmojiCategory(currentStrings.emojiCategoryNails, "📌", listOf(
+                "📌", "📍", "🔩", "🔨", "🛠️", "🔧", "⚙️", "🗜️",
+                "⛓️", "🪝", "📎", "🖇️", "🧷", "📏", "📐", "📍"
+            ))
+        )
+    }
+
     Column(modifier = modifier) {
         Text(
-            text = "KART EMOJİSİ",
+            text = currentStrings.cardEmoji,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Bold,
             color = onSurfaceColor.copy(alpha = 0.5f),
@@ -89,7 +96,7 @@ fun EmojiPicker(
                 .padding(bottom = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            emojiCategories.forEachIndexed { index, category ->
+            localizedCategories.forEachIndexed { index, category ->
                 val isSelected = index == selectedCategory
                 val bgColor by animateColorAsState(
                     if (isSelected) primaryColor.copy(alpha = 0.15f)
@@ -128,7 +135,7 @@ fun EmojiPicker(
         }
 
         // Emoji grid
-        val currentEmojis = emojiCategories[selectedCategory].emojis
+        val currentEmojis = localizedCategories[selectedCategory].emojis
         LazyVerticalGrid(
             columns = GridCells.Fixed(6),
             horizontalArrangement = Arrangement.spacedBy(8.dp),

@@ -99,6 +99,7 @@ fun AnimatedSplashScreen(onAnimationFinished: () -> Unit) {
             Spacer(modifier = Modifier.height(32.dp))
 
             // Branding Text
+            val currentStrings = com.vahitkeskin.fencecalculator.util.Localization.getStrings(java.util.Locale.getDefault().language)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.graphicsLayer {
@@ -108,14 +109,14 @@ fun AnimatedSplashScreen(onAnimationFinished: () -> Unit) {
                 }
             ) {
                 Text(
-                    text = "ÇİT HESAPLAMA",
+                    text = currentStrings.splashTitle,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Black,
                     color = onBackgroundColor,
                     letterSpacing = 4.sp
                 )
                 Text(
-                    text = "PREMIUM CALCULATOR",
+                    text = currentStrings.premiumArchitecturalTool,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = primaryColor.copy(alpha = 0.7f),
