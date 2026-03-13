@@ -204,6 +204,7 @@ fun MainScreen(
                 composable(Screen.Calculations.route) {
                     CalculationsScreen(
                         viewModel = viewModel,
+                        navController = globalNavController,
                         onPremiumClick = { showPremiumPopup = true }
                     )
                 }
