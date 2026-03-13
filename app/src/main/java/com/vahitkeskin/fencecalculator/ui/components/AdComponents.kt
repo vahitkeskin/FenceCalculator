@@ -27,6 +27,7 @@ import com.vahitkeskin.fencecalculator.BuildConfig
 
 @Composable
 fun BannerAdView(modifier: Modifier = Modifier, strings: com.vahitkeskin.fencecalculator.util.AppStrings? = null) {
+    /*
     // ID local.properties dosyasından çekiliyor
     val bannerAdId = BuildConfig.ADMOB_BANNER_ID
     val configuration = LocalConfiguration.current
@@ -79,4 +80,5 @@ fun BannerAdView(modifier: Modifier = Modifier, strings: com.vahitkeskin.fenceca
             }
         )
     }
+    */
 }

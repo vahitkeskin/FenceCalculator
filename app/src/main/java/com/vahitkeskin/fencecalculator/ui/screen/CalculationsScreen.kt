@@ -83,7 +83,7 @@ fun CalculationsScreen(
                             )
                             isGeneratingPdf = false
                             pdfFileForPreview = file
-                            activity?.let { AdManager.onShareClicked(it) }
+                            // activity?.let { AdManager.onShareClicked(it) }
                         }
                     }) {
                         Icon(Icons.Default.Share, contentDescription = viewModel.strings.sharePdf, tint = primaryColor)
