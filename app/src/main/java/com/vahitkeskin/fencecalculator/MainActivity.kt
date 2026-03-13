@@ -35,10 +35,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        /*
         MobileAds.initialize(this) { status ->
             Log.d("MainActivity", "AdMob Başlatıldı: $status")
             com.vahitkeskin.fencecalculator.util.AdManager.loadInterstitialAd(this)
         }
+        */
         enableEdgeToEdge()
         setContent {
             var showSplash by remember { mutableStateOf(true) }

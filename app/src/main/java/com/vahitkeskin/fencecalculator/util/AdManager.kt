@@ -24,6 +24,7 @@ object AdManager {
         private set
 
     fun loadInterstitialAd(context: Context) {
+        /*
         Log.d("AdManager", "Interstitial reklam yükleniyor ID: $INTERSTITIAL_AD_ID")
         val adRequest = AdRequest.Builder().build()
         InterstitialAd.load(
@@ -42,9 +43,11 @@ object AdManager {
                 }
             }
         )
+        */
     }
 
     fun onShareClicked(activity: Activity) {
+        /*
         calculationClickCount++
         Log.d(
             "AdManager",
@@ -56,9 +59,11 @@ object AdManager {
             Log.d("AdManager", "$adNumber. reklam gösterilecek")
             showInterstitialAd(activity)
         }
+        */
     }
 
     private fun showInterstitialAd(activity: Activity) {
+        /*
         interstitialAd?.let { ad ->
             Log.d("AdManager", "Interstitial reklam gösteriliyor...")
             ad.show(activity)
@@ -69,6 +74,7 @@ object AdManager {
             // If ad is not loaded, try loading it again
             loadInterstitialAd(activity)
         }
+        */
     }
 
     /**
@@ -80,6 +86,7 @@ object AdManager {
         adUnitId: String,
         onLoaded: () -> Unit
     ): AdView {
+        /*
         val current = cachedBannerAdView
         if (current != null) {
             Log.d("AdManager", "Önceki banner reklamı kullanılıyor (Yeniden yükleme önlendi)")
@@ -109,5 +116,10 @@ object AdManager {
         }
         cachedBannerAdView = newAdView
         return newAdView
+        */
+        return AdView(context).apply {
+            setAdSize(adSize)
+            this.adUnitId = adUnitId
+        }
     }
 }
