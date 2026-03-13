@@ -357,16 +357,30 @@ class CalculatorViewModel @Inject constructor(
             val calculationResult =
                 if (card.dependentCardId != null && card.dependentRatio != null) {
                     // Önce varsayılan ürünlerde ara (id as is)
-                    val baseItem = allStaticResults.find { it.id == card.dependentCardId }
+                    val baseItem = if (card.dependentCardId == "v_total_length") {
+                        CalculationItem(
+                            id = "v_total_length",
+                            title = strings.pdfTotalLengthLabel.removeSuffix(":"),
+                            description = "",
+                            quantity = totalLengthInput.toDoubleOrNull() ?: 0.0,
+                            unit = strings.unitMeter,
+                            unitPrice = 0.0,
+                            totalCost = 0.0,
+                            icon = Icons.Filled.Straighten,
+                            color = Color.Transparent
+                        )
+                    } else {
+                        allStaticResults.find { it.id == card.dependentCardId }
+                    }
                     // Eğer orada yoksa özel kartlarda ara
                         ?: customCards.find { it.id == card.dependentCardId }?.let { depCard ->
                             CalculationItem(
-                                id = "",
+                                id = depCard.id,
                                 title = depCard.title,
                                 description = "",
-                                quantity = depCard.quantity,
-                                unit = "",
-                                unitPrice = 0.0,
+                                quantity = depCard.quantity, // Note: This might need recursive update if custom cards depend on each other
+                                unit = depCard.unit,
+                                unitPrice = depCard.unitPrice,
                                 totalCost = 0.0,
                                 icon = Icons.Filled.Block,
                                 color = Color.Transparent
@@ -387,7 +401,7 @@ class CalculatorViewModel @Inject constructor(
                         "${baseItem.title} (${baseQty.toInt()} ${baseItem.unit}) ${card.dependentOperation} $ratio"
                     } else null
 
-                    ceil(result) to depInfo
+                    ceil(kotlin.math.max(0.0, result)) to depInfo
                 } else {
                     card.quantity to null
                 }
@@ -475,8 +489,16 @@ class CalculatorViewModel @Inject constructor(
             dataStoreManager.customCards.collectLatest { json ->
                 customCards = try {
                     val loaded: List<CustomCardItem> = Json.decodeFromString(json)
-                    // Resetting unit prices for fresh start as requested
-                    loaded.map { it.copy(unitPrice = 0.0) }
+                    // Sync loaded custom card prices to priceMap only if not already equivalent
+                    loaded.forEach { card ->
+                        val id = "custom_${card.id}"
+                        val currentStr = priceMap[id]
+                        val currentVal = currentStr?.toDoubleOrNull() ?: 0.0
+                        if (card.unitPrice > 0 && (currentStr == null || currentVal != card.unitPrice)) {
+                             priceMap[id] = card.unitPrice.toString().removeSuffix(".0")
+                        }
+                    }
+                    loaded
                 } catch (e: Exception) {
                     emptyList()
                 }

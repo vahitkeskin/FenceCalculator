@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -65,7 +66,12 @@ fun AddEditCardScreen(
     var dependentOperation by remember { mutableStateOf(existingCard?.dependentOperation ?: "*") }
 
     val allBaseCards = viewModel.results // Varsayılanlar
-    val baseCardOptions = allBaseCards.map { it.id to it.title }
+    val baseCardOptions = remember(viewModel.results, viewModel.customCards) {
+        val list = mutableListOf("v_total_length" to viewModel.strings.pdfTotalLengthLabel.removeSuffix(":"))
+        list.addAll(viewModel.results.map { it.id to it.title })
+        list.addAll(viewModel.customCards.filter { it.id != editCardId }.map { it.id to it.title })
+        list
+    }
     
     val unitOptions = remember { listOf(
         viewModel.strings.unitPiece, 
@@ -148,6 +154,34 @@ fun AddEditCardScreen(
                             onValueChange = { title = it },
                             label = { Text(viewModel.strings.cardTitleRequired, color = onBackgroundColor.copy(alpha = 0.5f)) },
                             leadingIcon = { Icon(Icons.Default.Title, contentDescription = null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
+                            trailingIcon = {
+                                if (title.isNotEmpty()) {
+                                    IconButton(
+                                        onClick = { title = "" },
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .background(
+                                                color = if (androidx.compose.foundation.isSystemInDarkTheme())
+                                                    Color.White.copy(alpha = 0.15f)
+                                                else
+                                                    Color.Black.copy(alpha = 0.08f),
+                                                shape = androidx.compose.foundation.shape.CircleShape
+                                            )
+                                            .padding(5.dp),
+                                        colors = IconButtonDefaults.iconButtonColors(
+                                            contentColor = if (androidx.compose.foundation.isSystemInDarkTheme())
+                                                Color.White.copy(alpha = 0.6f)
+                                            else
+                                                Color.Black.copy(alpha = 0.5f)
+                                        )
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Close,
+                                            contentDescription = null,
+                                        )
+                                    }
+                                }
+                            },
                             modifier = Modifier.fillMaxWidth().padding(16.dp),
                             shape = RoundedCornerShape(12.dp),
                             singleLine = true,
@@ -168,9 +202,37 @@ fun AddEditCardScreen(
                             onValueChange = { description = it },
                             label = { Text(viewModel.strings.descriptionNote, color = onBackgroundColor.copy(alpha = 0.5f)) },
                             leadingIcon = { Icon(Icons.Default.Description, contentDescription = null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
+                            trailingIcon = {
+                                if (description.isNotEmpty()) {
+                                    IconButton(
+                                        onClick = { description = "" },
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .background(
+                                                color = if (androidx.compose.foundation.isSystemInDarkTheme())
+                                                    Color.White.copy(alpha = 0.15f)
+                                                else
+                                                    Color.Black.copy(alpha = 0.08f),
+                                                shape = androidx.compose.foundation.shape.CircleShape
+                                            )
+                                            .padding(5.dp),
+                                        colors = IconButtonDefaults.iconButtonColors(
+                                            contentColor = if (androidx.compose.foundation.isSystemInDarkTheme())
+                                                Color.White.copy(alpha = 0.6f)
+                                            else
+                                                Color.Black.copy(alpha = 0.5f)
+                                        )
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Close,
+                                            contentDescription = null,
+                                        )
+                                    }
+                                }
+                            },
                             modifier = Modifier.fillMaxWidth().padding(16.dp),
                             shape = RoundedCornerShape(12.dp),
-                            singleLine = true,
+                            maxLines = 3,
                             keyboardOptions = KeyboardOptions(
                                 capitalization = KeyboardCapitalization.Sentences,
                                 imeAction = ImeAction.Next
@@ -382,14 +444,22 @@ fun AddEditCardScreen(
                                     }
                                     
                                     // Hesaplanan miktar önizlemesi
-                                    val baseQty = allBaseCards.find { it.id == dependentCardId }?.quantity ?: 0.0
-                                    val baseUnit = allBaseCards.find { it.id == dependentCardId }?.unit ?: ""
+                                    val baseQty = when {
+                                        dependentCardId == "v_total_length" -> viewModel.totalLengthInput.toDoubleOrNull() ?: 0.0
+                                        allBaseCards.any { it.id == dependentCardId } -> allBaseCards.find { it.id == dependentCardId }?.quantity ?: 0.0
+                                        else -> viewModel.customCards.find { it.id == dependentCardId }?.quantity ?: 0.0
+                                    }
+                                    val baseUnit = when {
+                                        dependentCardId == "v_total_length" -> viewModel.strings.unitMeter
+                                        allBaseCards.any { it.id == dependentCardId } -> allBaseCards.find { it.id == dependentCardId }?.unit ?: ""
+                                        else -> viewModel.customCards.find { it.id == dependentCardId }?.unit ?: ""
+                                    }
                                     val ratio = dependentRatio.toDoubleOrNull() ?: 0.0
                                     val calcQty = kotlin.math.ceil(
                                         when (dependentOperation) {
                                             "+" -> baseQty + ratio
                                             "-" -> baseQty - ratio
-                                            "÷", "/" -> if (ratio != 0.0) baseQty / ratio else baseQty
+                                            "÷" -> if (ratio != 0.0) baseQty / ratio else baseQty
                                             else -> baseQty * ratio
                                         }
                                     )
@@ -431,6 +501,34 @@ fun AddEditCardScreen(
                                     },
                                     label = { Text(viewModel.strings.quantity, color = onBackgroundColor.copy(alpha = 0.5f)) },
                                     leadingIcon = { Icon(Icons.Default.Numbers, contentDescription = null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
+                                    trailingIcon = {
+                                        if (quantity.isNotEmpty()) {
+                                            IconButton(
+                                                onClick = { quantity = "" },
+                                                modifier = Modifier
+                                                    .size(24.dp)
+                                                    .background(
+                                                        color = if (androidx.compose.foundation.isSystemInDarkTheme())
+                                                            Color.White.copy(alpha = 0.15f)
+                                                        else
+                                                            Color.Black.copy(alpha = 0.08f),
+                                                        shape = androidx.compose.foundation.shape.CircleShape
+                                                    )
+                                                    .padding(5.dp),
+                                                colors = IconButtonDefaults.iconButtonColors(
+                                                    contentColor = if (androidx.compose.foundation.isSystemInDarkTheme())
+                                                        Color.White.copy(alpha = 0.6f)
+                                                    else
+                                                        Color.Black.copy(alpha = 0.5f)
+                                                )
+                                            ) {
+                                                Icon(
+                                                    imageVector = androidx.compose.material.icons.Icons.Rounded.Close,
+                                                    contentDescription = null,
+                                                )
+                                            }
+                                        }
+                                    },
                                     modifier = Modifier.weight(1f),
                                     shape = RoundedCornerShape(12.dp),
                                     singleLine = true,
@@ -458,6 +556,34 @@ fun AddEditCardScreen(
                             },
                             label = { Text(viewModel.strings.unitPriceTl, color = onBackgroundColor.copy(alpha = 0.5f)) },
                             leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
+                            trailingIcon = {
+                                if (unitPrice.isNotEmpty()) {
+                                    IconButton(
+                                        onClick = { unitPrice = "" },
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .background(
+                                                color = if (androidx.compose.foundation.isSystemInDarkTheme())
+                                                    Color.White.copy(alpha = 0.15f)
+                                                else
+                                                    Color.Black.copy(alpha = 0.08f),
+                                                shape = androidx.compose.foundation.shape.CircleShape
+                                            )
+                                            .padding(5.dp),
+                                        colors = IconButtonDefaults.iconButtonColors(
+                                            contentColor = if (androidx.compose.foundation.isSystemInDarkTheme())
+                                                Color.White.copy(alpha = 0.6f)
+                                            else
+                                                Color.Black.copy(alpha = 0.5f)
+                                        )
+                                    ) {
+                                        Icon(
+                                            imageVector = androidx.compose.material.icons.Icons.Rounded.Close,
+                                            contentDescription = null,
+                                        )
+                                    }
+                                }
+                            },
                             modifier = Modifier.fillMaxWidth().padding(16.dp),
                             shape = RoundedCornerShape(12.dp),
                             singleLine = true,
