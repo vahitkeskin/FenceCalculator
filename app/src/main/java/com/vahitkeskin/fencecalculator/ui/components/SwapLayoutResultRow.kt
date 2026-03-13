@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.draw.blur
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.rounded.Close
 import com.vahitkeskin.fencecalculator.R
 import androidx.compose.ui.unit.sp
 import com.vahitkeskin.fencecalculator.data.model.CalculationItem
@@ -168,7 +169,19 @@ fun SwapLayoutResultRow(
                         unfocusedTextColor = onSurfaceColor,
                         focusedBorderColor = item.color.copy(alpha = 0.8f),
                         unfocusedBorderColor = Color(0xFFCBD5E1)
-                    )
+                    ),
+                    trailingIcon = {
+                        if (currentPriceInput.isNotEmpty() && !isBlurred) {
+                            IconButton(onClick = { onPriceChange("") }) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Close,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                    tint = onSurfaceColor.copy(alpha = 0.3f)
+                                )
+                            }
+                        }
+                    }
                 )
             }
         }
