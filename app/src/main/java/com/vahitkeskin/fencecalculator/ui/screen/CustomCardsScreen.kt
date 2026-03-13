@@ -26,6 +26,10 @@ import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import com.vahitkeskin.fencecalculator.util.DataStoreManager
 import androidx.navigation.compose.rememberNavController
 import com.vahitkeskin.fencecalculator.ui.theme.shadowlessElevation
+import com.vahitkeskin.fencecalculator.util.PdfGenerator
+import com.vahitkeskin.fencecalculator.util.AdManager
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -44,6 +48,12 @@ fun CustomCardsScreen(
             }
         }
     }
+    val scope = rememberCoroutineScope()
+    var isGeneratingPdf by remember { mutableStateOf(false) }
+    var pdfFileForPreview by remember { mutableStateOf<java.io.File?>(null) }
+    val context = LocalContext.current
+    val activity = context as? android.app.Activity
+
     val customItems = viewModel.orderedVisibleItems.filter { it.id.startsWith("custom_") }
     var isEditMode by remember { mutableStateOf(false) }
 
@@ -64,6 +74,28 @@ fun CustomCardsScreen(
                                 tint = if (isEditMode) primaryColor else LocalContentColor.current
                             )
                         }
+                    }
+                    IconButton(onClick = {
+                        scope.launch {
+                            isGeneratingPdf = true
+                            val finalPdfTitle = if (viewModel.customerName.isBlank()) "" else viewModel.customerName.uppercase()
+                            delay(1000)
+                            val file = PdfGenerator.generatePdf(
+                                context = context,
+                                results = viewModel.orderedVisibleItems,
+                                totalCost = viewModel.grandTotalCost,
+                                length = viewModel.totalLengthInput,
+                                customerTitle = finalPdfTitle,
+                                customerName = viewModel.customerName,
+                                companyName = viewModel.companyName,
+                                viewModel = viewModel
+                            )
+                            isGeneratingPdf = false
+                            pdfFileForPreview = file
+                            activity?.let { AdManager.onShareClicked(it) }
+                        }
+                    }) {
+                        Icon(Icons.Default.Share, contentDescription = viewModel.strings.sharePdf, tint = primaryColor)
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
@@ -135,18 +167,17 @@ fun CustomCardsScreen(
                             }
                         }
                         
-                        Box(modifier = Modifier.weight(1f).clickable { 
-                            if (!isEditMode) navController.navigate("add_edit_card/$realId")
-                        }) {
-                            SwapLayoutResultRow(
-                                viewModel = viewModel,
-                                item = item,
-                                currentPriceInput = viewModel.getPriceString(item.id),
-                                onPriceChange = { viewModel.onPriceChange(item.id, it) },
-                                onPinToggle = { viewModel.togglePin(item.id) },
-                                onPremiumClick = onPremiumClick
-                            )
-                        }
+                        SwapLayoutResultRow(
+                            viewModel = viewModel,
+                            item = item,
+                            currentPriceInput = viewModel.getPriceString(item.id),
+                            onPriceChange = { viewModel.onPriceChange(item.id, it) },
+                            onPinToggle = { viewModel.togglePin(item.id) },
+                            onPremiumClick = onPremiumClick,
+                            onClick = {
+                                if (!isEditMode) navController.navigate("add_edit_card/$realId")
+                            }
+                        )
 
                         if (isEditMode) {
                             IconButton(onClick = { viewModel.hideCard(item.id) }) {
@@ -173,6 +204,25 @@ fun CustomCardsScreen(
                 // Klavye açıldığında en alttaki içeriğin yukarı kaydırılabilmesi için spacer
                 item { Spacer(modifier = Modifier.height(90.dp)) }
             }
+        }
+
+        if (isGeneratingPdf) {
+            androidx.compose.ui.window.Dialog(onDismissRequest = {}) {
+                com.vahitkeskin.fencecalculator.ui.components.PremiumGlassCard {
+                    Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                        CircularProgressIndicator(color = primaryColor)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(viewModel.strings.preparingPdfReport, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        }
+
+        pdfFileForPreview?.let { file ->
+            com.vahitkeskin.fencecalculator.ui.components.PdfPreviewDialog(
+                file,
+                viewModel
+            ) { pdfFileForPreview = null }
         }
     }
 }

@@ -371,18 +371,17 @@ fun HomeScreen(
                     
                     items(customPinned) { item ->
                         val realId = item.id.removePrefix("custom_")
-                        Box(modifier = Modifier.clickable {
-                            navController.navigate("add_edit_card/$realId")
-                        }) {
-                            SwapLayoutResultRow(
-                                viewModel = viewModel,
-                                item = item,
-                                currentPriceInput = viewModel.getPriceString(item.id),
-                                onPriceChange = { viewModel.onPriceChange(item.id, it) },
-                                onPinToggle = { viewModel.togglePin(item.id) },
-                                onPremiumClick = onPremiumClick
-                            )
-                        }
+                        SwapLayoutResultRow(
+                            viewModel = viewModel,
+                            item = item,
+                            currentPriceInput = viewModel.getPriceString(item.id),
+                            onPriceChange = { viewModel.onPriceChange(item.id, it) },
+                            onPinToggle = { viewModel.togglePin(item.id) },
+                            onPremiumClick = onPremiumClick,
+                            onClick = {
+                                navController.navigate("add_edit_card/$realId")
+                            }
+                        )
                         Spacer(modifier = Modifier.height(16.dp))
                     }
                 }

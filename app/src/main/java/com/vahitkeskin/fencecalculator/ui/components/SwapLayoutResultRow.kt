@@ -50,7 +50,8 @@ fun SwapLayoutResultRow(
     currentPriceInput: String,
     onPriceChange: (String) -> Unit,
     onPinToggle: () -> Unit = {},
-    onPremiumClick: () -> Unit = {}
+    onPremiumClick: () -> Unit = {},
+    onClick: () -> Unit = {}
 ) {
     // TODO: İstediğim zaman aktif edebileyim - 50 sınırlaması ve premium
     // val isBlurred = !viewModel.isPremium && viewModel.usageCount >= 50
@@ -66,7 +67,10 @@ fun SwapLayoutResultRow(
     PremiumGlassCard(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { if (isBlurred) onPremiumClick() }
+            .clickable { 
+                if (isBlurred) onPremiumClick() 
+                else onClick()
+            }
     ) {
         Row(modifier = Modifier.padding(16.dp).fillMaxWidth(), verticalAlignment = Alignment.Top) {
             Box(modifier = Modifier.size(48.dp).clip(RoundedCornerShape(14.dp)).background(item.color.copy(alpha = 0.15f)), contentAlignment = Alignment.Center) {
