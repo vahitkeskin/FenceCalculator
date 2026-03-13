@@ -556,10 +556,12 @@ class CalculatorViewModel @Inject constructor(
         // Clear non-numeric chars except dot/comma
         val cleaned = v.replace(",", ".").filter { it.isDigit() || it == '.' }
         totalLengthDraft = cleaned
+        totalLengthInput = cleaned
+        calculateValues()
     }
 
     fun applyTotalLength() {
-        totalLengthInput = totalLengthDraft
+        // No longer needed for manual apply, but kept for compatibility if needed elsewhere
         calculateValues()
     }
 

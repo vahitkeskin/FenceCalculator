@@ -37,7 +37,7 @@ object AdManager {
         )
     }
 
-    fun onCalculateClicked(activity: Activity) {
+    fun onShareClicked(activity: Activity) {
         calculationClickCount++
         Log.d(
             "AdManager",
