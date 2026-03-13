@@ -7,6 +7,8 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import com.vahitkeskin.fencecalculator.BuildConfig
 
 object AdManager {
@@ -15,6 +17,11 @@ object AdManager {
 
     private var interstitialAd: InterstitialAd? = null
     private var calculationClickCount = 0
+    
+    // Banner Ad Caching
+    private var cachedBannerAdView: AdView? = null
+    var isBannerLoaded = false
+        private set
 
     fun loadInterstitialAd(context: Context) {
         Log.d("AdManager", "Interstitial reklam yükleniyor ID: $INTERSTITIAL_AD_ID")
@@ -62,5 +69,45 @@ object AdManager {
             // If ad is not loaded, try loading it again
             loadInterstitialAd(activity)
         }
+    }
+
+    /**
+     * Reuses or creates a banner ad view to prevent reloading on navigation.
+     */
+    fun getOrCreateBannerAdView(
+        context: Context, 
+        adSize: AdSize, 
+        adUnitId: String,
+        onLoaded: () -> Unit
+    ): AdView {
+        val current = cachedBannerAdView
+        if (current != null) {
+            Log.d("AdManager", "Önceki banner reklamı kullanılıyor (Yeniden yükleme önlendi)")
+            // Remove from previous parent if any
+            (current.parent as? android.view.ViewGroup)?.removeView(current)
+            if (isBannerLoaded) onLoaded()
+            return current
+        }
+
+        Log.d("AdManager", "Yeni banner reklamı oluşturuluyor...")
+        val newAdView = AdView(context).apply {
+            setAdSize(adSize)
+            this.adUnitId = adUnitId
+            adListener = object : com.google.android.gms.ads.AdListener() {
+                override fun onAdLoaded() {
+                    super.onAdLoaded()
+                    isBannerLoaded = true
+                    onLoaded()
+                    Log.d("AdManager", "Banner reklamı başarıyla yüklendi")
+                }
+                override fun onAdFailedToLoad(error: com.google.android.gms.ads.LoadAdError) {
+                    super.onAdFailedToLoad(error)
+                    Log.e("AdManager", "Banner yüklenemedi: ${error.message}")
+                }
+            }
+            loadAd(AdRequest.Builder().build())
+        }
+        cachedBannerAdView = newAdView
+        return newAdView
     }
 }

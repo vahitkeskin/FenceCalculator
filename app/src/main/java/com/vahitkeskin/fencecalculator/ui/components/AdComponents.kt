@@ -70,23 +70,12 @@ fun BannerAdView(modifier: Modifier = Modifier, strings: com.vahitkeskin.fenceca
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { factoryContext ->
-                AdView(factoryContext).apply {
-                    setAdSize(adSize)
-                    adUnitId = bannerAdId
-                    adListener = object : AdListener() {
-                        override fun onAdLoaded() {
-                            isAdLoaded = true
-                            Log.d("BannerAd", "Banner reklam başarıyla yüklendi")
-                        }
-                        override fun onAdFailedToLoad(error: LoadAdError) {
-                            // On failure, we might keep the placeholder or hide it, 
-                            // but here we mark as loaded to potentially show error logs or hide space if needed.
-                            // However, user specifically asked for placeholder until loaded.
-                            Log.e("BannerAd", "Banner reklam yüklenemedi: ${error.message}, Kod: ${error.code}")
-                        }
-                    }
-                    loadAd(AdRequest.Builder().build())
-                }
+                com.vahitkeskin.fencecalculator.util.AdManager.getOrCreateBannerAdView(
+                    context = factoryContext,
+                    adSize = adSize,
+                    adUnitId = bannerAdId,
+                    onLoaded = { isAdLoaded = true }
+                )
             }
         )
     }
