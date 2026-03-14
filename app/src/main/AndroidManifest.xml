@@ -6,7 +6,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:name=".FenceApp"
@@ -22,7 +25,7 @@
         <!-- TODO: AdMob Uygulama Kimliği (App ID) - Gerçek ID'niz ile değiştirin -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="${admobAppId}"/>
+            android:value="${admobAppId}" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
