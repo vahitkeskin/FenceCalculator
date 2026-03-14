@@ -93,6 +93,7 @@ val NlStrings = AppStrings(
     poleSpacingM = "Paalafstand (m)",
     wireThicknessMm = "Draaddikte (mm)",
     meshEyeCm = "Maaswijdte (cm)",
+    meshEyeAndWireThickness = "Maaswijdte & Draaddikte",
     weightConstant = "Gewichtsconstante",
     strutSetup = "Schoreninstallatie",
     strutIntervalPosts = "Interval (palen)",

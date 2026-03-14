@@ -93,6 +93,7 @@ val ItStrings = AppStrings(
     poleSpacingM = "Spaziatura pali (m)",
     wireThicknessMm = "Spessore filo (mm)",
     meshEyeCm = "Maglia (cm)",
+    meshEyeAndWireThickness = "Maglia e spessore filo",
     weightConstant = "Costante di peso",
     strutSetup = "Installazione saette",
     strutIntervalPosts = "Intervallo (pali)",

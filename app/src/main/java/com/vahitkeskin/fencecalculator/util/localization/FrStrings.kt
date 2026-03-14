@@ -93,6 +93,7 @@ val FrStrings = AppStrings(
     poleSpacingM = "Espacement des poteaux (m)",
     wireThicknessMm = "Épaisseur du fil (mm)",
     meshEyeCm = "Maille (cm)",
+    meshEyeAndWireThickness = "Maille & épaisseur du fil",
     weightConstant = "Constante de poids",
     strutSetup = "Installation des jambes de force",
     strutIntervalPosts = "Intervalle (poteaux)",
