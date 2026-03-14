@@ -56,6 +56,7 @@ object PdfGenerator {
         canvas.drawPath(pathBoundary, paint)
 
         // 2. Başlık ve Alt Başlık
+        paint.color = Color.WHITE
         paint.textSize = 24f
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         val mainTitle = if (companyName.isNotBlank()) companyName.uppercase() else viewModel.strings.pdfDefaultTitle
