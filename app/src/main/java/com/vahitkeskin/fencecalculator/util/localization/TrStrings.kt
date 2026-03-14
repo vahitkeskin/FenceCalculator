@@ -93,6 +93,7 @@ val TrStrings = AppStrings(
     poleSpacingM = "Direk Aralığı (m)",
     wireThicknessMm = "Tel Kalınlığı (mm)",
     meshEyeCm = "Göz Aralığı (cm)",
+    meshEyeAndWireThickness = "Göz Aralığı & Tel Kalınlığı",
     weightConstant = "Sabit Çarpan",
     strutSetup = "Payanda Kurulumu",
     strutIntervalPosts = "Sıklık (Direk)",

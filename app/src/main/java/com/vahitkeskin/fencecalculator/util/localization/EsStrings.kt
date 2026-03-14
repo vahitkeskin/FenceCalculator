@@ -93,6 +93,7 @@ val EsStrings = AppStrings(
     poleSpacingM = "Espacio entre postes (m)",
     wireThicknessMm = "Grosor del alambre (mm)",
     meshEyeCm = "Mallado (cm)",
+    meshEyeAndWireThickness = "Malla y grosor del alambre",
     weightConstant = "Constante de peso",
     strutSetup = "Instalación de puntales",
     strutIntervalPosts = "Intervalo (postes)",

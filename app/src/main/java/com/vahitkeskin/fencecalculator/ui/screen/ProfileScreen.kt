@@ -40,7 +40,7 @@ fun ProfileScreen(
     navController: NavController,
     viewModel: CalculatorViewModel
 ) {
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
     val listState = rememberLazyListState()
 
     LaunchedEffect(Unit) {

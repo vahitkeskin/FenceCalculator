@@ -64,7 +64,9 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
             val strings = viewModel.strings
             SettingsGroupTitle(strings.appearanceSettings, Icons.Filled.Palette)
             Row(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 ThemeToggleButton(
@@ -133,14 +135,13 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
             Spacer(modifier = Modifier.height(24.dp))
         }
 
-        // Grup: Tel Ağırlık
+        // Grup: Tel Özellikleri
         item {
             val strings = viewModel.strings
-            SmartSettingsInput(strings.wireThicknessMm, viewModel.wireThicknessInput, Defaults.WIRE_THICKNESS, String.format(strings.defaultValueLabel, Defaults.WIRE_THICKNESS), viewModel::onWireThicknessChange, Modifier.fillMaxWidth(), focusManager)
-            Spacer(modifier = Modifier.height(12.dp))
+            SettingsGroupTitle(strings.meshEyeAndWireThickness, Icons.Filled.BlurOn)
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 SmartSettingsInput(strings.meshEyeCm, viewModel.meshEyeInput, Defaults.MESH_EYE, String.format(strings.defaultValueLabel, Defaults.MESH_EYE), viewModel::onMeshEyeChange, Modifier.weight(1f), focusManager)
-                SmartSettingsInput(strings.weightConstant, viewModel.weightConstantInput, Defaults.WEIGHT_CONSTANT, String.format(strings.defaultValueLabel, Defaults.WEIGHT_CONSTANT), viewModel::onWeightConstantChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(strings.wireThicknessMm, viewModel.wireThicknessInput, Defaults.WIRE_THICKNESS, String.format(strings.defaultValueLabel, Defaults.WIRE_THICKNESS), viewModel::onWireThicknessChange, Modifier.weight(1f), focusManager)
             }
         }
 
@@ -205,7 +206,9 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
                 onClick = {
                     viewModel.restoreDefaultCards()
                 },
-                modifier = Modifier.fillMaxWidth().height(50.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colorScheme.primary

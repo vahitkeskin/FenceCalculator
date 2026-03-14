@@ -119,6 +119,7 @@ data class AppStrings(
     val poleSpacingM: String,
     val wireThicknessMm: String,
     val meshEyeCm: String,
+    val meshEyeAndWireThickness: String,
     val weightConstant: String,
     val strutSetup: String,
     val strutIntervalPosts: String,

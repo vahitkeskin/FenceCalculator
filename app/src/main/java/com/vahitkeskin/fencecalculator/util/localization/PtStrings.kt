@@ -93,6 +93,7 @@ val PtStrings = AppStrings(
     poleSpacingM = "Espaçamento entre postes (m)",
     wireThicknessMm = "Espessura do arame (mm)",
     meshEyeCm = "Malha (cm)",
+    meshEyeAndWireThickness = "Malha e espessura do arame",
     weightConstant = "Constante de peso",
     strutSetup = "Instalação de escoras",
     strutIntervalPosts = "Intervalo (postes)",

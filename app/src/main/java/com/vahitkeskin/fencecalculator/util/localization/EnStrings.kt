@@ -93,6 +93,7 @@ val EnStrings = AppStrings(
     poleSpacingM = "Pole Spacing (m)",
     wireThicknessMm = "Wire Thickness (mm)",
     meshEyeCm = "Mesh Eye (cm)",
+    meshEyeAndWireThickness = "Mesh Eye & Wire Thickness",
     weightConstant = "Weight Constant",
     strutSetup = "Strut Setup",
     strutIntervalPosts = "Interval (Posts)",
