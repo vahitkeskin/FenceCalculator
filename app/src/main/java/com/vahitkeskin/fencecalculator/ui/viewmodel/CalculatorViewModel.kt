@@ -244,7 +244,7 @@ class CalculatorViewModel @Inject constructor(
         totalLengthInput = Defaults.LENGTH
         totalLengthDraft = Defaults.LENGTH
         priceMap.clear()
-        
+
         viewModelScope.launch {
             dataStoreManager.companyName.collectLatest { name ->
                 companyName = name
@@ -282,7 +282,7 @@ class CalculatorViewModel @Inject constructor(
                     val currentStr = priceMap[id]
                     val currentVal = currentStr?.toDoubleOrNull() ?: 0.0
                     if (card.unitPrice > 0 && (currentStr == null || currentVal != card.unitPrice)) {
-                         priceMap[id] = card.unitPrice.toString().removeSuffix(".0")
+                        priceMap[id] = card.unitPrice.toString().removeSuffix(".0")
                     }
                 }
                 // Custom card logic is in CalculatorCustomCardLogic.kt
@@ -392,7 +392,8 @@ class CalculatorViewModel @Inject constructor(
     fun onPriceChange(id: String, v: String) = onPriceChangeExt(id, v)
 
     // Calculation logic is in CalculatorCalculationLogic.kt
-    private fun updateIfValid(value: String, setter: (String) -> Unit) = updateIfValidExt(value, setter)
+    private fun updateIfValid(value: String, setter: (String) -> Unit) =
+        updateIfValidExt(value, setter)
 
     // Calculation logic is in CalculatorCalculationLogic.kt
     fun getPriceString(id: String): String = getPriceStringExt(id)
