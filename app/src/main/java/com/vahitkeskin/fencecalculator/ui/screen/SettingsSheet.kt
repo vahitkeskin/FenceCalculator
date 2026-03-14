@@ -42,7 +42,7 @@ import androidx.compose.ui.res.stringResource
 @Composable
 fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) {
     val focusManager = LocalFocusManager.current
-    val onBackgroundColor = MaterialTheme.colorScheme.onSurface 
+    val onBackgroundColor = MaterialTheme.colorScheme.onSurface
 
     LazyColumn(
         modifier = Modifier
@@ -53,8 +53,17 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
     ) {
         item {
             val strings = viewModel.strings
-            Text(strings.calculationParameters, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = onBackgroundColor)
-            Text(strings.calculationParametersDesc, style = MaterialTheme.typography.bodyMedium, color = onBackgroundColor.copy(alpha = 0.6f))
+            Text(
+                strings.calculationParameters,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = onBackgroundColor
+            )
+            Text(
+                strings.calculationParametersDesc,
+                style = MaterialTheme.typography.bodyMedium,
+                color = onBackgroundColor.copy(alpha = 0.6f)
+            )
         }
 
         item { Spacer(modifier = Modifier.height(24.dp)) }
@@ -99,7 +108,7 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
         item {
             val strings = viewModel.strings
             SettingsGroupTitle(strings.languageSettings, Icons.Filled.Language)
-            
+
             var isLanguageLocked by remember { mutableStateOf(true) }
             val languages = com.vahitkeskin.fencecalculator.util.AppLanguage.entries
             com.vahitkeskin.fencecalculator.ui.components.VerticalPicker(
@@ -124,8 +133,24 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
             val strings = viewModel.strings
             SettingsGroupTitle(strings.fencePostDimensions, Icons.Filled.Straighten)
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                SmartSettingsInput(strings.fenceHeightM, viewModel.fenceHeightInput, Defaults.HEIGHT, String.format(strings.defaultValueLabel, Defaults.HEIGHT), viewModel::onFenceHeightChange, Modifier.weight(1f), focusManager)
-                SmartSettingsInput(strings.poleSpacingM, viewModel.poleSpacingInput, Defaults.SPACING, String.format(strings.defaultValueLabel, Defaults.SPACING), viewModel::onPoleSpacingChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(
+                    strings.fenceHeightM,
+                    viewModel.fenceHeightInput,
+                    Defaults.HEIGHT,
+                    String.format(strings.defaultValueLabel, Defaults.HEIGHT),
+                    viewModel::onFenceHeightChange,
+                    Modifier.weight(1f),
+                    focusManager
+                )
+                SmartSettingsInput(
+                    strings.poleSpacingM,
+                    viewModel.poleSpacingInput,
+                    Defaults.SPACING,
+                    String.format(strings.defaultValueLabel, Defaults.SPACING),
+                    viewModel::onPoleSpacingChange,
+                    Modifier.weight(1f),
+                    focusManager
+                )
             }
         }
 
@@ -140,8 +165,24 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
             val strings = viewModel.strings
             SettingsGroupTitle(strings.meshEyeAndWireThickness, Icons.Filled.BlurOn)
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                SmartSettingsInput(strings.meshEyeCm, viewModel.meshEyeInput, Defaults.MESH_EYE, String.format(strings.defaultValueLabel, Defaults.MESH_EYE), viewModel::onMeshEyeChange, Modifier.weight(1f), focusManager)
-                SmartSettingsInput(strings.wireThicknessMm, viewModel.wireThicknessInput, Defaults.WIRE_THICKNESS, String.format(strings.defaultValueLabel, Defaults.WIRE_THICKNESS), viewModel::onWireThicknessChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(
+                    strings.meshEyeCm,
+                    viewModel.meshEyeInput,
+                    Defaults.MESH_EYE,
+                    String.format(strings.defaultValueLabel, Defaults.MESH_EYE),
+                    viewModel::onMeshEyeChange,
+                    Modifier.weight(1f),
+                    focusManager
+                )
+                SmartSettingsInput(
+                    strings.wireThicknessMm,
+                    viewModel.wireThicknessInput,
+                    Defaults.WIRE_THICKNESS,
+                    String.format(strings.defaultValueLabel, Defaults.WIRE_THICKNESS),
+                    viewModel::onWireThicknessChange,
+                    Modifier.weight(1f),
+                    focusManager
+                )
             }
         }
 
@@ -153,8 +194,24 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
             Spacer(modifier = Modifier.height(24.dp))
             SettingsGroupTitle(strings.strutSetup, Icons.Filled.ChangeHistory)
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                SmartSettingsInput(strings.strutIntervalPosts, viewModel.strutIntervalInput, Defaults.STRUT_INTERVAL, String.format(strings.defaultValueLabel, Defaults.STRUT_INTERVAL), viewModel::onStrutIntervalChange, Modifier.weight(1f), focusManager)
-                SmartSettingsInput(strings.strutCountPer, viewModel.strutCountInput, Defaults.STRUT_COUNT, String.format(strings.defaultValueLabel, Defaults.STRUT_COUNT), viewModel::onStrutCountChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(
+                    strings.strutIntervalPosts,
+                    viewModel.strutIntervalInput,
+                    Defaults.STRUT_INTERVAL,
+                    String.format(strings.defaultValueLabel, Defaults.STRUT_INTERVAL),
+                    viewModel::onStrutIntervalChange,
+                    Modifier.weight(1f),
+                    focusManager
+                )
+                SmartSettingsInput(
+                    strings.strutCountPer,
+                    viewModel.strutCountInput,
+                    Defaults.STRUT_COUNT,
+                    String.format(strings.defaultValueLabel, Defaults.STRUT_COUNT),
+                    viewModel::onStrutCountChange,
+                    Modifier.weight(1f),
+                    focusManager
+                )
             }
         }
 
@@ -165,11 +222,35 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
             Divider(color = onBackgroundColor.copy(alpha = 0.1f))
             Spacer(modifier = Modifier.height(24.dp))
             SettingsGroupTitle(strings.meshRollSpecs, Icons.Filled.GridOn)
-            SmartSettingsInput(strings.meshRollLengthM, viewModel.meshRollLengthInput, Defaults.MESH_ROLL, String.format(strings.defaultValueLabel, Defaults.MESH_ROLL), viewModel::onMeshRollLengthChange, Modifier.fillMaxWidth(), focusManager)
+            SmartSettingsInput(
+                strings.meshRollLengthM,
+                viewModel.meshRollLengthInput,
+                Defaults.MESH_ROLL,
+                String.format(strings.defaultValueLabel, Defaults.MESH_ROLL),
+                viewModel::onMeshRollLengthChange,
+                Modifier.fillMaxWidth(),
+                focusManager
+            )
             Spacer(modifier = Modifier.height(16.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                SmartSettingsInput(strings.barbedWireRows, viewModel.barbedWireRowsInput, Defaults.BARBED_ROWS, String.format(strings.defaultValueLabel, Defaults.BARBED_ROWS), viewModel::onBarbedWireRowsChange, Modifier.weight(1f), focusManager)
-                SmartSettingsInput(strings.barbedWireRollM, viewModel.barbedWireRollLengthInput, Defaults.BARBED_ROLL, String.format(strings.defaultValueLabel, Defaults.BARBED_ROLL), viewModel::onBarbedWireRollLengthChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(
+                    strings.barbedWireRows,
+                    viewModel.barbedWireRowsInput,
+                    Defaults.BARBED_ROWS,
+                    String.format(strings.defaultValueLabel, Defaults.BARBED_ROWS),
+                    viewModel::onBarbedWireRowsChange,
+                    Modifier.weight(1f),
+                    focusManager
+                )
+                SmartSettingsInput(
+                    strings.barbedWireRollM,
+                    viewModel.barbedWireRollLengthInput,
+                    Defaults.BARBED_ROLL,
+                    String.format(strings.defaultValueLabel, Defaults.BARBED_ROLL),
+                    viewModel::onBarbedWireRollLengthChange,
+                    Modifier.weight(1f),
+                    focusManager
+                )
             }
         }
 
@@ -180,20 +261,68 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
             Divider(color = onBackgroundColor.copy(alpha = 0.1f))
             Spacer(modifier = Modifier.height(24.dp))
             SettingsGroupTitle(strings.advancedParameters, Icons.Filled.AdminPanelSettings)
-            
+
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                SmartSettingsInput(strings.poleLengthM, viewModel.poleLengthInput, "2.4", String.format(strings.defaultValueLabel, "2.4"), viewModel::onPoleLengthChange, Modifier.weight(1f), focusManager)
-                SmartSettingsInput(strings.pipeLengthM, viewModel.pipeLengthInput, "6.0", String.format(strings.defaultValueLabel, "6.0"), viewModel::onPipeLengthChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(
+                    strings.poleLengthM,
+                    viewModel.poleLengthInput,
+                    "2.4",
+                    String.format(strings.defaultValueLabel, "2.4"),
+                    viewModel::onPoleLengthChange,
+                    Modifier.weight(1f),
+                    focusManager
+                )
+                SmartSettingsInput(
+                    strings.pipeLengthM,
+                    viewModel.pipeLengthInput,
+                    "6.0",
+                    String.format(strings.defaultValueLabel, "6.0"),
+                    viewModel::onPipeLengthChange,
+                    Modifier.weight(1f),
+                    focusManager
+                )
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                SmartSettingsInput(strings.tensionFactor, viewModel.tensionFactorInput, "6.66", String.format(strings.defaultValueLabel, "6.66"), viewModel::onTensionFactorChange, Modifier.weight(1f), focusManager)
-                SmartSettingsInput(strings.bindingFactor, viewModel.bindingFactorInput, "3.0", String.format(strings.defaultValueLabel, "3.0"), viewModel::onBindingFactorChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(
+                    strings.tensionFactor,
+                    viewModel.tensionFactorInput,
+                    "6.66",
+                    String.format(strings.defaultValueLabel, "6.66"),
+                    viewModel::onTensionFactorChange,
+                    Modifier.weight(1f),
+                    focusManager
+                )
+                SmartSettingsInput(
+                    strings.bindingFactor,
+                    viewModel.bindingFactorInput,
+                    "3.0",
+                    String.format(strings.defaultValueLabel, "3.0"),
+                    viewModel::onBindingFactorChange,
+                    Modifier.weight(1f),
+                    focusManager
+                )
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                SmartSettingsInput(strings.cementFactor, viewModel.cementFactorInput, "6.0", String.format(strings.defaultValueLabel, "6.0"), viewModel::onCementFactorChange, Modifier.weight(1f), focusManager)
-                SmartSettingsInput(strings.concreteFactor, viewModel.concreteFactorInput, "30.0", String.format(strings.defaultValueLabel, "30.0"), viewModel::onConcreteFactorChange, Modifier.weight(1f), focusManager)
+                SmartSettingsInput(
+                    strings.cementFactor,
+                    viewModel.cementFactorInput,
+                    "6.0",
+                    String.format(strings.defaultValueLabel, "6.0"),
+                    viewModel::onCementFactorChange,
+                    Modifier.weight(1f),
+                    focusManager
+                )
+                SmartSettingsInput(
+                    strings.concreteFactor,
+                    viewModel.concreteFactorInput,
+                    "30.0",
+                    String.format(strings.defaultValueLabel, "30.0"),
+                    viewModel::onConcreteFactorChange,
+                    Modifier.weight(1f),
+                    focusManager
+                )
             }
         }
 
@@ -222,7 +351,7 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
         }
 
         item { Spacer(modifier = Modifier.height(12.dp)) }
-        
+
         // Klavye açıldığında en alttaki içeriğin yukarı kaydırılabilmesi için spacer
         item { Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.ime)) }
 
@@ -232,10 +361,23 @@ fun SettingsSheetContent(viewModel: CalculatorViewModel, onDismiss: () -> Unit) 
 
 @Composable
 fun SettingsGroupTitle(text: String, icon: ImageVector) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 8.dp)) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(bottom = 8.dp)
+    ) {
+        Icon(
+            icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp)
+        )
         Spacer(modifier = Modifier.width(8.dp))
-        Text(text, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f), fontWeight = FontWeight.Bold)
+        Text(
+            text,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 
@@ -254,7 +396,10 @@ fun ThemeToggleButton(
         shape = RoundedCornerShape(12.dp),
         color = if (isSelected) MaterialTheme.colorScheme.primary else onSurface.copy(alpha = 0.05f),
         contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else onSurface.copy(alpha = 0.6f),
-        border = if (isSelected) null else androidx.compose.foundation.BorderStroke(1.dp, onSurface.copy(alpha = 0.1f)),
+        border = if (isSelected) null else androidx.compose.foundation.BorderStroke(
+            1.dp,
+            onSurface.copy(alpha = 0.1f)
+        ),
         shadowElevation = 0.dp,
         tonalElevation = 0.dp
     ) {
@@ -278,7 +423,7 @@ fun SettingsSheetContentPreview() {
     val context = LocalContext.current
     val dataStoreManager = remember { DataStoreManager(context) }
     val viewModel = remember { CalculatorViewModel(dataStoreManager, context) }
-    
+
     FenceCalculatorTheme {
         Box(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
             SettingsSheetContent(viewModel = viewModel, onDismiss = {})
