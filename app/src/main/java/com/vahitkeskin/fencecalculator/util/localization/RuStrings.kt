@@ -93,6 +93,7 @@ val RuStrings = AppStrings(
     poleSpacingM = "Расстояние между столбами (м)",
     wireThicknessMm = "Толщина проволоки (мм)",
     meshEyeCm = "Ячейка сетки (см)",
+    meshEyeAndWireThickness = "Ячейка сетки и толщина проволоки",
     weightConstant = "Коэффициент веса",
     strutSetup = "Установка подкосов",
     strutIntervalPosts = "Интервал (столбы)",

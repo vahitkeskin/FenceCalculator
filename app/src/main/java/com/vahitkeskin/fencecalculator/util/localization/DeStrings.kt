@@ -93,6 +93,7 @@ val DeStrings = AppStrings(
     poleSpacingM = "Pfostenabstand (m)",
     wireThicknessMm = "Drahtstärke (mm)",
     meshEyeCm = "Maschenweite (cm)",
+    meshEyeAndWireThickness = "Maschenweite & Drahtstärke",
     weightConstant = "Gewichtskonstante",
     strutSetup = "Strebenmontage",
     strutIntervalPosts = "Intervall (Pfosten)",

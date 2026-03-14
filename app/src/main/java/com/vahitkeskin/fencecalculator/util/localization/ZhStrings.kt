@@ -93,6 +93,7 @@ val ZhStrings = AppStrings(
     poleSpacingM = "立柱间距 (m)",
     wireThicknessMm = "铁丝厚度 (mm)",
     meshEyeCm = "网眼尺寸 (cm)",
+    meshEyeAndWireThickness = "网眼尺寸 & 铁丝厚度",
     weightConstant = "重量常数",
     strutSetup = "撑杆设置",
     strutIntervalPosts = "间隔（立柱）",

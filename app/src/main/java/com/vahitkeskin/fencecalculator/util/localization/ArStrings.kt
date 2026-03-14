@@ -93,6 +93,7 @@ val ArStrings = AppStrings(
     poleSpacingM = "المسافة بين الأعمدة (م)",
     wireThicknessMm = "سمك السلك (مم)",
     meshEyeCm = "فتحة الشبكة (سم)",
+    meshEyeAndWireThickness = "فتحة الشبكة وسمك السلك",
     weightConstant = "ثابت الوزن",
     strutSetup = "تركيب الدعامات",
     strutIntervalPosts = "المدة (أعمدة)",
