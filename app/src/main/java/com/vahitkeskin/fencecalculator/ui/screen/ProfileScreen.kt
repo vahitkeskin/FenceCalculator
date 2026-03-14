@@ -56,7 +56,7 @@ fun ProfileScreen(
     val listState = rememberLazyListState()
     var showLargeQr by remember { mutableStateOf(false) }
     var isShareExpanded by remember { mutableStateOf(false) }
-    
+
     val appLink = "https://play.google.com/store/apps/details?id=${context.packageName}"
     val qrBitmap = remember(appLink) { QrGenerator.generateQrCode(appLink, 512) }
 
@@ -252,7 +252,7 @@ fun ProfileScreen(
 
                     val appName = viewModel.strings.appName
                     val shareMessage = String.format(viewModel.strings.shareAppMessage, appName)
-                    
+
                     PremiumGlassCard(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -290,12 +290,12 @@ fun ProfileScreen(
                                         fontWeight = FontWeight.Bold
                                     )
                                 }
-                                
+
                                 val rotateChevron by animateFloatAsState(
                                     targetValue = if (isShareExpanded) 90f else 0f,
                                     label = "ChevronRotation"
                                 )
-                                
+
                                 Icon(
                                     imageVector = Icons.Default.ChevronRight,
                                     contentDescription = null,
@@ -303,7 +303,7 @@ fun ProfileScreen(
                                     modifier = Modifier.rotate(rotateChevron)
                                 )
                             }
-                            
+
                             AnimatedVisibility(
                                 visible = isShareExpanded,
                                 enter = expandVertically() + fadeIn(),
@@ -311,7 +311,7 @@ fun ProfileScreen(
                             ) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Spacer(modifier = Modifier.height(16.dp))
-                                    
+
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.Center,
@@ -329,16 +329,21 @@ fun ProfileScreen(
                                                     .clickable { showLargeQr = true }
                                             )
                                         }
-                                        
+
                                         Spacer(modifier = Modifier.width(24.dp))
-                                        
+
                                         IconButton(
                                             onClick = {
                                                 val intent = Intent(Intent.ACTION_SEND).apply {
                                                     type = "text/plain"
                                                     putExtra(Intent.EXTRA_TEXT, shareMessage)
                                                 }
-                                                context.startActivity(Intent.createChooser(intent, viewModel.strings.shareAppTitle))
+                                                context.startActivity(
+                                                    Intent.createChooser(
+                                                        intent,
+                                                        viewModel.strings.shareAppTitle
+                                                    )
+                                                )
                                             },
                                             modifier = Modifier
                                                 .size(120.dp)
@@ -358,7 +363,7 @@ fun ProfileScreen(
                             }
                         }
                     }
-                    
+
                     if (showLargeQr && qrBitmap != null) {
                         Dialog(
                             onDismissRequest = { showLargeQr = false },
@@ -397,7 +402,7 @@ fun ProfileScreen(
                                                 .padding(12.dp)
                                         )
                                         Spacer(modifier = Modifier.height(24.dp))
-                                        
+
                                         Button(
                                             onClick = { shareBitmap(qrBitmap) },
                                             modifier = Modifier.fillMaxWidth(),
@@ -522,6 +527,7 @@ fun ProfileMenuItem(
         }
     }
 }
+
 @AppPreviews
 @Composable
 fun ProfileScreenPreview() {
@@ -529,7 +535,7 @@ fun ProfileScreenPreview() {
     val dataStoreManager = remember { DataStoreManager(context) }
     val viewModel = remember { CalculatorViewModel(dataStoreManager, context) }
     val navController = rememberNavController()
-    
+
     FenceCalculatorTheme {
         ProfileScreen(navController = navController, viewModel = viewModel)
     }
