@@ -334,11 +334,11 @@ fun ProfileScreen(
                                         
                                         IconButton(
                                             onClick = {
-                                                val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                                val intent = Intent(Intent.ACTION_SEND).apply {
                                                     type = "text/plain"
-                                                    putExtra(android.content.Intent.EXTRA_TEXT, shareMessage)
+                                                    putExtra(Intent.EXTRA_TEXT, shareMessage)
                                                 }
-                                                context.startActivity(android.content.Intent.createChooser(intent, viewModel.strings.shareAppTitle))
+                                                context.startActivity(Intent.createChooser(intent, viewModel.strings.shareAppTitle))
                                             },
                                             modifier = Modifier
                                                 .size(120.dp)
@@ -379,6 +379,14 @@ fun ProfileScreen(
                                         modifier = Modifier.padding(24.dp),
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
+                                        Text(
+                                            text = viewModel.strings.appName,
+                                            style = MaterialTheme.typography.headlineSmall,
+                                            fontWeight = FontWeight.Black,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+
+                                        Spacer(modifier = Modifier.height(24.dp))
                                         Image(
                                             bitmap = qrBitmap.asImageBitmap(),
                                             contentDescription = "Large QR Code",
@@ -388,19 +396,6 @@ fun ProfileScreen(
                                                 .background(Color.White)
                                                 .padding(12.dp)
                                         )
-                                        Spacer(modifier = Modifier.height(24.dp))
-                                        Text(
-                                            text = viewModel.strings.appName,
-                                            style = MaterialTheme.typography.headlineSmall,
-                                            fontWeight = FontWeight.Black,
-                                            color = MaterialTheme.colorScheme.onSurface
-                                        )
-                                        Text(
-                                            text = viewModel.strings.shareAppTitle,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                        )
-                                        
                                         Spacer(modifier = Modifier.height(24.dp))
                                         
                                         Button(
