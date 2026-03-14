@@ -59,7 +59,8 @@ object PdfGenerator {
         paint.color = Color.WHITE
         paint.textSize = 24f
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        val mainTitle = if (companyName.isNotBlank()) companyName.uppercase() else viewModel.strings.pdfDefaultTitle
+        val mainTitle =
+            if (companyName.isNotBlank()) companyName.uppercase() else viewModel.strings.pdfDefaultTitle
         canvas.drawText(mainTitle, 30f, 75f, paint)
 
         paint.textSize = 14f
@@ -77,7 +78,7 @@ object PdfGenerator {
         // 3. Bilgi Kartı (Uzunluk Bilgisi ve Müşteri Adı Soyadı)
         val hasCustomerName = customerName.isNotBlank()
         val cardBottom = if (hasCustomerName) 225f else 200f
-        
+
         paint.color = Color.WHITE
         paint.clearShadowLayer()
         canvas.drawRoundRect(30f, 140f, 565f, cardBottom, 10f, 10f, paint)
@@ -147,15 +148,26 @@ object PdfGenerator {
 
                 paint.textAlign = Paint.Align.LEFT
                 paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-                val displayName = if (item.title.length > 28) item.title.take(28) + "..." else item.title
+                val displayName =
+                    if (item.title.length > 28) item.title.take(28) + "..." else item.title
                 canvas.drawText(displayName, xMaterial, yPos, paint)
 
                 paint.textAlign = Paint.Align.RIGHT
                 canvas.drawText("${dfQty.format(item.quantity)} ${item.unit}", xQtyEnd, yPos, paint)
-                canvas.drawText(String.format(viewModel.strings.currencyFormat, dfPrice.format(unitPrice)), xUnitEnd, yPos, paint)
-                
-                canvas.drawText(String.format(viewModel.strings.currencyFormat, dfPrice.format(item.totalCost)), xTotalEnd, yPos, paint)
-                
+                canvas.drawText(
+                    String.format(
+                        viewModel.strings.currencyFormat,
+                        dfPrice.format(unitPrice)
+                    ), xUnitEnd, yPos, paint
+                )
+
+                canvas.drawText(
+                    String.format(
+                        viewModel.strings.currencyFormat,
+                        dfPrice.format(item.totalCost)
+                    ), xTotalEnd, yPos, paint
+                )
+
                 // --- Alt Bilgi (Açıklama veya Bağımlılık) ---
                 val subText = when {
                     !item.dependencyInfo.isNullOrBlank() -> item.dependencyInfo
@@ -170,9 +182,10 @@ object PdfGenerator {
                     paint.textSize = 9f
                     paint.color = Color.GRAY
                     //TODO PDF "Malzeme" altında bulunan formuül
-                    val displaySubText = if (subText.length > 50) subText.take(47) + "..." else subText
+                    val displaySubText =
+                        if (subText.length > 50) subText.take(47) + "..." else subText
                     //canvas.drawText(displaySubText, xMaterial, yPos, paint)
-                    
+
                     // Reset paint for next item
                     paint.color = Color.BLACK
                     paint.textSize = 12f
@@ -201,7 +214,12 @@ object PdfGenerator {
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         paint.textAlign = Paint.Align.RIGHT
         paint.color = android.graphics.Color.parseColor("#3F51B5")
-        canvas.drawText(String.format(viewModel.strings.currencyFormat, dfPrice.format(totalCost)), 565f, yPos + 38f, paint)
+        canvas.drawText(
+            String.format(viewModel.strings.currencyFormat, dfPrice.format(totalCost)),
+            565f,
+            yPos + 38f,
+            paint
+        )
 
         pdfDocument.finishPage(page)
 
@@ -223,7 +241,13 @@ object PdfGenerator {
         }
     }
 
-    fun shareViaWhatsApp(context: Context, file: File, phoneNumber: String, iban: String, viewModel: com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel) {
+    fun shareViaWhatsApp(
+        context: Context,
+        file: File,
+        phoneNumber: String,
+        iban: String,
+        viewModel: com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
+    ) {
         val uri = FileProvider.getUriForFile(
             context,
             "${context.packageName}.provider",
@@ -232,7 +256,8 @@ object PdfGenerator {
 
         // Telefon numarasını temizle (sadece rakamlar)
         val cleanPhone = phoneNumber.filter { it.isDigit() }
-        val finalPhone = if (cleanPhone.startsWith("0")) "9$cleanPhone" else if (!cleanPhone.startsWith("90")) "90$cleanPhone" else cleanPhone
+        val finalPhone =
+            if (cleanPhone.startsWith("0")) "9$cleanPhone" else if (!cleanPhone.startsWith("90")) "90$cleanPhone" else cleanPhone
 
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "application/pdf"
@@ -261,7 +286,11 @@ object PdfGenerator {
         }
     }
 
-    fun sharePdfFile(context: Context, file: File, viewModel: com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel) {
+    fun sharePdfFile(
+        context: Context,
+        file: File,
+        viewModel: com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
+    ) {
         val uri = FileProvider.getUriForFile(
             context,
             "${context.packageName}.provider",
