@@ -124,7 +124,11 @@ fun CalculatorViewModel.calculateValuesExt() {
         createItemExt(
             "payanda",
             strings.payandaTitle,
-            String.format(strings.payandaDesc, strutFreq.toInt().toString(), strutCnt.toInt().toString()),
+            String.format(
+                strings.payandaDesc,
+                strutFreq.toInt().toString(),
+                strutCnt.toInt().toString()
+            ),
             payandaSayisi,
             strings.unitPiece,
             Icons.Filled.ChangeHistory,
