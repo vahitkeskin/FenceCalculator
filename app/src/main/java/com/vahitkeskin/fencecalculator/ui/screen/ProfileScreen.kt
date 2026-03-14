@@ -23,7 +23,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import com.vahitkeskin.fencecalculator.util.QrGenerator
 import androidx.navigation.NavController
+import java.io.File
+import java.io.FileOutputStream
+import androidx.core.content.FileProvider
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.ui.draw.rotate
 import com.vahitkeskin.fencecalculator.R
 import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.PremiumGlassCard
@@ -42,6 +54,45 @@ fun ProfileScreen(
 ) {
     val context = LocalContext.current
     val listState = rememberLazyListState()
+    var showLargeQr by remember { mutableStateOf(false) }
+    var isShareExpanded by remember { mutableStateOf(false) }
+    
+    val appLink = "https://play.google.com/store/apps/details?id=${context.packageName}"
+    val qrBitmap = remember(appLink) { QrGenerator.generateQrCode(appLink, 512) }
+
+    LaunchedEffect(isShareExpanded) {
+        if (isShareExpanded) {
+            // Give some time for the expanding animation to progress
+            kotlinx.coroutines.delay(300)
+            listState.animateScrollToItem(listState.layoutInfo.totalItemsCount - 1)
+        }
+    }
+
+    fun shareBitmap(bitmap: android.graphics.Bitmap) {
+        try {
+            val cachePath = File(context.cacheDir, "images")
+            cachePath.mkdirs()
+            val file = File(cachePath, "app_qr_code.png")
+            val stream = FileOutputStream(file)
+            bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream)
+            stream.close()
+
+            val contentUri: Uri = FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.provider",
+                file
+            )
+
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "image/png"
+                putExtra(Intent.EXTRA_STREAM, contentUri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            context.startActivity(Intent.createChooser(intent, viewModel.strings.shareReportTitle))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.scrollToTop.collect { route ->
@@ -202,18 +253,171 @@ fun ProfileScreen(
                     val appName = viewModel.strings.appName
                     val shareMessage = String.format(viewModel.strings.shareAppMessage, appName)
                     
-                    ProfileMenuItem(
-                        icon = Icons.Default.Share,
-                        title = viewModel.strings.share,
-                        subtitle = viewModel.strings.feedbackDesc,
-                        onClick = {
-                            val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
-                                type = "text/plain"
-                                putExtra(android.content.Intent.EXTRA_TEXT, shareMessage)
+                    PremiumGlassCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { isShareExpanded = !isShareExpanded },
+                        cornerRadius = 16.dp
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Share,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(16.dp))
+                                    Text(
+                                        text = viewModel.strings.share,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                                
+                                val rotateChevron by animateFloatAsState(
+                                    targetValue = if (isShareExpanded) 90f else 0f,
+                                    label = "ChevronRotation"
+                                )
+                                
+                                Icon(
+                                    imageVector = Icons.Default.ChevronRight,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                                    modifier = Modifier.rotate(rotateChevron)
+                                )
                             }
-                            context.startActivity(android.content.Intent.createChooser(intent, viewModel.strings.shareAppTitle))
+                            
+                            AnimatedVisibility(
+                                visible = isShareExpanded,
+                                enter = expandVertically() + fadeIn(),
+                                exit = shrinkVertically() + fadeOut()
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        qrBitmap?.let { bitmap ->
+                                            Image(
+                                                bitmap = bitmap.asImageBitmap(),
+                                                contentDescription = "App QR Code",
+                                                modifier = Modifier
+                                                    .size(120.dp)
+                                                    .clip(RoundedCornerShape(12.dp))
+                                                    .background(Color.White)
+                                                    .padding(8.dp)
+                                                    .clickable { showLargeQr = true }
+                                            )
+                                        }
+                                        
+                                        Spacer(modifier = Modifier.width(24.dp))
+                                        
+                                        IconButton(
+                                            onClick = {
+                                                val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                                    type = "text/plain"
+                                                    putExtra(android.content.Intent.EXTRA_TEXT, shareMessage)
+                                                }
+                                                context.startActivity(android.content.Intent.createChooser(intent, viewModel.strings.shareAppTitle))
+                                            },
+                                            modifier = Modifier
+                                                .size(120.dp)
+                                                .background(
+                                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                                    RoundedCornerShape(12.dp)
+                                                )
+                                        ) {
+                                            Icon(
+                                                Icons.Default.IosShare,
+                                                contentDescription = "System Share",
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
-                    )
+                    }
+                    
+                    if (showLargeQr && qrBitmap != null) {
+                        Dialog(
+                            onDismissRequest = { showLargeQr = false },
+                            properties = DialogProperties(usePlatformDefaultWidth = false)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color.Black.copy(alpha = 0.8f))
+                                    .clickable { showLargeQr = false },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                PremiumGlassCard(
+                                    modifier = Modifier.padding(32.dp),
+                                    cornerRadius = 24.dp
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(24.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Image(
+                                            bitmap = qrBitmap.asImageBitmap(),
+                                            contentDescription = "Large QR Code",
+                                            modifier = Modifier
+                                                .size(280.dp)
+                                                .clip(RoundedCornerShape(16.dp))
+                                                .background(Color.White)
+                                                .padding(12.dp)
+                                        )
+                                        Spacer(modifier = Modifier.height(24.dp))
+                                        Text(
+                                            text = viewModel.strings.appName,
+                                            style = MaterialTheme.typography.headlineSmall,
+                                            fontWeight = FontWeight.Black,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = viewModel.strings.shareAppTitle,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                        )
+                                        
+                                        Spacer(modifier = Modifier.height(24.dp))
+                                        
+                                        Button(
+                                            onClick = { shareBitmap(qrBitmap) },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            shape = RoundedCornerShape(12.dp),
+                                            contentPadding = PaddingValues(16.dp)
+                                        ) {
+                                            Icon(Icons.Default.Share, null)
+                                            Spacer(Modifier.width(8.dp))
+                                            Text(viewModel.strings.shareAppTitle)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
