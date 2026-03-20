@@ -22,6 +22,13 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.animation.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Color
+import androidx.compose.material.icons.filled.ViewInAr
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.FabPosition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -137,7 +144,7 @@ fun MainScreen(
                     }
                 }
             }
-        }
+        },
     ) { innerPadding ->
         val density = LocalDensity.current
         val imeBottom = with(density) { WindowInsets.ime.getBottom(this).toDp() }
@@ -242,6 +249,37 @@ fun MainScreen(
                     isBlurred = false,
                     onClick = { showPremiumPopup = true }
                 )
+            }
+
+            // Global FAB positioned relative to the card
+            val showFab = currentRoute in listOf(Screen.Home.route, Screen.Calculations.route, Screen.Custom.route) &&
+                         (viewModel.totalLengthInput.toFloatOrNull() ?: 0f) > 0f
+            
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = max(0.dp, navBarHeight - imeBottom) + 112.dp, end = 16.dp)
+                    .imePadding(),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                AnimatedVisibility(
+                    visible = showFab,
+                    enter = scaleIn() + fadeIn(),
+                    exit = scaleOut() + fadeOut()
+                ) {
+                    FloatingActionButton(
+                        onClick = { globalNavController.navigate("fence_3d") },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = Color.White,
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ViewInAr,
+                            contentDescription = "3D Görünüm"
+                        )
+                    }
+                }
             }
         }
     }
