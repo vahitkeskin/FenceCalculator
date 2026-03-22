@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -75,6 +76,7 @@ fun MainScreen(
     globalNavController: NavController
 ) {
     val innerNavController = rememberNavController()
+    val keyboardController = LocalSoftwareKeyboardController.current
     val items = listOf(Screen.Home, Screen.Calculations, Screen.Custom, Screen.Profile)
     var showPremiumPopup by remember { mutableStateOf(false) }
     
@@ -268,7 +270,10 @@ fun MainScreen(
                     exit = scaleOut() + fadeOut()
                 ) {
                     FloatingActionButton(
-                        onClick = { globalNavController.navigate("fence_3d") },
+                        onClick = { 
+                            keyboardController?.hide()
+                            globalNavController.navigate("fence_3d") 
+                        },
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = Color.White,
                         shape = RoundedCornerShape(16.dp),
