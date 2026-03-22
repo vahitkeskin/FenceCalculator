@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
+import com.vahitkeskin.fencecalculator.util.centerOnFocus
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -84,8 +85,8 @@ fun CompactInput(
     // TODO: İstediğim zaman aktif edebileyim - 50 sınırlaması ve premium
     // val isLimitReached = !isPremium && usageCount >= 50
     val isLimitReached = false
-    val bringIntoViewRequester = remember { BringIntoViewRequester() }
-    val coroutineScope = rememberCoroutineScope()
+    // val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    // val coroutineScope = rememberCoroutineScope()
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
 
     Column(modifier) {
@@ -94,14 +95,7 @@ fun CompactInput(
             onValueChange = onValueChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .bringIntoViewRequester(bringIntoViewRequester)
-                .onFocusEvent { focusState ->
-                    if (focusState.isFocused) {
-                        coroutineScope.launch {
-                            bringIntoViewRequester.bringIntoView()
-                        }
-                    }
-                },
+                .centerOnFocus(),
             label = {
                 Text(
                     label,

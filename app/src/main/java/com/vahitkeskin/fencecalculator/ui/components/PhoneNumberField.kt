@@ -22,6 +22,7 @@ import com.vahitkeskin.fencecalculator.data.model.CountryData
 import com.vahitkeskin.fencecalculator.util.PhoneVisualTransformation
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 import com.vahitkeskin.fencecalculator.R
+import com.vahitkeskin.fencecalculator.util.centerOnFocus
 import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,7 +97,7 @@ fun PhoneNumberField(
                 }
             },
             visualTransformation = visualTransformation,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().centerOnFocus(),
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
             keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
@@ -166,7 +167,7 @@ fun CountryPickerDialogContent(
             onValueChange = { searchQuery = it },
             placeholder = { Text(searchCountryLabel, color = onBackgroundColor.copy(alpha = 0.4f)) },
             leadingIcon = { Icon(Icons.Default.Search, null) },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().centerOnFocus(),
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
             keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
