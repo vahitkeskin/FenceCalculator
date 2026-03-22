@@ -7,6 +7,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
+import com.vahitkeskin.fencecalculator.util.centerOnFocus
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -61,8 +62,8 @@ fun SwapLayoutResultRow(
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
 
     // Scroll İsteği İçin Gerekli Değişkenler
-    val bringIntoViewRequester = remember { BringIntoViewRequester() }
-    val coroutineScope = rememberCoroutineScope()
+    // val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    // val coroutineScope = rememberCoroutineScope()
 
     PremiumGlassCard(
         modifier = Modifier
@@ -150,14 +151,7 @@ fun SwapLayoutResultRow(
                         onValueChange = onPriceChange,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .bringIntoViewRequester(bringIntoViewRequester)
-                            .onFocusEvent { focusState ->
-                                if (focusState.isFocused) {
-                                    coroutineScope.launch {
-                                        bringIntoViewRequester.bringIntoView()
-                                    }
-                                }
-                            }
+                            .centerOnFocus()
                             .then(if (isBlurred) Modifier.blur(8.dp) else Modifier),
                         readOnly = isBlurred,
                     label = { Text(viewModel.strings.unitPriceTl, style = MaterialTheme.typography.bodySmall, color = onSurfaceColor.copy(alpha = 0.5f)) },

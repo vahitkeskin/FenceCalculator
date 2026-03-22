@@ -39,6 +39,7 @@ import com.vahitkeskin.fencecalculator.util.DataStoreManager
 import com.vahitkeskin.fencecalculator.R
 import androidx.compose.ui.res.stringResource
 import com.vahitkeskin.fencecalculator.util.NavigationUtils.safeClick
+import com.vahitkeskin.fencecalculator.util.centerOnFocus
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -182,7 +183,7 @@ fun AddEditCardScreen(
                                     }
                                 }
                             },
-                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            modifier = Modifier.fillMaxWidth().padding(16.dp).centerOnFocus(),
                             shape = RoundedCornerShape(12.dp),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(
@@ -230,7 +231,7 @@ fun AddEditCardScreen(
                                     }
                                 }
                             },
-                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            modifier = Modifier.fillMaxWidth().padding(16.dp).centerOnFocus(),
                             shape = RoundedCornerShape(12.dp),
                             maxLines = 3,
                             keyboardOptions = KeyboardOptions(
@@ -417,7 +418,7 @@ fun AddEditCardScreen(
                                                         Icon(icon, contentDescription = null, tint = primaryColor)
                                                     }
                                                 },
-                                                modifier = Modifier.weight(1f),
+                                                modifier = Modifier.weight(1f).centerOnFocus(),
                                                 shape = RoundedCornerShape(12.dp),
                                                 singleLine = true,
                                                 keyboardOptions = KeyboardOptions(
@@ -529,7 +530,7 @@ fun AddEditCardScreen(
                                             }
                                         }
                                     },
-                                    modifier = Modifier.weight(1f),
+                                    modifier = Modifier.weight(1f).centerOnFocus(),
                                     shape = RoundedCornerShape(12.dp),
                                     singleLine = true,
                                     keyboardOptions = KeyboardOptions(
@@ -584,7 +585,7 @@ fun AddEditCardScreen(
                                     }
                                 }
                             },
-                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            modifier = Modifier.fillMaxWidth().padding(16.dp).centerOnFocus(),
                             shape = RoundedCornerShape(12.dp),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(

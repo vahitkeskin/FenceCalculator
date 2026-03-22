@@ -83,6 +83,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
+import com.vahitkeskin.fencecalculator.util.centerOnFocus
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.vahitkeskin.fencecalculator.ui.components.AdvancedInputSection
@@ -238,7 +239,7 @@ fun HomeScreen(
                                 onValueChange = { viewModel.onCustomerNameChange(it) },
                                 label = { Text(viewModel.strings.customerNameSurname, color = onBackgroundColor.copy(alpha = 0.5f)) },
                                 leadingIcon = { Icon(Icons.Default.Person, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth().centerOnFocus(),
                                 shape = RoundedCornerShape(12.dp),
                                 singleLine = true,
                                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next),
@@ -317,7 +318,7 @@ fun HomeScreen(
                                                     Text(viewModel.strings.invalidIban, color = MaterialTheme.colorScheme.error)
                                                 }
                                             },
-                                            modifier = Modifier.fillMaxWidth(),
+                                            modifier = Modifier.fillMaxWidth().centerOnFocus(),
                                             shape = RoundedCornerShape(12.dp),
                                             maxLines = 2,
                                             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Done),
