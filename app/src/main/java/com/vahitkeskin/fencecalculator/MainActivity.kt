@@ -41,14 +41,11 @@ import androidx.compose.ui.unit.sp
 import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.AndroidEntryPoint
 
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: CalculatorViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
         super.onCreate(savedInstanceState)
         /*
         MobileAds.initialize(this) { status ->
