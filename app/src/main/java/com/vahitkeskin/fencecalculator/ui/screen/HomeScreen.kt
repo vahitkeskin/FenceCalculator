@@ -32,6 +32,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Info
@@ -121,7 +122,6 @@ fun HomeScreen(
     var showScanSheet by remember { mutableStateOf(false) }
 
 
-
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
@@ -146,7 +146,8 @@ fun HomeScreen(
         if (isGranted) {
             cameraLauncher.launch(null)
         } else {
-            Toast.makeText(context, viewModel.strings.cameraPermissionRequired, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, viewModel.strings.cameraPermissionRequired, Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
@@ -157,7 +158,7 @@ fun HomeScreen(
             }
         }
     }
-    
+
     val currencyFormat = remember { DecimalFormat("#,##0.00") }
 
     fun getFormattedCustomerTitle(name: String): String {
@@ -173,9 +174,15 @@ fun HomeScreen(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { 
+                    title = {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(viewModel.strings.fenceCalculation, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = onBackgroundColor, letterSpacing = 2.sp)
+                            Text(
+                                viewModel.strings.fenceCalculation,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Black,
+                                color = onBackgroundColor,
+                                letterSpacing = 2.sp
+                            )
                             // TODO: İstediğim zaman aktif edebileyim - 50 sınırlaması ve premium
                             // Text(viewModel.strings.premiumArchitecturalTool, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = onBackgroundColor.copy(alpha = 0.5f), letterSpacing = 1.sp)
                         }
@@ -184,7 +191,8 @@ fun HomeScreen(
                         IconButton(onClick = {
                             scope.launch {
                                 isGeneratingPdf = true
-                                val finalPdfTitle = getFormattedCustomerTitle(viewModel.customerName)
+                                val finalPdfTitle =
+                                    getFormattedCustomerTitle(viewModel.customerName)
                                 delay(1000)
                                 val file = PdfGenerator.generatePdf(
                                     context = context,
@@ -201,7 +209,11 @@ fun HomeScreen(
                                 // activity?.let { AdManager.onShareClicked(it) }
                             }
                         }) {
-                            Icon(Icons.Default.Share, contentDescription = viewModel.strings.sharePdf, tint = primaryColor)
+                            Icon(
+                                Icons.Default.Share,
+                                contentDescription = viewModel.strings.sharePdf,
+                                tint = primaryColor
+                            )
                         }
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
@@ -233,16 +245,32 @@ fun HomeScreen(
                                 color = onBackgroundColor.copy(alpha = 0.5f),
                                 letterSpacing = 1.sp
                             )
-                            
+
                             OutlinedTextField(
                                 value = viewModel.customerName,
                                 onValueChange = { viewModel.onCustomerNameChange(it) },
-                                label = { Text(viewModel.strings.customerNameSurname, color = onBackgroundColor.copy(alpha = 0.5f)) },
-                                leadingIcon = { Icon(Icons.Default.Person, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
-                                modifier = Modifier.fillMaxWidth().centerOnFocus(),
+                                label = {
+                                    Text(
+                                        viewModel.strings.customerNameSurname,
+                                        color = onBackgroundColor.copy(alpha = 0.5f)
+                                    )
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Person,
+                                        null,
+                                        tint = onBackgroundColor.copy(alpha = 0.7f)
+                                    )
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .centerOnFocus(),
                                 shape = RoundedCornerShape(12.dp),
                                 singleLine = true,
-                                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next),
+                                keyboardOptions = KeyboardOptions(
+                                    capitalization = KeyboardCapitalization.Words,
+                                    imeAction = ImeAction.Next
+                                ),
                                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor)
                             )
 
@@ -269,8 +297,8 @@ fun HomeScreen(
                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         Icon(
-                                            Icons.Default.AccountBalance, 
-                                            null, 
+                                            Icons.Default.AccountBalance,
+                                            null,
                                             tint = primaryColor.copy(alpha = 0.7f),
                                             modifier = Modifier.size(20.dp)
                                         )
@@ -299,29 +327,66 @@ fun HomeScreen(
                                         verticalArrangement = Arrangement.spacedBy(12.dp)
                                     ) {
                                         val isIbanValid = remember(viewModel.iban) {
-                                            viewModel.iban.isBlank() || com.vahitkeskin.fencecalculator.util.IbanValidator.isValidIban(viewModel.iban)
+                                            viewModel.iban.isBlank() || com.vahitkeskin.fencecalculator.util.IbanValidator.isValidIban(
+                                                viewModel.iban
+                                            )
                                         }
 
                                         OutlinedTextField(
                                             value = viewModel.iban,
                                             onValueChange = { viewModel.onIbanChange(it) },
-                                            label = { Text(viewModel.strings.iban, color = onBackgroundColor.copy(alpha = 0.5f)) },
-                                            leadingIcon = { Icon(Icons.Default.AccountBalance, null, tint = onBackgroundColor.copy(alpha = 0.7f)) },
+                                            label = {
+                                                Text(
+                                                    viewModel.strings.iban,
+                                                    color = onBackgroundColor.copy(alpha = 0.5f)
+                                                )
+                                            },
+                                            leadingIcon = {
+                                                Icon(
+                                                    Icons.Default.AccountBalance,
+                                                    null,
+                                                    tint = onBackgroundColor.copy(alpha = 0.7f)
+                                                )
+                                            },
                                             trailingIcon = {
-                                                IconButton(onClick = { showScanSheet = true }) {
-                                                    Icon(Icons.Default.QrCodeScanner, viewModel.strings.scanQrCode, tint = primaryColor)
+                                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                                    if (viewModel.iban.isNotEmpty()) {
+                                                        Icon(
+                                                            modifier = Modifier.clickable {
+                                                                viewModel.onIbanChange("")
+                                                            },
+                                                            imageVector = Icons.Default.Cancel,
+                                                            contentDescription = "Clear",
+                                                            tint = onBackgroundColor.copy(alpha = 0.5f)
+                                                        )
+                                                    }
+                                                    IconButton(onClick = { showScanSheet = true }) {
+                                                        Icon(
+                                                            Icons.Default.QrCodeScanner,
+                                                            viewModel.strings.scanQrCode,
+                                                            tint = primaryColor
+                                                        )
+                                                    }
                                                 }
                                             },
                                             isError = !isIbanValid && viewModel.iban.isNotBlank(),
                                             supportingText = {
                                                 if (!isIbanValid && viewModel.iban.isNotBlank()) {
-                                                    Text(viewModel.strings.invalidIban, color = MaterialTheme.colorScheme.error)
+                                                    Text(
+                                                        viewModel.strings.invalidIban,
+                                                        color = MaterialTheme.colorScheme.error
+                                                    )
                                                 }
                                             },
-                                            modifier = Modifier.fillMaxWidth().centerOnFocus(),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .centerOnFocus(),
                                             shape = RoundedCornerShape(12.dp),
                                             maxLines = 2,
-                                            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Done),
+                                            keyboardOptions = KeyboardOptions(
+                                                capitalization = KeyboardCapitalization.Characters,
+                                                imeAction = ImeAction.Done
+                                            ),
                                             colors = OutlinedTextFieldDefaults.colors(
                                                 focusedBorderColor = primaryColor,
                                                 errorBorderColor = MaterialTheme.colorScheme.error
@@ -329,8 +394,14 @@ fun HomeScreen(
                                         )
 
                                         val qrBitmap = remember(viewModel.iban) {
-                                            if (com.vahitkeskin.fencecalculator.util.IbanValidator.isValidIban(viewModel.iban)) {
-                                                com.vahitkeskin.fencecalculator.util.QrGenerator.generateQrCode(viewModel.iban, 300)
+                                            if (com.vahitkeskin.fencecalculator.util.IbanValidator.isValidIban(
+                                                    viewModel.iban
+                                                )
+                                            ) {
+                                                com.vahitkeskin.fencecalculator.util.QrGenerator.generateQrCode(
+                                                    viewModel.iban,
+                                                    300
+                                                )
                                             } else null
                                         }
 
@@ -376,9 +447,12 @@ fun HomeScreen(
                 val standardPinned = viewModel.pinnedItems.filter { !it.id.startsWith("custom_") }
                 if (standardPinned.isNotEmpty()) {
                     item {
-                        Divider(color = onBackgroundColor.copy(alpha = 0.1f), modifier = Modifier.padding(vertical = 8.dp))
+                        Divider(
+                            color = onBackgroundColor.copy(alpha = 0.1f),
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
                     }
-                    
+
                     item {
                         Text(
                             viewModel.strings.favoriteCalculations,
@@ -389,7 +463,7 @@ fun HomeScreen(
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                     }
-                    
+
                     items(standardPinned) { item ->
                         SwapLayoutResultRow(
                             viewModel = viewModel,
@@ -407,9 +481,12 @@ fun HomeScreen(
                 val customPinned = viewModel.pinnedItems.filter { it.id.startsWith("custom_") }
                 if (customPinned.isNotEmpty()) {
                     item {
-                        Divider(color = onBackgroundColor.copy(alpha = 0.1f), modifier = Modifier.padding(vertical = 8.dp))
+                        Divider(
+                            color = onBackgroundColor.copy(alpha = 0.1f),
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
                     }
-                    
+
                     item {
                         Text(
                             viewModel.strings.customCards,
@@ -420,7 +497,7 @@ fun HomeScreen(
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                     }
-                    
+
                     items(customPinned) { item ->
                         val realId = item.id.removePrefix("custom_")
                         SwapLayoutResultRow(
@@ -462,7 +539,7 @@ fun HomeScreen(
                                     )
                                 }
                             }
-                            
+
                             Text(
                                 viewModel.strings.infoTextHome,
                                 style = MaterialTheme.typography.labelSmall,
@@ -514,14 +591,20 @@ fun HomeScreen(
                                 permissionLauncher.launch(Manifest.permission.CAMERA)
                             }
                         },
-                        modifier = Modifier.fillMaxWidth().height(64.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(64.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
                         elevation = (shadowlessElevation())
                     ) {
                         Icon(Icons.Default.PhotoCamera, null)
                         Spacer(Modifier.width(12.dp))
-                        Text(viewModel.strings.useCamera, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(
+                            viewModel.strings.useCamera,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
                     }
 
                     OutlinedButton(
@@ -529,14 +612,21 @@ fun HomeScreen(
                             showScanSheet = false
                             galleryLauncher.launch("image/*")
                         },
-                        modifier = Modifier.fillMaxWidth().height(64.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(64.dp),
                         shape = RoundedCornerShape(16.dp),
                         border = androidx.compose.foundation.BorderStroke(1.dp, primaryColor),
                         elevation = (shadowlessElevation())
                     ) {
                         Icon(Icons.Default.PhotoLibrary, null)
                         Spacer(Modifier.width(12.dp))
-                        Text(viewModel.strings.selectFromGallery, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = primaryColor)
+                        Text(
+                            viewModel.strings.selectFromGallery,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = primaryColor
+                        )
                     }
                 }
             }
@@ -545,7 +635,10 @@ fun HomeScreen(
         if (isGeneratingPdf) {
             Dialog(onDismissRequest = {}) {
                 PremiumGlassCard {
-                    Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         CircularProgressIndicator(color = primaryColor)
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(viewModel.strings.preparingPdfReport, fontWeight = FontWeight.Bold)
@@ -570,10 +663,10 @@ fun HomeScreenPreview() {
     val dataStoreManager = remember { DataStoreManager(context) }
     val viewModel = remember { CalculatorViewModel(dataStoreManager, context) }
     val navController = rememberNavController()
-    
+
     FenceCalculatorTheme {
         HomeScreen(
-            viewModel = viewModel, 
+            viewModel = viewModel,
             navController = navController,
             onPremiumClick = {}
         )
