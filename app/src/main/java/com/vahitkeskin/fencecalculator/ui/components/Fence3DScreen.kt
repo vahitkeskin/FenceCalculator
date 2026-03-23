@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -425,6 +426,15 @@ fun Fence3DScreen(
         }
 
         // --- OVERLAY (Glassmorphic Proje Özet) ---
+        val isDark = MaterialTheme.colorScheme.onBackground.luminance() > 0.5f // Robust Theme Detection
+        val glassBaseColor = if (isDark) Color.White.copy(alpha = 0.08f) else Color.White.copy(alpha = 0.85f)
+        val glassContentColor = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface
+        val glassContentSecondaryColor = if (isDark) Color.White.copy(0.5f) else MaterialTheme.colorScheme.onSurface.copy(0.75f)
+        val glassBorderColor1 = if (isDark) Color.White.copy(0.25f) else Color.White // Pure Diamond Highlight
+        val glassBorderColor2 = if (isDark) Color.White.copy(0.05f) else Color.Black.copy(0.25f) // Extreme Depth Shadow
+        val glassGradientColor1 = if (isDark) Color.White.copy(0.12f) else Color.White.copy(0.5f)
+        val glassGradientColor2 = if (isDark) Color.White.copy(0.02f) else Color.White.copy(0.1f)
+
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(20.dp)) {
@@ -432,14 +442,15 @@ fun Fence3DScreen(
             Box(modifier = Modifier.clip(RoundedCornerShape(28.dp))) {
                 // Layer 1: Blurred Backdrop (Glass Effect)
                 Surface(
-                    color = Color.White.copy(alpha = 0.08f), // Professional Glass Base
+                    color = glassBaseColor, // Professional Glass Base
                     shape = RoundedCornerShape(28.dp),
+                    shadowElevation = if (isDark) 0.dp else 24.dp, // Ultra Depth in Light Mode
                     border = BorderStroke(
-                        1.dp,
+                        if (isDark) 1.dp else 2.dp, // Thicker border for maximum prominence
                         Brush.linearGradient(
                             listOf(
-                                Color.White.copy(0.25f),
-                                Color.White.copy(0.05f)
+                                glassBorderColor1,
+                                glassBorderColor2
                             )
                         )
                     ),
@@ -454,9 +465,9 @@ fun Fence3DScreen(
                         .background(
                             Brush.verticalGradient(
                                 listOf(
-                                    Color.White.copy(0.12f),
+                                    glassGradientColor1,
                                     Color.Transparent,
-                                    Color.White.copy(0.02f)
+                                    glassGradientColor2
                                 )
                             ),
                             RoundedCornerShape(28.dp)
@@ -485,28 +496,28 @@ fun Fence3DScreen(
                                 Text(
                                     "PROJE ÖZETİ",
                                     style = MaterialTheme.typography.labelLarge,
-                                    color = Color.White,
+                                    color = glassContentColor,
                                     fontWeight = FontWeight.ExtraBold,
                                     letterSpacing = 2.sp
                                 )
                             }
                             Spacer(Modifier.height(20.dp))
                             Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-                                StatItem(Icons.Default.Square, "${fenceResult.postCount}", "Direk")
-                                StatItem(Icons.Default.Height, "${fenceResult.height}m", "Boy")
-                                StatItem(Icons.Default.Grid4x4, "${fenceResult.meshEye}cm", "Göz")
+                                StatItem(Icons.Default.Square, "${fenceResult.postCount}", "Direk", glassContentColor, glassContentSecondaryColor)
+                                StatItem(Icons.Default.Height, "${fenceResult.height}m", "Boy", glassContentColor, glassContentSecondaryColor)
+                                StatItem(Icons.Default.Grid4x4, "${fenceResult.meshEye}cm", "Göz", glassContentColor, glassContentSecondaryColor)
                             }
                             HorizontalDivider(
                                 modifier = Modifier
                                     .padding(vertical = 16.dp)
                                     .width(120.dp),
-                                color = Color.White.copy(0.15f),
+                                color = glassContentColor.copy(0.15f),
                                 thickness = 1.dp
                             )
                             Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                                ViewStatItem(null, "X: ${curX.toInt()}°")
-                                ViewStatItem(null, "Y: ${curY.toInt()}°")
-                                ViewStatItem(Icons.Default.ZoomIn, "Z: %.1fX".format(curS))
+                                ViewStatItem(null, "X: ${curX.toInt()}°", glassContentColor)
+                                ViewStatItem(null, "Y: ${curY.toInt()}°", glassContentColor)
+                                ViewStatItem(Icons.Default.ZoomIn, "Z: %.1fX".format(curS), glassContentColor)
                             }
                         }
 
@@ -575,22 +586,24 @@ fun Fence3DScreen(
 private fun StatItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     value: String,
-    label: String
+    label: String,
+    contentColor: Color = if (MaterialTheme.colorScheme.onBackground.luminance() > 0.5f) Color.White else MaterialTheme.colorScheme.onSurface,
+    secondaryColor: Color = if (MaterialTheme.colorScheme.onBackground.luminance() > 0.5f) Color.White.copy(0.5f) else MaterialTheme.colorScheme.onSurface.copy(0.65f)
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, null, tint = Color.White.copy(0.4f), modifier = Modifier.size(16.dp))
+        Icon(icon, null, tint = secondaryColor.copy(0.8f), modifier = Modifier.size(16.dp))
         Spacer(Modifier.width(8.dp))
         Column {
             Text(
                 value,
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.White,
+                color = contentColor,
                 fontWeight = FontWeight.ExtraBold
             )
             Text(
                 label,
                 style = MaterialTheme.typography.labelSmall,
-                color = Color.White.copy(0.5f),
+                color = secondaryColor,
                 fontWeight = FontWeight.Medium
             )
         }
@@ -598,7 +611,11 @@ private fun StatItem(
 }
 
 @Composable
-private fun ViewStatItem(icon: androidx.compose.ui.graphics.vector.ImageVector?, value: String) {
+private fun ViewStatItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector?,
+    value: String,
+    contentColor: Color = if (MaterialTheme.colorScheme.onBackground.luminance() > 0.5f) Color.White else MaterialTheme.colorScheme.onSurface
+) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         if (icon != null) {
             Icon(
@@ -609,7 +626,7 @@ private fun ViewStatItem(icon: androidx.compose.ui.graphics.vector.ImageVector?,
             )
             Spacer(Modifier.width(6.dp))
         }
-        Text(value, style = MaterialTheme.typography.bodySmall, color = Color.White.copy(0.8f))
+        Text(value, style = MaterialTheme.typography.bodySmall, color = contentColor.copy(0.8f))
     }
 }
 
