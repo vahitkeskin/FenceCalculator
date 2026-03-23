@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
@@ -21,6 +22,29 @@ import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+private data class SplashVec3(val x: Float, val y: Float, val z: Float)
+
+private fun splashProject(v: SplashVec3, w: Float, h: Float, rotX: Float, rotY: Float, s: Float): Offset {
+    val radX = rotX * Math.PI / 180f
+    val radY = rotY * Math.PI / 180f
+    val cosX = Math.cos(radX).toFloat()
+    val sinX = Math.sin(radX).toFloat()
+    val cosY = Math.cos(radY).toFloat()
+    val sinY = Math.sin(radY).toFloat()
+    var x = v.x
+    var y = v.y
+    var z = v.z
+    val y1 = y * cosX - z * sinX
+    val z1 = y * sinX + z * cosX
+    y = y1; z = z1
+    val x2 = x * cosY + z * sinY
+    val z2 = -x * sinY + z * cosY
+    x = x2; z = z2
+    val p = 1000f
+    val factor = p / (p + z)
+    return Offset(w / 2 + x * factor * s, h / 2 - y * factor * s)
+}
+
 @Composable
 fun AnimatedSplashScreen(onAnimationFinished: () -> Unit) {
     val primaryColor = MaterialTheme.colorScheme.primary
@@ -31,12 +55,10 @@ fun AnimatedSplashScreen(onAnimationFinished: () -> Unit) {
     val scale = remember { Animatable(0.8f) }
 
     LaunchedEffect(Unit) {
-        // Line drawing animation
         lineProgress.animateTo(
             targetValue = 1f,
             animationSpec = tween(durationMillis = 1500, easing = FastOutSlowInEasing)
         )
-        // Reveal text and scale up
         launch {
             textAlpha.animateTo(1f, tween(800))
         }
@@ -56,49 +78,61 @@ fun AnimatedSplashScreen(onAnimationFinished: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Architectural/Fence Drawing with Canvas
-            Canvas(modifier = Modifier.size(120.dp)) {
-                val strokeWidth = 8f
+            Canvas(modifier = Modifier.size(170.dp)) {
                 val w = size.width
                 val h = size.height
+                
+                val vScale = 3f * scale.value
+                val baseFenceH = 45f // Base v14 height
+                val fenceH = baseFenceH * lineProgress.value
+                
+                val concMain = Color(0xFFE0E0E0)
+                val concEdge = Color(0xFF78909C).copy(0.6f)
+                val shC = Color.Black.copy(0.15f)
 
-                // Vertical Poles
-                val poleCount = 4
-                for (i in 0 until poleCount) {
-                    val x = (w / (poleCount - 1)) * i
-                    drawLine(
-                        color = primaryColor.copy(alpha = 0.3f), // Ghost pole
-                        start = Offset(x, 0f),
-                        end = Offset(x, h),
-                        strokeWidth = strokeWidth,
-                        cap = StrokeCap.Round
+                val rotX = -20f
+                val rotY = 32f
+
+                // Draw 3 Posts
+                val positions = listOf(-35f, 0f, 35f)
+                positions.forEach { xPos ->
+                    val base = SplashVec3(xPos, 0f, 0f)
+                    val joint = SplashVec3(xPos, fenceH, 0f)
+                    
+                    val pB = splashProject(base, w, h, rotX, rotY, vScale)
+                    val pJ = splashProject(joint, w, h, rotX, rotY, vScale)
+
+                    // Ground Shadow
+                    drawOval(
+                        shC,
+                        topLeft = pB - Offset(14f * vScale, 5f * vScale),
+                        size = Size(28f * vScale, 10f * vScale)
                     )
-                    drawLine(
-                        color = primaryColor,
-                        start = Offset(x, h),
-                        end = Offset(x, h - (h * lineProgress.value)),
-                        strokeWidth = strokeWidth,
-                        cap = StrokeCap.Round
-                    )
+
+                    // Post Body
+                    drawLine(concEdge, pB, pJ, 8.5f * vScale, StrokeCap.Square)
+                    drawLine(concMain, pB, pJ, 5.5f * vScale, StrokeCap.Square)
                 }
-
-                // Horizontal Mesh Lines (Stylized)
-                val lineCount = 5
-                for (i in 0 until lineCount) {
-                    val y = (h / (lineCount - 1)) * i
-                    drawLine(
-                        color = primaryColor.copy(alpha = 0.2f * lineProgress.value),
-                        start = Offset(0f, y),
-                        end = Offset(w * lineProgress.value, y),
-                        strokeWidth = 4f,
-                        cap = StrokeCap.Round
-                    )
+                
+                // Horizontal Mesh Wires
+                if (lineProgress.value > 0.4f) {
+                    val wireProgress = (lineProgress.value - 0.4f) / 0.6f
+                    val wireColor = Color(0xFFB0BEC5).copy(0.4f)
+                    for (i in 1..3) {
+                        val yWire = i * 12f
+                        val wStart = SplashVec3(-35f, yWire, 0f)
+                        val wEnd = SplashVec3(35f, yWire, 0f)
+                        
+                        val pW1 = splashProject(wStart, w, h, rotX, rotY, vScale)
+                        val pW2 = splashProject(wEnd, w, h, rotX, rotY, vScale)
+                        
+                        drawLine(wireColor, pW1, pW2, 1.5f * vScale * wireProgress)
+                    }
                 }
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Branding Text
             val currentStrings = com.vahitkeskin.fencecalculator.util.Localization.getStrings(java.util.Locale.getDefault().language)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
