@@ -112,9 +112,9 @@ fun Fence3DOverlay(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalAlignment = Alignment.Start
                     ) {
-                        ViewStatItem({ ViewStatIcon(Icons.Filled.RotationX, Color.Red.copy(0.8f)) }, "X: ${curX.toInt()}°", glassContentColor)
-                        ViewStatItem({ ViewStatIcon(Icons.Filled.RotationY, Color.Green.copy(0.8f)) }, "Y: ${curY.toInt()}°", glassContentColor)
-                        ViewStatItem({ ViewStatIcon(Icons.Filled.ScaleZ, Color.Cyan.copy(0.8f)) }, "Z: %.1fX".format(curS), glassContentColor)
+                        ViewStatItem({ ViewStatIcon(Icons.Filled.RotationX, Color.Red.copy(0.8f)) }, "${curX.toInt()}°", glassContentColor)
+                        ViewStatItem({ ViewStatIcon(Icons.Filled.RotationY, Color.Green.copy(0.8f)) }, "${curY.toInt()}°", glassContentColor)
+                        ViewStatItem({ ViewStatIcon(Icons.Filled.ScaleZ, Color.Cyan.copy(0.8f)) }, "%.1fX".format(curS), glassContentColor)
                     }
 
                     val infiniteT = rememberInfiniteTransition()
