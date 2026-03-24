@@ -69,7 +69,7 @@ object PdfGenerator {
         canvas.drawText(customerTitle, 30f, 105f, paint)
 
         // Tarih Bilgisi
-        val sdf = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+        val sdf = SimpleDateFormat("dd MMMM yyyy", Locale(viewModel.selectedLanguage.code))
         val currentDate = sdf.format(Date())
         paint.textSize = 12f
         canvas.drawText(currentDate, 30f, 125f, paint)
@@ -168,31 +168,34 @@ object PdfGenerator {
                     ), xTotalEnd, yPos, paint
                 )
 
-                // --- Alt Bilgi (Açıklama veya Bağımlılık) ---
-                val subText = when {
-                    !item.dependencyInfo.isNullOrBlank() -> item.dependencyInfo
-                    !item.description.isNullOrBlank() -> item.description
-                    else -> null
-                }
-
-                if (subText != null) {
-                    yPos += 15f
+                // --- Alt Bilgi (Açıklama ve Bağımlılık) ---
+                var subTextLines = 0
+                if (!item.description.isNullOrBlank()) {
+                    yPos += 14f
                     paint.textAlign = Paint.Align.LEFT
                     paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-                    paint.textSize = 9f
+                    paint.textSize = 8.5f
                     paint.color = Color.GRAY
-                    //TODO PDF "Malzeme" altında bulunan formuül
-                    val displaySubText =
-                        if (subText.length > 50) subText.take(47) + "..." else subText
-                    //canvas.drawText(displaySubText, xMaterial, yPos, paint)
-
-                    // Reset paint for next item
-                    paint.color = Color.BLACK
-                    paint.textSize = 12f
-                    yPos += 20f
-                } else {
-                    yPos += 30f
+                    val displayDescription = if (item.description.length > 70) item.description.take(67) + "..." else item.description
+                    canvas.drawText(displayDescription, xMaterial, yPos, paint)
+                    subTextLines++
                 }
+
+                if (!item.dependencyInfo.isNullOrBlank()) {
+                    yPos += 11f
+                    paint.textAlign = Paint.Align.LEFT
+                    paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                    paint.textSize = 7.5f
+                    paint.color = android.graphics.Color.parseColor("#9E9E9E") // Subtle gray
+                    val displayDep = if (item.dependencyInfo.length > 85) item.dependencyInfo.take(82) + "..." else item.dependencyInfo
+                    canvas.drawText(displayDep, xMaterial, yPos, paint)
+                    subTextLines++
+                }
+
+                // Reset paint for next item
+                paint.color = Color.BLACK
+                paint.textSize = 12f
+                yPos += if (subTextLines > 0) 20f else 25f
             }
         }
 
