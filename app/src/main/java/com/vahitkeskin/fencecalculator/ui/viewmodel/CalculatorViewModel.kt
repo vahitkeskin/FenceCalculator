@@ -69,6 +69,19 @@ class CalculatorViewModel @Inject constructor(
         isIbanExpanded = v
         viewModelScope.launch { dataStoreManager.saveIbanExpanded(v) }
     }
+    
+    private var isFirstOrderPhoneLoad = true
+    var orderPhone by mutableStateOf("+90 541 900 07 76"); private set
+    fun onOrderPhoneChange(v: String) {
+        orderPhone = v
+        viewModelScope.launch { dataStoreManager.saveOrderPhone(v) }
+    }
+
+    var isOrderCardExpanded by mutableStateOf(true); private set
+    fun onOrderCardExpandedChange(v: Boolean) {
+        isOrderCardExpanded = v
+        viewModelScope.launch { dataStoreManager.saveOrderCardExpanded(v) }
+    }
 
     var isOnboardingCompleted by mutableStateOf(true); private set
     fun setOnboardingCompleted() {
@@ -349,6 +362,27 @@ class CalculatorViewModel @Inject constructor(
         viewModelScope.launch {
             dataStoreManager.ibanExpanded.collectLatest {
                 isIbanExpanded = it
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.orderPhone.collectLatest { valFromDataStore ->
+                if (isFirstOrderPhoneLoad) {
+                    isFirstOrderPhoneLoad = false
+                    val digitsOnly = valFromDataStore.filter { it.isDigit() }
+                    if (valFromDataStore.isBlank() || digitsOnly.length <= 3) {
+                        orderPhone = "+90 541 900 07 76"
+                        viewModelScope.launch { dataStoreManager.saveOrderPhone("+90 541 900 07 76") }
+                    } else {
+                        orderPhone = valFromDataStore
+                    }
+                } else {
+                    orderPhone = valFromDataStore
+                }
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.isOrderCardExpanded.collectLatest {
+                isOrderCardExpanded = it
             }
         }
     }

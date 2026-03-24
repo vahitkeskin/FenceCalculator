@@ -207,5 +207,12 @@ val EnStrings = AppStrings(
     gergiSummary = "Horizontal wire to prevent sagging.",
     baglamaSummary = "Binding wire to secure the mesh.",
     cimentoSummary = "Mortar for fixing post bases.",
-    betonSummary = "Fill mixture for post holes."
+    betonSummary = "Fill mixture for post holes.",
+    orderContactText = "You can reach this phone number for orders and more details.",
+    callAction = "Call",
+    whatsappAction = "WhatsApp",
+    smsAction = "SMS",
+    orderMessageTemplate = "Hello, I am reaching out to you via the Fence Calculator app. Could you please assist me with the purchasing process and details?",
+    orderCardTitle = "Order / Contact",
+    playStoreLink = "https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator"
 )

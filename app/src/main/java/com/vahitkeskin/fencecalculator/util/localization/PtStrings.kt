@@ -207,5 +207,12 @@ val PtStrings = AppStrings(
     gergiSummary = "Arame horizontal para evitar a curvatura.",
     baglamaSummary = "Arame de amarração para fixar a malha.",
     cimentoSummary = "Argamassa para fixar as bases dos postes.",
-    betonSummary = "Mistura de enchimento para os furos."
+    betonSummary = "Mistura de enchimento para os furos.",
+    orderContactText = "Podes contactar este número de telefone para encomendas e mais detalhes.",
+    callAction = "Ligar",
+    whatsappAction = "WhatsApp",
+    smsAction = "SMS",
+    orderMessageTemplate = "Olá, estou entrando em contato através do aplicativo Calculadora de Cercas. Poderia me ajudar com o processo de compra e os detalhes?",
+    orderCardTitle = "Pedido / Contato",
+    playStoreLink = "https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator"
 )

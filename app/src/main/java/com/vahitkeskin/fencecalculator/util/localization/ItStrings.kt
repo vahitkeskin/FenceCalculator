@@ -207,5 +207,12 @@ val ItStrings = AppStrings(
     gergiSummary = "Filo orizzontale contro l'allentamento.",
     baglamaSummary = "Filo di legatura per fissare la rete.",
     cimentoSummary = "Malta per fissare le basi dei pali.",
-    betonSummary = "Miscela di riempimento per i fori dei pali."
+    betonSummary = "Miscela di riempimento per i fori dei pali.",
+    orderContactText = "Puoi contattare questo numero di telefono per ordini e maggiori dettagli.",
+    callAction = "Chiama",
+    whatsappAction = "WhatsApp",
+    smsAction = "SMS",
+    orderMessageTemplate = "Salve, vi contatto tramite l'app Calcolatore di Recinzioni. Potreste assistermi con il processo di acquisto e i dettagli?",
+    orderCardTitle = "Ordine / Contatto",
+    playStoreLink = "https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator"
 )
