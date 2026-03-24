@@ -69,7 +69,7 @@ fun PhoneNumberField(
             onValueChange = { newValue ->
                 // Sadece rakamları al
                 val digits = newValue.filter { it.isDigit() }
-                onPhoneNumberChange(selectedCountry.dialCode + digits)
+                onPhoneNumberChange(if (digits.isEmpty()) "" else selectedCountry.dialCode + digits)
             },
             label = { Text(label, color = onBackgroundColor.copy(alpha = 0.5f)) },
             leadingIcon = {

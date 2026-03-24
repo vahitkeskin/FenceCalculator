@@ -207,5 +207,12 @@ val ZhStrings = AppStrings(
     gergiSummary = "防止下垂的水平张紧线。",
     baglamaSummary = "固定网格的绑线。",
     cimentoSummary = "固定立柱底座的砂浆。",
-    betonSummary = "柱坑的填充混合物。"
+    betonSummary = "柱坑的填充混合物。",
+    orderContactText = "您可以拨打此电话号码进行订购和了解更多详情。",
+    callAction = "呼叫",
+    whatsappAction = "WhatsApp",
+    smsAction = "SMS",
+    orderMessageTemplate = "您好，我通过围栏计算器应用程序与您联系。您能协助我了解购买流程和详细信息吗？",
+    orderCardTitle = "订单 / 联系",
+    playStoreLink = "https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator"
 )

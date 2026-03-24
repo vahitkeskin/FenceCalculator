@@ -88,6 +88,7 @@ import com.vahitkeskin.fencecalculator.util.centerOnFocus
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.vahitkeskin.fencecalculator.ui.components.AdvancedInputSection
+import com.vahitkeskin.fencecalculator.ui.components.ContactCard
 import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.ui.components.PdfPreviewDialog
 import com.vahitkeskin.fencecalculator.ui.components.PhoneNumberField
@@ -440,6 +441,17 @@ fun HomeScreen(
                         lengthValue = viewModel.totalLengthDraft,
                         onLengthChange = viewModel::onTotalLengthChange,
                         onClear = { viewModel.clearTotalLength() }
+                    )
+                }
+
+                // Sipariş/İletişim Kartı
+                item {
+                    ContactCard(
+                        phoneNumber = viewModel.orderPhone,
+                        onPhoneNumberChange = viewModel::onOrderPhoneChange,
+                        isExpanded = viewModel.isOrderCardExpanded,
+                        onExpandedChange = viewModel::onOrderCardExpandedChange,
+                        strings = viewModel.strings
                     )
                 }
 

@@ -207,5 +207,12 @@ val EsStrings = AppStrings(
     gergiSummary = "Alambre horizontal para evitar la flexión.",
     baglamaSummary = "Alambre de amarre para fijar la malla.",
     cimentoSummary = "Mortero para fijar las bases de los postes.",
-    betonSummary = "Mezcla de relleno para los agujeros."
+    betonSummary = "Mezcla de relleno para los agujeros.",
+    orderContactText = "Puedes contactar a este número de teléfono para pedidos y más detalles.",
+    callAction = "Llamar",
+    whatsappAction = "WhatsApp",
+    smsAction = "SMS",
+    orderMessageTemplate = "Hola, me comunico con usted a través de la aplicación Calculadora de Cercas. ¿Podría ayudarme con el proceso de compra y los detalles?",
+    orderCardTitle = "Pedido / Contacto",
+    playStoreLink = "https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator"
 )

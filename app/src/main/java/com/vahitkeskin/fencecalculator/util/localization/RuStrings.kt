@@ -207,5 +207,12 @@ val RuStrings = AppStrings(
     gergiSummary = "Горизонтальная натяжная проволока.",
     baglamaSummary = "Вязальная проволока для фиксации.",
     cimentoSummary = "Цемент для фиксации оснований.",
-    betonSummary = "Бетонная смесь для ям."
+    betonSummary = "Бетонная смесь для ям.",
+    orderContactText = "Вы можете обратиться по этому номеру телефона для заказов и более подробной информации.",
+    callAction = "Позвонить",
+    whatsappAction = "WhatsApp",
+    smsAction = "SMS",
+    orderMessageTemplate = "Здравствуйте, я обращаюсь к вам через приложение Калькулятор Заборов. Не могли бы вы помочь мне с процессом покупки и деталями?",
+    orderCardTitle = "Заказ / Контакты",
+    playStoreLink = "https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator"
 )

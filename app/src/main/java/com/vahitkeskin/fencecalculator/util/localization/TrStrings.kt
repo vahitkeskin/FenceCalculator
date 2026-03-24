@@ -207,5 +207,12 @@ val TrStrings = AppStrings(
     gergiSummary = "Esnemeyi önleyen yatay gergi teli.",
     baglamaSummary = "Teli direğe sabitleyen bağlayıcı.",
     cimentoSummary = "Direk diplerini sabitleyen harç.",
-    betonSummary = "Direk çukurları için dolgu karışımı."
+    betonSummary = "Direk çukurları için dolgu karışımı.",
+    orderContactText = "Sipariş ve daha fazla detay için bu telefon numarasına ulaşabilirler.",
+    callAction = "Ara",
+    whatsappAction = "WhatsApp",
+    smsAction = "SMS",
+    orderMessageTemplate = "Merhaba, Tel Çit Hesaplayıcı uygulaması üzerinden size ulaşıyorum. Satın alma işlemleri ve detaylar konusunda yardımcı olabilir misiniz?",
+    orderCardTitle = "Sipariş / İletişim",
+    playStoreLink = "https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator"
 )
