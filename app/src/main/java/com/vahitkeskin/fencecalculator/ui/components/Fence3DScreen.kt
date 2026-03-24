@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Height
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Square
+import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material.icons.filled.ZoomIn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -72,6 +73,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
 import kotlin.math.sqrt
+import com.vahitkeskin.fencecalculator.ui.icons.*
 
 private data class Vec3(val x: Float, val y: Float, val z: Float)
 
@@ -502,23 +504,26 @@ fun Fence3DScreen(
                                 )
                             }
                             Spacer(Modifier.height(20.dp))
-                            Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-                                StatItem(Icons.Default.Square, "${fenceResult.postCount}", "Direk", glassContentColor, glassContentSecondaryColor)
-                                StatItem(Icons.Default.Height, "${fenceResult.height}m", "Boy", glassContentColor, glassContentSecondaryColor)
-                                StatItem(Icons.Default.Grid4x4, "${fenceResult.meshEye}cm", "Göz", glassContentColor, glassContentSecondaryColor)
+                            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                                Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                                    StatItem(Icons.Default.Square, "${fenceResult.postCount}", "Direk", glassContentColor, glassContentSecondaryColor)
+                                    StatItem(Icons.Default.Straighten, "${fenceResult.spacing}m", "Aralık", glassContentColor, glassContentSecondaryColor)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                                    StatItem(Icons.Default.Height, "${fenceResult.height}m", "Boy", glassContentColor, glassContentSecondaryColor)
+                                    StatItem(Icons.Default.Grid4x4, "${fenceResult.meshEye}cm", "Göz", glassContentColor, glassContentSecondaryColor)
+                                }
                             }
-                            HorizontalDivider(
-                                modifier = Modifier
-                                    .padding(vertical = 16.dp)
-                                    .width(120.dp),
-                                color = glassContentColor.copy(0.15f),
-                                thickness = 1.dp
-                            )
-                            Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                                ViewStatItem(null, "X: ${curX.toInt()}°", glassContentColor)
-                                ViewStatItem(null, "Y: ${curY.toInt()}°", glassContentColor)
-                                ViewStatItem(Icons.Default.ZoomIn, "Z: %.1fX".format(curS), glassContentColor)
-                            }
+                        }
+
+                        Column(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            ViewStatItem({ ViewStatIcon(Icons.Filled.RotationX, Color.Red.copy(0.8f)) }, "X: ${curX.toInt()}°", glassContentColor)
+                            ViewStatItem({ ViewStatIcon(Icons.Filled.RotationY, Color.Green.copy(0.8f)) }, "Y: ${curY.toInt()}°", glassContentColor)
+                            ViewStatItem({ ViewStatIcon(Icons.Filled.ScaleZ, Color.Cyan.copy(0.8f)) }, "Z: %.1fX".format(curS), glassContentColor)
                         }
 
                         val infiniteT = rememberInfiniteTransition();
@@ -583,6 +588,23 @@ fun Fence3DScreen(
 }
 
 @Composable
+private fun ViewStatIcon(imageVector: androidx.compose.ui.graphics.vector.ImageVector, tint: Color) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(tint.copy(alpha = 0.15f), CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = null,
+            tint = tint,
+            modifier = Modifier.padding(3.dp)
+        )
+    }
+}
+
+@Composable
 private fun StatItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     value: String,
@@ -612,19 +634,16 @@ private fun StatItem(
 
 @Composable
 private fun ViewStatItem(
-    icon: androidx.compose.ui.graphics.vector.ImageVector?,
+    icon: @Composable (() -> Unit)? = null,
     value: String,
     contentColor: Color = if (MaterialTheme.colorScheme.onBackground.luminance() > 0.5f) Color.White else MaterialTheme.colorScheme.onSurface
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         if (icon != null) {
-            Icon(
-                icon,
-                null,
-                tint = MaterialTheme.colorScheme.primary.copy(0.7f),
-                modifier = Modifier.size(12.dp)
-            )
-            Spacer(Modifier.width(6.dp))
+            Box(Modifier.size(18.dp), contentAlignment = Alignment.Center) {
+                icon()
+            }
+            Spacer(Modifier.width(10.dp))
         }
         Text(value, style = MaterialTheme.typography.bodySmall, color = contentColor.copy(0.8f))
     }
