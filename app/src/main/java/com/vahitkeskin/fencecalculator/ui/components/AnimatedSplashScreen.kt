@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
@@ -21,28 +22,35 @@ import com.vahitkeskin.fencecalculator.ui.previews.AppPreviews
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 private data class SplashVec3(val x: Float, val y: Float, val z: Float)
 
 private fun splashProject(v: SplashVec3, w: Float, h: Float, rotX: Float, rotY: Float, s: Float): Offset {
-    val radX = rotX * Math.PI / 180f
-    val radY = rotY * Math.PI / 180f
-    val cosX = Math.cos(radX).toFloat()
-    val sinX = Math.sin(radX).toFloat()
-    val cosY = Math.cos(radY).toFloat()
-    val sinY = Math.sin(radY).toFloat()
-    var x = v.x
+    val radX = rotX * PI.toFloat() / 180f
+    val radY = rotY * PI.toFloat() / 180f
+    val cosX = cos(radX)
+    val sinX = sin(radX)
+    val cosY = cos(radY)
+    val sinY = sin(radY)
+    
+    val x = v.x
     var y = v.y
     var z = v.z
+    
     val y1 = y * cosX - z * sinX
     val z1 = y * sinX + z * cosX
     y = y1; z = z1
+    
     val x2 = x * cosY + z * sinY
     val z2 = -x * sinY + z * cosY
-    x = x2; z = z2
+    val finalX = x2; val finalZ = z2
+    
     val p = 1000f
-    val factor = p / (p + z)
-    return Offset(w / 2 + x * factor * s, h / 2 - y * factor * s)
+    val factor = p / (p + finalZ)
+    return Offset(w / 2f + finalX * factor * s, h / 2f - y * factor * s)
 }
 
 @Composable
@@ -78,55 +86,113 @@ fun AnimatedSplashScreen(onAnimationFinished: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Canvas(modifier = Modifier.size(170.dp)) {
+            Canvas(modifier = Modifier.size(220.dp)) {
                 val w = size.width
                 val h = size.height
                 
-                val vScale = 3f * scale.value
-                val baseFenceH = 45f // Base v14 height
+                val vScale = 3.5f * scale.value
+                val baseFenceH = 38f
                 val fenceH = baseFenceH * lineProgress.value
+                val tipH = 7f * lineProgress.value
+                val tipOut = 5f * lineProgress.value
                 
                 val concMain = Color(0xFFE0E0E0)
                 val concEdge = Color(0xFF78909C).copy(0.6f)
-                val shC = Color.Black.copy(0.15f)
+                val wireColor = Color(0xFFB0BEC5).copy(0.35f)
+                val shC = Color.Black.copy(0.1f)
 
-                val rotX = -20f
-                val rotY = 32f
+                val rotX = -16f
+                val rotY = 28f
 
-                // Draw 3 Posts
-                val positions = listOf(-35f, 0f, 35f)
-                positions.forEach { xPos ->
+                // 1. POSTS (5 positions)
+                val xPosList = listOf(-60f, -30f, 0f, 30f, 60f)
+                val pJoints = mutableListOf<Offset>()
+                val pTips = mutableListOf<Offset>()
+
+                xPosList.forEach { xPos ->
                     val base = SplashVec3(xPos, 0f, 0f)
                     val joint = SplashVec3(xPos, fenceH, 0f)
+                    val tip = SplashVec3(xPos + tipOut, fenceH + tipH, 0f)
                     
                     val pB = splashProject(base, w, h, rotX, rotY, vScale)
                     val pJ = splashProject(joint, w, h, rotX, rotY, vScale)
+                    val pT = splashProject(tip, w, h, rotX, rotY, vScale)
+                    
+                    pJoints.add(pJ); pTips.add(pT)
 
                     // Ground Shadow
                     drawOval(
                         shC,
-                        topLeft = pB - Offset(14f * vScale, 5f * vScale),
-                        size = Size(28f * vScale, 10f * vScale)
+                        topLeft = pB - Offset(14f * vScale, 4f * vScale),
+                        size = Size(28f * vScale, 8f * vScale)
                     )
 
                     // Post Body
-                    drawLine(concEdge, pB, pJ, 8.5f * vScale, StrokeCap.Square)
-                    drawLine(concMain, pB, pJ, 5.5f * vScale, StrokeCap.Square)
+                    drawLine(concEdge, pB, pJ, 6.5f * vScale, StrokeCap.Square)
+                    drawLine(concMain, pB, pJ, 4f * vScale, StrokeCap.Square)
+                    
+                    // Post Tip (Angled)
+                    if (lineProgress.value > 0.3f) {
+                        drawLine(concEdge, pJ, pT, 4.5f * vScale, StrokeCap.Round)
+                        drawLine(concMain, pJ, pT, 2.8f * vScale, StrokeCap.Round)
+                    }
                 }
                 
-                // Horizontal Mesh Wires
+                // 2. ULTRA-DIAMOND MESH (Small Baklava Dilimleri)
                 if (lineProgress.value > 0.4f) {
-                    val wireProgress = (lineProgress.value - 0.4f) / 0.6f
-                    val wireColor = Color(0xFFB0BEC5).copy(0.4f)
-                    for (i in 1..3) {
-                        val yWire = i * 12f
-                        val wStart = SplashVec3(-35f, yWire, 0f)
-                        val wEnd = SplashVec3(35f, yWire, 0f)
+                    val mAlpha = (lineProgress.value - 0.4f) / 0.6f
+                    val eyeX = 3.6f // Much denser horizontal
+                    val eyeY = 2.4f // Much denser vertical
+                    
+                    for (i in 0 until xPosList.size - 1) {
+                        val sX = xPosList[i]
+                        val eX = xPosList[i+1]
+                        val segmentWidth = eX - sX
                         
-                        val pW1 = splashProject(wStart, w, h, rotX, rotY, vScale)
-                        val pW2 = splashProject(wEnd, w, h, rotX, rotY, vScale)
+                        val mD = (segmentWidth / eyeX).toInt().coerceAtLeast(10)
+                        val hD = (baseFenceH / eyeY).toInt().coerceAtLeast(12)
                         
-                        drawLine(wireColor, pW1, pW2, 1.5f * vScale * wireProgress)
+                        for (m in -hD..mD + hD) {
+                            val r1 = m.toFloat() / mD.toFloat()
+                            val r2 = (m + hD).toFloat() / mD.toFloat()
+                            
+                            val r1C = r1.coerceIn(0f, 1f)
+                            val r2C = r2.coerceIn(0f, 1f)
+                            
+                            // Line 1: Forward crossing
+                            val p1Ref = splashProject(SplashVec3(sX + segmentWidth * r1C, r1C * fenceH, 0f), w, h, rotX, rotY, vScale)
+                            val p2Ref = splashProject(SplashVec3(sX + segmentWidth * r2C, r2C * fenceH, 0f), w, h, rotX, rotY, vScale)
+                            
+                            if (r1 in -0.05f..1.05f || r2 in -0.05f..1.05f) {
+                                drawLine(wireColor.copy(alpha = 0.25f * mAlpha), p1Ref, p2Ref, 0.45f * vScale)
+                            }
+                            
+                            // Line 2: Backward crossing
+                            val p3Ref = splashProject(SplashVec3(sX + segmentWidth * r2C, r1C * fenceH, 0f), w, h, rotX, rotY, vScale)
+                            val p4Ref = splashProject(SplashVec3(sX + segmentWidth * r1C, r2C * fenceH, 0f), w, h, rotX, rotY, vScale)
+                            
+                            if (r1 in -0.05f..1.05f || r2 in -0.05f..1.05f) {
+                                drawLine(wireColor.copy(alpha = 0.25f * mAlpha), p3Ref, p4Ref, 0.45f * vScale)
+                            }
+                        }
+                    }
+                }
+
+                // 3. CLEAN PARALLEL TOP STRANDS (Between Tips)
+                if (lineProgress.value > 0.6f) {
+                    val bAlpha = (lineProgress.value - 0.6f) / 0.4f
+                    for (i in 0 until pTips.size - 1) {
+                        val t1 = pTips[i]; val t2 = pTips[i+1]
+                        val j1 = pJoints[i]; val j2 = pJoints[i+1]
+                        
+                        for (s in 1..3) {
+                            val ratio = s / 3f
+                            val startS = j1 + (t1 - j1) * ratio
+                            val endS = j2 + (t2 - j2) * ratio
+                            
+                            // Only draw the clean parallel wires, no barbs
+                            drawLine(wireColor.copy(alpha = 0.7f * bAlpha), startS, endS, 1.0f * vScale)
+                        }
                     }
                 }
             }
