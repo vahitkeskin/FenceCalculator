@@ -21,7 +21,7 @@ import com.vahitkeskin.fencecalculator.ui.screen.AddEditCardScreen
 import com.vahitkeskin.fencecalculator.ui.screen.HomeScreen
 import com.vahitkeskin.fencecalculator.ui.screen.SettingsScreen
 import com.vahitkeskin.fencecalculator.ui.screen.PersonalInfoScreen
-import com.vahitkeskin.fencecalculator.ui.screen.AboutScreen
+import com.vahitkeskin.fencecalculator.ui.about.AboutScreen
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
 import com.vahitkeskin.fencecalculator.ui.fence3d.Fence3DScreen
