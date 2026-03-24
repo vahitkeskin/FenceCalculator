@@ -25,8 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import com.vahitkeskin.fencecalculator.util.centerOnFocus
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -41,8 +39,7 @@ fun AdvancedInputSection(
     labelText: String,
     lengthValue: String,
     onLengthChange: (String) -> Unit,
-    onClear: () -> Unit = {},
-    focusRequester: FocusRequester? = null
+    onClear: () -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
     PremiumGlassCard(
@@ -62,8 +59,7 @@ fun AdvancedInputSection(
                 modifier = Modifier.fillMaxWidth(),
                 focusManager = focusManager,
                 isLast = true,
-                onClear = onClear,
-                focusRequester = focusRequester
+                onClear = onClear
             )
 
         }
@@ -84,8 +80,7 @@ fun CompactInput(
     isPremium: Boolean = false,
     usageLimitInfo: String = "",
     premiumRequiredInfo: String = "",
-    onClear: () -> Unit = {},
-    focusRequester: FocusRequester? = null
+    onClear: () -> Unit = {}
 ) {
     // TODO: İstediğim zaman aktif edebileyim - 50 sınırlaması ve premium
     // val isLimitReached = !isPremium && usageCount >= 50
@@ -100,7 +95,6 @@ fun CompactInput(
             onValueChange = onValueChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
                 .centerOnFocus(),
             label = {
                 Text(

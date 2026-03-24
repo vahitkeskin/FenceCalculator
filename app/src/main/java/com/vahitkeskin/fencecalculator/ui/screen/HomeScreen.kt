@@ -85,7 +85,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
 import com.vahitkeskin.fencecalculator.util.centerOnFocus
-import androidx.compose.ui.focus.FocusRequester
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.vahitkeskin.fencecalculator.ui.components.AdvancedInputSection
@@ -149,17 +148,6 @@ fun HomeScreen(
         } else {
             Toast.makeText(context, viewModel.strings.cameraPermissionRequired, Toast.LENGTH_SHORT)
                 .show()
-        }
-    }
-
-    val totalLengthFocusRequester = remember { FocusRequester() }
-    
-    LaunchedEffect(Unit) {
-        delay(600) // Layout ve animasyonların tamamlanmasını bekleyelim
-        try {
-            totalLengthFocusRequester.requestFocus()
-        } catch (e: Exception) {
-            // Focus request might fail if components are not yet ready/visible
         }
     }
 
@@ -451,8 +439,7 @@ fun HomeScreen(
                         labelText = viewModel.strings.pdfTotalLengthLabel.removeSuffix(":"),
                         lengthValue = viewModel.totalLengthDraft,
                         onLengthChange = viewModel::onTotalLengthChange,
-                        onClear = { viewModel.clearTotalLength() },
-                        focusRequester = totalLengthFocusRequester
+                        onClear = { viewModel.clearTotalLength() }
                     )
                 }
 
