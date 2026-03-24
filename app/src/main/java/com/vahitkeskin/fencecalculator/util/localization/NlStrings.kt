@@ -207,5 +207,12 @@ val NlStrings = AppStrings(
     gergiSummary = "Horizontale draad tegen doorhangen.",
     baglamaSummary = "Binddraad om de maas vast te zetten.",
     cimentoSummary = "Mortel voor het vastzetten van palen.",
-    betonSummary = "Vulmengsel voor paalgaten."
+    betonSummary = "Vulmengsel voor paalgaten.",
+    orderContactText = "U kunt dit telefoonnummer bereiken voor bestellingen en meer details.",
+    callAction = "Bellen",
+    whatsappAction = "WhatsApp",
+    smsAction = "SMS",
+    orderMessageTemplate = "Hallo, ik neem contact met u op via de Hekwerk Calculator app. Kunt u mij helpen met het aankoopproces en de details?",
+    orderCardTitle = "Bestelling / Contact",
+    playStoreLink = "https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator"
 )

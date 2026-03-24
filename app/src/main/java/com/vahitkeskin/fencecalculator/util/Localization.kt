@@ -233,7 +233,14 @@ data class AppStrings(
     val gergiSummary: String,
     val baglamaSummary: String,
     val cimentoSummary: String,
-    val betonSummary: String
+    val betonSummary: String,
+    val orderContactText: String,
+    val callAction: String,
+    val whatsappAction: String,
+    val smsAction: String,
+    val orderMessageTemplate: String,
+    val orderCardTitle: String,
+    val playStoreLink: String
 )
 
 

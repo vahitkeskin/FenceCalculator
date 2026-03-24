@@ -207,5 +207,12 @@ val ArStrings = AppStrings(
     gergiSummary = "سلك أفقي لمنع الارتخاء.",
     baglamaSummary = "سلك ربط لتثبيت الشبكة.",
     cimentoSummary = "ملاط لتثبيت قواعد الأعمدة.",
-    betonSummary = "خليط الحشو لثقوب الأعمدة."
+    betonSummary = "خليط الحشو لثقوب الأعمدة.",
+    orderContactText = "يمكنك الوصول إلى رقم الهاتف هذا للطلبات ومزيد من التفاصيل.",
+    callAction = "اتصال",
+    whatsappAction = "WhatsApp",
+    smsAction = "SMS",
+    orderMessageTemplate = "مرحباً، أتواصل معك عبر تطبيق حاسبة السياج. هل يمكنك مساعدتي في عملية الشراء والتفاصيل؟",
+    orderCardTitle = "الطلب / الاتصال",
+    playStoreLink = "https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator"
 )

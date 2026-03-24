@@ -207,5 +207,12 @@ val DeStrings = AppStrings(
     gergiSummary = "Spanndraht gegen Durchhängen.",
     baglamaSummary = "Bindedraht zur Befestigung.",
     cimentoSummary = "Mörtel für Pfostenfundamente.",
-    betonSummary = "Füllmischung für Pfostenlöcher."
+    betonSummary = "Füllmischung für Pfostenlöcher.",
+    orderContactText = "Für Bestellungen und weitere Details können Sie diese Telefonnummer erreichen.",
+    callAction = "Anrufen",
+    whatsappAction = "WhatsApp",
+    smsAction = "SMS",
+    orderMessageTemplate = "Hallo, ich kontaktiere Sie über die Zaunrechner-App. Könnten Sie mir bitte beim Kaufprozess und den Details weiterhelfen?",
+    orderCardTitle = "Bestellung / Kontakt",
+    playStoreLink = "https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator"
 )

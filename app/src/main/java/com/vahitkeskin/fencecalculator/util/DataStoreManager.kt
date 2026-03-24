@@ -41,6 +41,8 @@ class DataStoreManager @Inject constructor(
         val LAND_LENGTH_USAGE_COUNT_KEY = stringPreferencesKey("land_length_usage_count")
         val IS_PREMIUM_KEY = booleanPreferencesKey("is_premium")
         val IBAN_EXPANDED_KEY = booleanPreferencesKey("iban_expanded")
+        val ORDER_PHONE_KEY = stringPreferencesKey("order_phone")
+        val ORDER_CARD_EXPANDED_KEY = booleanPreferencesKey("order_card_expanded")
     }
 
     val onboardingCompleted: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -86,6 +88,14 @@ class DataStoreManager @Inject constructor(
     val customerPhone: Flow<String> = context.dataStore.data.map { it[CUSTOMER_PHONE_KEY] ?: "" }
     val iban: Flow<String> = context.dataStore.data.map { it[IBAN_KEY] ?: "" }
     val appLanguage: Flow<String> = context.dataStore.data.map { it[APP_LANGUAGE_KEY] ?: "detect" }
+    
+    val orderPhone: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[ORDER_PHONE_KEY] ?: ""
+    }
+
+    val isOrderCardExpanded: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[ORDER_CARD_EXPANDED_KEY] ?: true
+    }
 
     suspend fun saveCompanyName(name: String) {
         context.dataStore.edit { preferences ->
@@ -131,4 +141,7 @@ class DataStoreManager @Inject constructor(
     suspend fun saveUsageCount(count: Int) = context.dataStore.edit { it[LAND_LENGTH_USAGE_COUNT_KEY] = count.toString() }
     suspend fun saveIsPremium(v: Boolean) = context.dataStore.edit { it[IS_PREMIUM_KEY] = v }
     suspend fun saveIbanExpanded(v: Boolean) = context.dataStore.edit { it[IBAN_EXPANDED_KEY] = v }
+    
+    suspend fun saveOrderPhone(v: String) = context.dataStore.edit { it[ORDER_PHONE_KEY] = v }
+    suspend fun saveOrderCardExpanded(v: Boolean) = context.dataStore.edit { it[ORDER_CARD_EXPANDED_KEY] = v }
 }

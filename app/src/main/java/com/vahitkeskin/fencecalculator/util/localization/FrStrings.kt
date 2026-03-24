@@ -207,5 +207,12 @@ val FrStrings = AppStrings(
     gergiSummary = "Fil horizontal pour éviter l'affaissement.",
     baglamaSummary = "Fil de liaison pour fixer le grillage.",
     cimentoSummary = "Mortier pour fixer les bases des poteaux.",
-    betonSummary = "Mélange de remplissage pour les trous."
+    betonSummary = "Mélange de remplissage pour les trous.",
+    orderContactText = "Vous pouvez contacter ce numéro de téléphone pour les commandes et plus de détails.",
+    callAction = "Appeler",
+    whatsappAction = "WhatsApp",
+    smsAction = "SMS",
+    orderMessageTemplate = "Bonjour, je vous contacte via l'application Calculateur de Clôture. Pourriez-vous m'aider avec le processus d'achat et les détails ?",
+    orderCardTitle = "Commande / Contact",
+    playStoreLink = "https://play.google.com/store/apps/details?id=com.vahitkeskin.fencecalculator"
 )
