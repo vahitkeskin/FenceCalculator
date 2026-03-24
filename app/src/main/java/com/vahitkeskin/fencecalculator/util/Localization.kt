@@ -223,7 +223,17 @@ data class AppStrings(
     val cardColor: String,
     val selected: String,
     val emojiCategoryNails: String,
-    val splashTitle: String
+    val splashTitle: String,
+    val direkSummary: String,
+    val boyDemirSummary: String,
+    val payandaSummary: String,
+    val kafesTopSummary: String,
+    val kafesKgSummary: String,
+    val dikenSummary: String,
+    val gergiSummary: String,
+    val baglamaSummary: String,
+    val cimentoSummary: String,
+    val betonSummary: String
 )
 
 

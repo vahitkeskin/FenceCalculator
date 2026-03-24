@@ -100,127 +100,127 @@ fun CalculatorViewModel.calculateValuesExt() {
         createItemExt(
             "direk",
             strings.direkTitle,
-            String.format(strings.direkDesc, spacing.toString()),
+            strings.direkSummary,
             direkSayisi,
             strings.unitPiece,
             Icons.Filled.Straighten,
             Color(0xFF3F51B5),
             strings.catMetal,
-            "", // Empty formula
+            String.format(strings.direkDesc, spacing.toString()),
             ::getP
         ),
         createItemExt(
             "boy_demir",
             strings.boyDemirTitle,
-            String.format(strings.boyDemirDesc, pipeLen.toString(), pLength.toString()),
+            strings.boyDemirSummary,
             boyDemirSayisi,
             strings.unitPiece,
             Icons.Filled.FormatLineSpacing,
             Color(0xFF5C6BC0),
             strings.catMetal,
-            "", // Empty formula
+            String.format(strings.boyDemirDesc, pipeLen.toString(), pLength.toString()),
             ::getP
         ),
         createItemExt(
             "payanda",
             strings.payandaTitle,
-            String.format(
-                strings.payandaDesc,
-                strutFreq.toInt().toString(),
-                strutCnt.toInt().toString()
-            ),
+            strings.payandaSummary,
             payandaSayisi,
             strings.unitPiece,
             Icons.Filled.ChangeHistory,
             Color(0xFF9C27B0),
             strings.catMetal,
-            "", // Empty formula
+            String.format(
+                strings.payandaDesc,
+                strutFreq.toInt().toString(),
+                strutCnt.toInt().toString()
+            ),
             ::getP
         ),
 
         createItemExt(
             "kafes_top",
             strings.kafesTopTitle,
-            String.format(strings.kafesTopDesc, meshLen.toString(), height.toString()),
+            strings.kafesTopSummary,
             kafesTopSayisi,
             strings.unitRoll,
             Icons.Filled.GridOn,
             Color(0xFF009688),
             strings.catWire,
-            "", // Empty formula
+            String.format(strings.kafesTopDesc, meshLen.toString(), height.toString()),
             ::getP
         ),
         createItemExt(
             "kafes_kg",
             strings.kafesKgTitle,
-            String.format(strings.kafesKgDesc, meshLen.toString()),
+            strings.kafesKgSummary,
             oneRollWeight,
             strings.unitKg,
             Icons.Filled.Scale,
             Color(0xFF00796B),
             strings.catWire,
-            "", // Empty formula
+            String.format(strings.kafesKgDesc, meshLen.toString()),
             ::getP
         ),
         createItemExt(
             "diken",
             strings.dikenTitle,
-            String.format(strings.dikenDesc, barbedRows.toInt(), barbedLen.toString()),
+            strings.dikenSummary,
             dikenliTelTopSayisi,
             strings.unitRoll,
             Icons.Filled.Warning,
             Color(0xFFD32F2F),
             strings.catWire,
-            "", // Empty formula
+            String.format(strings.dikenDesc, barbedRows.toInt(), barbedLen.toString()),
             ::getP
         ),
         createItemExt(
             "gergi",
             strings.gergiTitle,
-            String.format(strings.gergiDesc, tFactor.toString()),
+            strings.gergiSummary,
             gergiTeli,
             strings.unitKg,
             Icons.Filled.LinearScale,
             Color(0xFFFF9800),
             strings.catWire,
-            "", // Empty formula
+            String.format(strings.gergiDesc, tFactor.toString()),
             ::getP
         ),
         createItemExt(
             "baglama",
             strings.baglamaTitle,
-            String.format(strings.baglamaDesc, bFactor.toInt().toString()),
+            strings.baglamaSummary,
             baglamaTeli,
             strings.unitKg,
             Icons.Filled.Link,
             Color(0xFF795548),
             strings.catWire,
-            "", // Empty formula
+            String.format(strings.baglamaDesc, bFactor.toInt().toString()),
             ::getP
         ),
 
         createItemExt(
             "cimento",
             strings.cimentoTitle,
-            strings.cimentoDesc,
+            strings.cimentoSummary,
             cimentoSayisi,
             strings.unitPiece,
             Icons.Filled.Egg,
             Color(0xFF607D8B),
             strings.catConstruction,
-            "", // Empty formula
+            strings.cimentoDesc,
             ::getP
         ),
         createItemExt(
             "beton",
             strings.betonTitle,
-            strings.betonDesc,
+            strings.betonSummary,
             hazirBetonM3,
             strings.unitM3,
             Icons.Filled.Layers,
             Color(0xFF455A64),
             strings.catConstruction,
-            "", // Empty formula
+            strings.betonDesc,
             ::getP
         )
     )
