@@ -24,7 +24,7 @@ import com.vahitkeskin.fencecalculator.ui.screen.PersonalInfoScreen
 import com.vahitkeskin.fencecalculator.ui.screen.AboutScreen
 import com.vahitkeskin.fencecalculator.ui.theme.FenceCalculatorTheme
 import com.vahitkeskin.fencecalculator.ui.viewmodel.CalculatorViewModel
-import com.vahitkeskin.fencecalculator.ui.components.Fence3DScreen
+import com.vahitkeskin.fencecalculator.ui.fence3d.Fence3DScreen
 import com.vahitkeskin.fencecalculator.ui.components.MeshBackground
 import com.vahitkeskin.fencecalculator.model.FenceResult
 import androidx.compose.material.icons.Icons
