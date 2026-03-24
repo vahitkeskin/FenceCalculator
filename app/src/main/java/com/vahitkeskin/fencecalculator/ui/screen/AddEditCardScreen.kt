@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextOverflow
 import com.vahitkeskin.fencecalculator.data.model.CustomCardItem
 import com.vahitkeskin.fencecalculator.ui.components.ColorPickerCircle
 import com.vahitkeskin.fencecalculator.ui.components.EmojiPicker
@@ -640,6 +641,31 @@ fun AddEditCardScreen(
                                     letterSpacing = 1.sp,
                                     modifier = Modifier.padding(bottom = 8.dp)
                                 )
+                                if (description.isNotBlank()) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(bottom = 12.dp)
+                                            .background(previewColor.copy(alpha = 0.08f), RoundedCornerShape(10.dp))
+                                            .padding(10.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Info,
+                                            contentDescription = null,
+                                            tint = previewColor.copy(alpha = 0.8f),
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(10.dp))
+                                        Text(
+                                            text = description,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = onBackgroundColor.copy(alpha = 0.65f),
+                                            fontWeight = FontWeight.Medium,
+                                            lineHeight = 16.sp
+                                        )
+                                    }
+                                }
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Surface(
                                         color = previewColor.copy(alpha = 0.15f),
@@ -655,19 +681,13 @@ fun AddEditCardScreen(
                                     }
                                     Spacer(modifier = Modifier.width(16.dp))
                                     Column(modifier = Modifier.weight(1f)) {
+                                        // Title Only
                                         Text(
                                             title,
                                             style = MaterialTheme.typography.titleMedium,
                                             fontWeight = FontWeight.ExtraBold,
                                             color = onBackgroundColor
                                         )
-                                        if (description.isNotBlank()) {
-                                            Text(
-                                                description,
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = onBackgroundColor.copy(alpha = 0.6f)
-                                            )
-                                        }
                                     }
                                     if (quantity.isNotBlank() && unit.isNotBlank()) {
                                         Surface(

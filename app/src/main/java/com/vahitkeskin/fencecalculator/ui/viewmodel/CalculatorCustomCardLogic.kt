@@ -105,7 +105,7 @@ fun CalculatorViewModel.updateCustomCardResultsExt() {
                 card.quantity to null
             }
 
-        val (finalQty, _) = calculationResult
+        val (finalQty, depInfo) = calculationResult
         val totalCost = finalQty * card.unitPrice
         CalculationItem(
             id = "custom_${card.id}",
@@ -118,7 +118,7 @@ fun CalculatorViewModel.updateCustomCardResultsExt() {
             icon = Icons.Default.Extension,
             color = color,
             emoji = card.emoji,
-            dependencyInfo = null
+            dependencyInfo = depInfo
         )
     }
     rebuildOrderedVisibleItemsExt()
