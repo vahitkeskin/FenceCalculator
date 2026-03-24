@@ -202,7 +202,9 @@ fun SmartSettingsInput(
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .centerOnFocus(),
             label = { Text(label, style = MaterialTheme.typography.bodySmall) },
             textStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
             singleLine = true,
