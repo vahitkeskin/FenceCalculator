@@ -29,8 +29,7 @@ fun Modifier.centerOnFocus(): Modifier = composed {
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
     
-    // Ekran yüksekliğinin bir kısmını (yaklaşık görünür alan) baz alıyoruz.
-    val viewportHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
+    val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
 
     this
         .bringIntoViewRequester(requester)
@@ -39,16 +38,24 @@ fun Modifier.centerOnFocus(): Modifier = composed {
             if (focusState.isFocused) {
                 scope.launch {
                     // Klavyenin açılma süresini ve UI'ın yeniden boyutlanmasını bekliyoruz.
-                    delay(350)
+                    delay(300)
                     
-                    // Rect koordinatları öğenin sol üst köşesine (0,0) göredir.
-                    // Öğeyi merkeze almak için, yüksekliği viewport kadar olan bir alanı hedefliyoruz.
-                    val focusAreaHeight = viewportHeightPx * 0.6f 
-                    val rect = Rect(
-                        offset = Offset(0f, -(focusAreaHeight / 2 - itemSize.height / 2)),
-                        size = Size(itemSize.width, focusAreaHeight)
-                    )
-                    requester.bringIntoView(rect)
+                    // Boyut henüz yakalanmadıysa biraz daha bekleyelim
+                    if (itemSize.height <= 0) delay(150)
+                    
+                    if (itemSize.height > 0) {
+                        // Rect koordinatları öğenin sol üst köşesine (0,0) göredir.
+                        // Öğeyi tamamen görünür yapmak ve ortalamak için viewport'un %50-60'ını baz alıyoruz.
+                        val viewportHeight = screenHeightPx * 0.5f 
+                        val rect = Rect(
+                            offset = Offset(0f, -(viewportHeight / 2 - itemSize.height / 2)),
+                            size = Size(itemSize.width, viewportHeight)
+                        )
+                        requester.bringIntoView(rect)
+                    } else {
+                        // Boyut hala sıfırsa (nadir), en azından öğeyi görünür kılmak için requester'ı parametresiz çağırabiliriz
+                        requester.bringIntoView()
+                    }
                 }
             }
         }
