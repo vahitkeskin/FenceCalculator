@@ -128,7 +128,7 @@ fun DeveloperCard(
                     )
                 }
                 Text(
-                    text = "Vahit KESKİN" + if (!isExpanded) " (Bana Ulaşın)" else "",
+                    text = (if (!isExpanded) "Bil. Müh. " else "") + "Vahit KESKİN",
                     style = if (isExpanded) MaterialTheme.typography.titleLarge else MaterialTheme.typography.bodyLarge,
                     fontWeight = if (isExpanded) FontWeight.Bold else FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface,
