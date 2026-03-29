@@ -150,6 +150,7 @@ fun CalculatorViewModel.calculateValuesExt() {
             String.format(strings.kafesTopDesc, meshLen.toString(), height.toString()),
             ::getP
         ),
+        /*
         createItemExt(
             "kafes_kg",
             strings.kafesKgTitle,
@@ -161,7 +162,8 @@ fun CalculatorViewModel.calculateValuesExt() {
             strings.catWire,
             String.format(strings.kafesKgDesc, meshLen.toString()),
             ::getP
-        ),
+        )
+        */
         createItemExt(
             "diken",
             strings.dikenTitle,
